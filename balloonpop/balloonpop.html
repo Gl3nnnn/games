@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balloon Pop - Neon Arcade</title>
+    <link rel="stylesheet" href="balloonpop.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">BALLOON POP</h1>
+        
+        <div class="score-display">
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="score">HIGH SCORE: <span id="highScore">0</span></div>
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="popped-count">Balloons Popped: <span id="poppedCount">0</span></div>
+        </div>
+        
+        <button id="startBtn" class="start-btn">START GAME</button>
+        <button id="resetBtn" class="reset-btn">RESET</button>
+    </div>
+    
+    <script src="balloonpop.js"></script>
+</body>
+</html>

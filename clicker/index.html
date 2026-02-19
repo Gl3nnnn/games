@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clicker - Neon Arcade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">CLICKER</h1>
+        
+        <div class="score-display">
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="high-score">HIGH SCORE: <span id="highScore">0</span></div>
+        </div>
+        
+        <div class="click-area">
+            <button id="clickBtn" class="click-btn">
+                <span class="btn-text">CLICK!</span>
+                <span class="click-power">+<span id="clickPower">1</span></span>
+            </button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-label">CLICKS</span>
+                <span id="totalClicks" class="stat-value">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">PER SECOND</span>
+                <span id="autoClick" class="stat-value">0</span>
+            </div>
+        </div>
+        
+        <div class="upgrades">
+            <h2>UPGRADES</h2>
+            
+            <div class="upgrade" id="upgrade1">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Click Power</span>
+                    <span class="upgrade-desc">+1 per click</span>
+                </div>
+                <button class="upgrade-btn" id="buyClickPower">
+                    Cost: <span id="clickPowerCost">10</span>
+                </button>
+            </div>
+            
+            <div class="upgrade" id="upgrade2">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Auto Clicker</span>
+                    <span class="upgrade-desc">+1 per second</span>
+                </div>
+                <button class="upgrade-btn" id="buyAutoClicker">
+                    Cost: <span id="autoClickCost">50</span>
+                </button>
+            </div>
+            
+            <div class="upgrade" id="upgrade3">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Mega Click</span>
+                    <span class="upgrade-desc">+5 per click</span>
+                </div>
+                <button class="upgrade-btn" id="buyMegaClick">
+                    Cost: <span id="megaClickCost">200</span>
+                </button>
+            </div>
+            
+            <div class="upgrade" id="upgrade4">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Super Auto</span>
+                    <span class="upgrade-desc">+10 per second</span>
+                </div>
+                <button class="upgrade-btn" id="buySuperAuto">
+                    Cost: <span id="superAutoCost">500</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

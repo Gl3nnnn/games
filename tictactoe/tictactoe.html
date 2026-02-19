@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe - Neon Arcade</title>
+    <link rel="stylesheet" href="tictactoe.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">TIC-TAC-TOE</h1>
+        
+        <div class="score-display">
+            <div class="score">X WINS: <span id="xWins">0</span></div>
+            <div class="score">O WINS: <span id="oWins">0</span></div>
+            <div class="score">DRAWS: <span id="draws">0</span></div>
+        </div>
+        
+        <div class="mode-select">
+            <label>Mode: </label>
+            <select id="gameMode">
+                <option value="pvp">Player vs Player</option>
+                <option value="pve">Player vs Easy AI</option>
+            </select>
+        </div>
+        
+        <div class="current-player">
+            Current Player: <span id="currentPlayer">X</span>
+        </div>
+        
+        <div class="board" id="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+        
+        <div id="winnerDisplay" class="winner-display hidden">
+            <h2 id="winnerText"></h2>
+        </div>
+        
+        <button id="resetBtn" class="reset-btn">NEW GAME</button>
+    </div>
+    
+    <script src="tictactoe.js"></script>
+</body>
+</html>
