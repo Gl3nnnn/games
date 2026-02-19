@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Escape - Neon Arcade</title>
+    <link rel="stylesheet" href="mazeescape.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">MAZE ESCAPE</h1>
+        
+        <div class="score-display">
+            <div class="timer">TIME: <span id="timer">0.0</span>s</div>
+            <div class="best-time">BEST: <span id="bestTime">--</span></div>
+        </div>
+        
+        <div class="game-area">
+            <div id="maze" class="maze"></div>
+        </div>
+        
+        <div class="controls-info">
+            <p>Use <span class="key">↑</span> <span class="key">↓</span> <span class="key">←</span> <span class="key">→</span> or tap to move</p>
+        </div>
+        
+        <div class="buttons">
+            <button id="resetBtn" class="game-btn">RESET</button>
+        </div>
+        
+        <div id="winMessage" class="win-message hidden">
+            <h2>🎉 YOU ESCAPED! 🎉</h2>
+            <p>Time: <span id="finalTime">0</span>s</p>
+        </div>
+    </div>
+    
+    <script src="mazeescape.js"></script>
+</body>
+</html>

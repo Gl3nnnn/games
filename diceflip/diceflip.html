@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice & Coin - Neon Arcade</title>
+    <link rel="stylesheet" href="diceflip.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">DICE & COIN</h1>
+        
+        <div class="mode-toggle">
+            <button id="diceModeBtn" class="mode-btn active">DICE</button>
+            <button id="coinModeBtn" class="mode-btn">COIN</button>
+        </div>
+        
+        <div class="dice-controls">
+            <button id="oneDieBtn" class="control-btn active">1 DIE</button>
+            <button id="twoDiceBtn" class="control-btn">2 DICE</button>
+        </div>
+        
+        <div class="game-area">
+            <div id="dice1" class="dice">1</div>
+            <div id="dice2" class="dice hidden">1</div>
+            
+            <div id="coin" class="coin hidden">
+                <div class="coin-front"></div>
+                <div class="coin-back"></div>
+            </div>
+        </div>
+        
+        <div class="result" id="result">Ready to roll!</div>
+        
+        <div class="buttons">
+            <button id="rollBtn" class="game-btn">ROLL!</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-label">TOTAL ROLLS</span>
+                <span id="totalRolls" class="stat-value">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">COIN WINS</span>
+                <span id="coinWins" class="stat-value">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <script src="diceflip.js"></script>
+</body>
+</html>

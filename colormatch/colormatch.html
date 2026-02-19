@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Match - Neon Arcade</title>
+    <link rel="stylesheet" href="colormatch.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">COLOR MATCH</h1>
+        
+        <div class="score-display">
+            <div class="level">LEVEL: <span id="level">1</span></div>
+            <div class="high-level">BEST: <span id="bestLevel">1</span></div>
+        </div>
+        
+        <div class="status" id="status">Press START to begin</div>
+        
+        <div class="game-board">
+            <div class="color-buttons">
+                <button id="green" class="color-btn green" data-color="0"></button>
+                <button id="red" class="color-btn red" data-color="1"></button>
+                <button id="yellow" class="color-btn yellow" data-color="2"></button>
+                <button id="blue" class="color-btn blue" data-color="3"></button>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button id="startBtn" class="game-btn start-btn">START</button>
+            <button id="resetBtn" class="game-btn">RESET</button>
+        </div>
+        
+        <div id="gameOver" class="game-over hidden">
+            <h2>GAME OVER</h2>
+            <p>You reached level <span id="finalLevel">1</span></p>
+            <button id="playAgainBtn" class="game-btn">PLAY AGAIN</button>
+        </div>
+    </div>
+    
+    <script src="colormatch.js"></script>
+</body>
+</html>
