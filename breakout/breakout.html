@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout Lite - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link rel="stylesheet" href="breakout.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">BREAKOUT</h1>
+        
+        <div class="score-display">
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="high-score">HIGH SCORE: <span id="highScore">0</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        
+        <div class="controls-info">
+            <p>Use <span>Arrow Keys</span> or <span>Mouse/Touch</span> to move paddle</p>
+            <p>Press <span>SPACE</span> to pause/resume</p>
+        </div>
+        
+        <div id="gameOver" class="game-over hidden">
+            <h2 id="gameOverTitle">GAME OVER</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+        
+        <div id="startScreen" class="start-screen">
+            <h2>PRESS ANY KEY TO START</h2>
+        </div>
+    </div>
+    
+    <script src="breakout.js"></script>
+</body>
+</html>
