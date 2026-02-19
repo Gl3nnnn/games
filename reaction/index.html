@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction Timer - Neon Arcade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">REACTION TIMER</h1>
+        
+        <div class="score-display">
+            <div class="current-time">TIME: <span id="currentTime">--</span> ms</div>
+            <div class="best-time">BEST: <span id="bestTime">--</span> ms</div>
+            <div class="attempts">ATTEMPTS: <span id="attempts">0</span></div>
+        </div>
+        
+        <div id="gameArea" class="game-area">
+            <div id="waiting" class="waiting-message">
+                <h2>WAIT FOR GREEN...</h2>
+                <p>Click anywhere when the screen turns green!</p>
+            </div>
+            <div id="ready" class="ready-message hidden">
+                <h2>CLICK NOW!</h2>
+            </div>
+            <div id="tooEarly" class="too-early hidden">
+                <h2>TOO EARLY!</h2>
+                <p>Wait for the green screen</p>
+                <button id="retryBtn" class="retry-btn">TRY AGAIN</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>Click or tap as fast as you can when the screen turns <span class="green">GREEN</span></p>
+            <p>Press <span>SPACE</span> or click to start</p>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

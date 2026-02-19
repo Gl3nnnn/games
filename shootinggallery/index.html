@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooting Gallery - Neon Arcade</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">SHOOTING GALLERY</h1>
+        
+        <div class="score-display">
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="high-score">BEST: <span id="highScore">0</span></div>
+            <div class="time">TIME: <span id="timeLeft">30</span>s</div>
+            <div class="targets">TARGETS: <span id="targetsLeft">15</span></div>
+        </div>
+        
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        
+        <div class="controls-info">
+            <p>Click or tap on targets to score points!</p>
+            <p>Bigger targets = More points</p>
+        </div>
+        
+        <div id="gameOver" class="game-over hidden">
+            <h2 id="gameOverTitle">GAME OVER</h2>
+            <p>Final Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+        
+        <div id="startScreen" class="start-screen">
+            <h2>CLICK TO START</h2>
+            <p>Hit as many targets as you can!</p>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>

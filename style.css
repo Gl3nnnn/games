@@ -149,6 +149,120 @@ body {
     text-shadow: 0 0 10px #ff00ff;
 }
 
+/* Tic-Tac-Toe - Cyan Neon */
+.tictactoe-card {
+    border-color: #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.tictactoe-card:hover {
+    box-shadow: 
+        0 0 25px rgba(0, 255, 255, 0.6),
+        0 0 50px rgba(0, 255, 255, 0.4),
+        inset 0 0 25px rgba(0, 255, 255, 0.15);
+    border-color: #00ffff;
+}
+
+.tictactoe-card h2 {
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+/* Memory - Yellow Neon */
+.memory-card {
+    border-color: #ffff00;
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
+}
+
+.memory-card:hover {
+    box-shadow: 
+        0 0 25px rgba(255, 255, 0, 0.6),
+        0 0 50px rgba(255, 255, 0, 0.4),
+        inset 0 0 25px rgba(255, 255, 0, 0.15);
+    border-color: #ffff00;
+}
+
+.memory-card h2 {
+    color: #ffff00;
+    text-shadow: 0 0 10px #ffff00;
+}
+
+/* Balloon Pop - Red Neon */
+.balloon-card {
+    border-color: #ff0044;
+    box-shadow: 0 0 15px rgba(255, 0, 68, 0.3);
+}
+
+.balloon-card:hover {
+    box-shadow: 
+        0 0 25px rgba(255, 0, 68, 0.6),
+        0 0 50px rgba(255, 0, 68, 0.4),
+        inset 0 0 25px rgba(255, 0, 68, 0.15);
+    border-color: #ff0044;
+}
+
+.balloon-card h2 {
+    color: #ff0044;
+    text-shadow: 0 0 10px #ff0044;
+}
+
+/* Reaction - Electric Blue Neon */
+.reaction-card {
+    border-color: #00aaff;
+    box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
+}
+
+.reaction-card:hover {
+    box-shadow: 
+        0 0 25px rgba(0, 170, 255, 0.6),
+        0 0 50px rgba(0, 170, 255, 0.4),
+        inset 0 0 25px rgba(0, 170, 255, 0.15);
+    border-color: #00aaff;
+}
+
+.reaction-card h2 {
+    color: #00aaff;
+    text-shadow: 0 0 10px #00aaff;
+}
+
+/* Shooting Gallery - Gold Neon */
+.shooting-card {
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.shooting-card:hover {
+    box-shadow: 
+        0 0 25px rgba(255, 215, 0, 0.6),
+        0 0 50px rgba(255, 215, 0, 0.4),
+        inset 0 0 25px rgba(255, 215, 0, 0.15);
+    border-color: #ffd700;
+}
+
+.shooting-card h2 {
+    color: #ffd700;
+    text-shadow: 0 0 10px #ffd700;
+}
+
+/* Endless Runner - Purple Neon */
+.runner-card {
+    border-color: #9d00ff;
+    box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
+}
+
+.runner-card:hover {
+    box-shadow: 
+        0 0 25px rgba(157, 0, 255, 0.6),
+        0 0 50px rgba(157, 0, 255, 0.4),
+        inset 0 0 25px rgba(157, 0, 255, 0.15);
+    border-color: #9d00ff;
+}
+
+.runner-card h2 {
+    color: #9d00ff;
+    text-shadow: 0 0 10px #9d00ff;
+}
+
 .card-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
