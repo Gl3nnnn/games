@@ -5,108 +5,235 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Arcade</title>
     <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="title">NEON ARCADE</h1>
-        <p class="subtitle">Select Your Game</p>
-        
-        <div class="game-cards">
-            <a href="snake/" class="game-card snake-card">
-                <div class="card-icon">🐍</div>
-                <h2>SNAKE</h2>
-                <p>Classic snake game</p>
-            </a>
-            
-            <a href="flappy/" class="game-card flappy-card">
-                <div class="card-icon">🐦</div>
-                <h2>FLAPPY BIRD</h2>
-                <p>Fly through pipes</p>
-            </a>
-            
-            <a href="clicker/" class="game-card clicker-card">
-                <div class="card-icon">👆</div>
-                <h2>CLICKER</h2>
-                <p>Click to score</p>
-            </a>
-            
-            <a href="tictactoe/tictactoe.html" class="game-card tictactoe-card">
-                <div class="card-icon">❌</div>
-                <h2>TIC-TAC-TOE</h2>
-                <p>Classic X and O</p>
-            </a>
-            
-            <a href="memory/memory.html" class="game-card memory-card">
-                <div class="card-icon">🧠</div>
-                <h2>MEMORY</h2>
-                <p>Match the pairs</p>
-            </a>
-            
-            <a href="balloonpop/balloonpop.html" class="game-card balloon-card">
-                <div class="card-icon">🎈</div>
-                <h2>BALLOON POP</h2>
-                <p>Pop balloons!</p>
-            </a>
-            
-            <a href="reaction/" class="game-card reaction-card">
-                <div class="card-icon">⚡</div>
-                <h2>REACTION</h2>
-                <p>Test your reflexes!</p>
-            </a>
-            
-            <a href="shootinggallery/" class="game-card shooting-card">
-                <div class="card-icon">🎯</div>
-                <h2>SHOOTING GALLERY</h2>
-                <p>Sharpen your aim!</p>
-            </a>
-            
-            <a href="endlessrunner/" class="game-card runner-card">
-                <div class="card-icon">🏃</div>
-                <h2>ENDLESS RUNNER</h2>
-                <p>Run forever!</p>
-            </a>
-            
-            <a href="mazeescape/mazeescape.html	" class="game-card maze-card">
-                <div class="card-icon">迷宫</div>
-                <h2>MAZE ESCAPE</h2>
-                <p>Find your way out!</p>
-            </a>
-            
-            <a href="colormatch/colormatch.html" class="game-card color-card">
-                <div class="card-icon">🎨</div>
-                <h2>COLOR MATCH</h2>
-                <p>Remember the pattern!</p>
-            </a>
-            
-            <a href="diceflip/diceflip.html" class="game-card dice-card">
-                <div class="card-icon">🎲</div>
-                <h2>DICE & COIN</h2>
-                <p>Roll the dice!</p>
-            </a>
-            
-            <a href="breakout/breakout.html" class="game-card breakout-card">
-                <div class="card-icon">🧱</div>
-                <h2>BREAKOUT</h2>
-                <p>Bounce and break!</p>
-            </a>
-            
-            <a href="whackamole/whackamole.html" class="game-card whackamole-card">
-                <div class="card-icon">🐹</div>
-                <h2>WHACK-A-MOLE</h2>
-                <p>Click the moles!</p>
-            </a>
-            
-            <a href="catcher/catcher.html" class="game-card catcher-card">
-                <div class="card-icon">🧺</div>
-                <h2>CATCHER</h2>
-                <p>Catch falling objects!</p>
-            </a>
-        </div>
-        
-        <footer class="footer">
-            <p>Press any button to start • Use keyboard or mouse</p>
-        </footer>
+    <div class="background-effects">
+        <div class="grid-overlay"></div>
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
     </div>
+
+    <header class="main-header">
+        <h1 class="title">NEON ARCADE</h1>
+        <p class="subtitle">Choose Your Game</p>
+    </header>
+
+    <main class="container">
+        <!-- Classic Games -->
+        <section class="category">
+            <h2 class="category-title classic-title">
+                <span class="category-icon">🎮</span>
+                CLASSIC GAMES
+            </h2>
+            <div class="game-grid">
+                <a href="snake/" class="game-card classic-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🐍</div>
+                        <h3>SNAKE</h3>
+                        <p>Classic snake game - eat and grow!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="flappy/" class="game-card classic-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🐦</div>
+                        <h3>FLAPPY BIRD</h3>
+                        <p>Fly through pipes without crashing!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="breakout/breakout.html" class="game-card classic-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🧱</div>
+                        <h3>BREAKOUT</h3>
+                        <p>Bounce the ball and break all bricks!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Puzzle & Memory -->
+        <section class="category">
+            <h2 class="category-title puzzle-title">
+                <span class="category-icon">🧠</span>
+                PUZZLE & MEMORY
+            </h2>
+            <div class="game-grid">
+                <a href="memory/memory.html" class="game-card puzzle-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🧠</div>
+                        <h3>MEMORY</h3>
+                        <p>Match all the pairs to win!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="colormatch/colormatch.html" class="game-card puzzle-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🎨</div>
+                        <h3>COLOR MATCH</h3>
+                        <p>Remember and match the colors!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="tictactoe/tictactoe.html" class="game-card puzzle-card">
+                    <div class="card-inner">
+                        <div class="card-icon">❌</div>
+                        <h3>TIC-TAC-TOE</h3>
+                        <p>Classic X and O strategy game!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="mazeescape/mazeescape.html" class="game-card puzzle-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🌀</div>
+                        <h3>MAZE ESCAPE</h3>
+                        <p>Find your way through the maze!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Action & Reflex -->
+        <section class="category">
+            <h2 class="category-title action-title">
+                <span class="category-icon">⚡</span>
+                ACTION & REFLEX
+            </h2>
+            <div class="game-grid">
+                <a href="balloonpop/balloonpop.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🎈</div>
+                        <h3>BALLOON POP</h3>
+                        <p>Pop balloons before they fly away!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="reaction/" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">⚡</div>
+                        <h3>REACTION</h3>
+                        <p>Test your reflexes - click when green!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="shootinggallery/" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🎯</div>
+                        <h3>SHOOTING GALLERY</h3>
+                        <p>Sharpen your aim with precision!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="endlessrunner/" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🏃</div>
+                        <h3>ENDLESS RUNNER</h3>
+                        <p>Run as far as you can!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="whackamole/whackamole.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🐹</div>
+                        <h3>WHACK-A-MOLE</h3>
+                        <p>Click the moles before they hide!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="tapthedot/tapthedot.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">👆</div>
+                        <h3>TAP THE DOT</h3>
+                        <p>Tap the moving dot as fast as you can!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="spacedodger/spacedodger.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🚀</div>
+                        <h3>SPACE DODGER</h3>
+                        <p>Dodge asteroids in space!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Chance & Luck -->
+        <section class="category">
+            <h2 class="category-title chance-title">
+                <span class="category-icon">🎲</span>
+                CHANCE & LUCK
+            </h2>
+            <div class="game-grid">
+                <a href="clicker/" class="game-card chance-card">
+                    <div class="card-inner">
+                        <div class="card-icon">👆</div>
+                        <h3>CLICKER</h3>
+                        <p>Click as fast as you can!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="diceflip/diceflip.html" class="game-card chance-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🎲</div>
+                        <h3>DICE & COIN</h3>
+                        <p>Roll the dice or flip the coin!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="catcher/catcher.html" class="game-card chance-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🧺</div>
+                        <h3>CATCHER</h3>
+                        <p>Catch falling objects!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Skill Games -->
+        <section class="category">
+            <h2 class="category-title skill-title">
+                <span class="category-icon">🎯</span>
+                SKILL CHALLENGE
+            </h2>
+            <div class="game-grid">
+                <a href="typingspeed/typingspeed.html" class="game-card skill-card">
+                    <div class="card-inner">
+                        <div class="card-icon">⌨️</div>
+                        <h3>TYPING SPEED</h3>
+                        <p>Type words fast to test your speed!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="numberguess/numberguess.html" class="game-card skill-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🔢</div>
+                        <h3>NUMBER GUESS</h3>
+                        <p>Guess the secret number - get hints!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="mathchallenge/mathchallenge.html" class="game-card skill-card">
+                    <div class="card-inner">
+                        <div class="card-icon">➕</div>
+                        <h3>MATH CHALLENGE</h3>
+                        <p>Solve math problems lightning fast!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>🎮 Press any key or tap to play 🎮</p>
+    </footer>
 </body>
 </html>

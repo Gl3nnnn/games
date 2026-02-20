@@ -1,421 +1,540 @@
+/* ========================================
+   NEON ARCADE - Modern Neon Theme
+   ======================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    /* Neon Color Palette */
+    --neon-cyan: #00ffff;
+    --neon-magenta: #ff00ff;
+    --neon-green: #00ff00;
+    --neon-orange: #ff6600;
+    --neon-yellow: #ffff00;
+    --neon-pink: #ff0080;
+    --neon-blue: #0080ff;
+    --neon-purple: #9d00ff;
+    --neon-red: #ff0044;
+    --neon-gold: #ffd700;
+    
+    /* Background */
+    --bg-dark: #0a0a0f;
+    --bg-card: rgba(20, 20, 30, 0.8);
+    --bg-category: rgba(15, 15, 25, 0.6);
+}
+
 body {
     font-family: 'Orbitron', 'Segoe UI', sans-serif;
     min-height: 100vh;
-    background: #0a0a0f;
-    background-image: 
-        linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.03) 25%, rgba(0, 255, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.03) 75%, rgba(0, 255, 255, 0.03) 76%, transparent 77%),
-        linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, 0.03) 25%, rgba(0, 255, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.03) 75%, rgba(0, 255, 255, 0.03) 76%, transparent 77%);
-    background-size: 50px 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: var(--bg-dark);
+    color: #fff;
     overflow-x: hidden;
 }
 
-.container {
+/* ========================================
+   Background Effects
+   ======================================== */
+
+.background-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.grid-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+.glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.3;
+    animation: orbFloat 15s ease-in-out infinite;
+}
+
+.orb-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--neon-magenta);
+    top: -100px;
+    right: -100px;
+    animation-delay: 0s;
+}
+
+.orb-2 {
+    width: 300px;
+    height: 300px;
+    background: var(--neon-cyan);
+    bottom: -50px;
+    left: -50px;
+    animation-delay: -7s;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    25% { transform: translate(30px, -30px) scale(1.1); }
+    50% { transform: translate(-20px, 20px) scale(0.9); }
+    75% { transform: translate(20px, 30px) scale(1.05); }
+}
+
+/* ========================================
+   Main Header
+   ======================================== */
+
+.main-header {
+    position: relative;
+    z-index: 1;
     text-align: center;
-    padding: 2rem;
-    max-width: 1200px;
+    padding: 3rem 1rem 2rem;
 }
 
 .title {
-    font-size: 4rem;
-    color: #0ff;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 900;
+    letter-spacing: 0.15em;
+    color: var(--neon-cyan);
     text-shadow: 
-        0 0 10px #0ff,
-        0 0 20px #0ff,
-        0 0 40px #0ff,
-        0 0 80px #0ff;
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.3em;
-    animation: flicker 3s infinite;
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan),
+        0 0 80px var(--neon-cyan),
+        0 0 120px rgba(0, 255, 255, 0.5);
+    animation: titleGlow 3s ease-in-out infinite;
 }
 
-@keyframes flicker {
-    0%, 100% { opacity: 1; }
-    92% { opacity: 1; }
-    93% { opacity: 0.8; }
-    94% { opacity: 1; }
-    96% { opacity: 0.9; }
-    97% { opacity: 1; }
+@keyframes titleGlow {
+    0%, 100% { 
+        text-shadow: 
+            0 0 10px var(--neon-cyan),
+            0 0 20px var(--neon-cyan),
+            0 0 40px var(--neon-cyan),
+            0 0 80px var(--neon-cyan),
+            0 0 120px rgba(0, 255, 255, 0.5);
+    }
+    50% { 
+        text-shadow: 
+            0 0 15px var(--neon-cyan),
+            0 0 30px var(--neon-cyan),
+            0 0 60px var(--neon-cyan),
+            0 0 100px var(--neon-cyan),
+            0 0 150px rgba(0, 255, 255, 0.7);
+    }
 }
 
 .subtitle {
-    color: #ff00ff;
-    font-size: 1.2rem;
-    margin-bottom: 3rem;
-    text-shadow: 0 0 10px #ff00ff;
-    letter-spacing: 0.2em;
+    font-size: 1rem;
+    color: var(--neon-magenta);
+    text-shadow: 0 0 10px var(--neon-magenta);
+    letter-spacing: 0.3em;
+    margin-top: 0.5rem;
+    font-weight: 500;
 }
 
-.game-cards {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-bottom: 3rem;
+/* ========================================
+   Container
+   ======================================== */
+
+.container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem 3rem;
 }
+
+/* ========================================
+   Category Sections
+   ======================================== */
+
+.category {
+    margin-bottom: 3rem;
+    background: var(--bg-category);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.category-title {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.category-icon {
+    font-size: 1.5em;
+}
+
+/* Category-specific colors */
+.classic-title {
+    color: var(--neon-green);
+    text-shadow: 0 0 15px var(--neon-green);
+    border-color: var(--neon-green);
+}
+
+.puzzle-title {
+    color: var(--neon-yellow);
+    text-shadow: 0 0 15px var(--neon-yellow);
+    border-color: var(--neon-yellow);
+}
+
+.action-title {
+    color: var(--neon-red);
+    text-shadow: 0 0 15px var(--neon-red);
+    border-color: var(--neon-red);
+}
+
+.chance-title {
+    color: var(--neon-gold);
+    text-shadow: 0 0 15px var(--neon-gold);
+    border-color: var(--neon-gold);
+}
+
+.skill-title {
+    color: var(--neon-blue);
+    text-shadow: 0 0 15px var(--neon-blue);
+    border-color: var(--neon-blue);
+}
+
+/* ========================================
+   Game Grid
+   ======================================== */
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1200px) {
+    .game-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .game-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .category {
+        padding: 1rem;
+    }
+}
+
+/* ========================================
+   Game Cards
+   ======================================== */
 
 .game-card {
-    background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
-    border: 2px solid #0ff;
-    border-radius: 15px;
-    padding: 2rem;
-    width: 250px;
     text-decoration: none;
     color: #fff;
-    transition: all 0.3s ease;
+    display: block;
+    perspective: 1000px;
+}
+
+.card-inner {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
 }
 
-.game-card::before {
+.card-inner::before {
     content: '';
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
     transition: 0.5s;
 }
 
-.game-card:hover::before {
+.game-card:hover .card-inner::before {
     left: 100%;
 }
 
-.game-card:hover {
-    transform: translateY(-10px) scale(1.05);
-    box-shadow: 
-        0 0 20px rgba(0, 255, 255, 0.5),
-        0 0 40px rgba(0, 255, 255, 0.3),
-        inset 0 0 20px rgba(0, 255, 255, 0.1);
+/* Card glow effects */
+.game-card:hover .card-inner {
+    transform: translateY(-8px) scale(1.02);
 }
 
-.snake-card {
-    border-color: #00ff00;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+.classic-card .card-inner {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 255, 0, 0.05);
 }
 
-.snake-card:hover {
-    box-shadow: 
-        0 0 20px rgba(0, 255, 0, 0.5),
-        0 0 40px rgba(0, 255, 0, 0.3),
-        inset 0 0 20px rgba(0, 255, 0, 0.1);
+.classic-card:hover .card-inner {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.4), 0 10px 40px rgba(0, 255, 0, 0.2), inset 0 0 30px rgba(0, 255, 0, 0.1);
 }
 
-.snake-card h2 {
-    color: #00ff00;
-    text-shadow: 0 0 10px #00ff00;
+.puzzle-card .card-inner {
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.2), inset 0 0 20px rgba(255, 255, 0, 0.05);
 }
 
-.flappy-card {
-    border-color: #ff6600;
-    box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+.puzzle-card:hover .card-inner {
+    border-color: var(--neon-yellow);
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.4), 0 10px 40px rgba(255, 255, 0, 0.2), inset 0 0 30px rgba(255, 255, 0, 0.1);
 }
 
-.flappy-card:hover {
-    box-shadow: 
-        0 0 20px rgba(255, 102, 0, 0.5),
-        0 0 40px rgba(255, 102, 0, 0.3),
-        inset 0 0 20px rgba(255, 102, 0, 0.1);
+.action-card .card-inner {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px rgba(255, 0, 68, 0.2), inset 0 0 20px rgba(255, 0, 68, 0.05);
 }
 
-.flappy-card h2 {
-    color: #ff6600;
-    text-shadow: 0 0 10px #ff6600;
+.action-card:hover .card-inner {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 30px rgba(255, 0, 68, 0.4), 0 10px 40px rgba(255, 0, 68, 0.2), inset 0 0 30px rgba(255, 0, 68, 0.1);
 }
 
-.clicker-card {
-    border-color: #ff00ff;
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
+.chance-card .card-inner {
+    border-color: var(--neon-gold);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2), inset 0 0 20px rgba(255, 215, 0, 0.05);
 }
 
-.clicker-card:hover {
-    box-shadow: 
-        0 0 20px rgba(255, 0, 255, 0.5),
-        0 0 40px rgba(255, 0, 255, 0.3),
-        inset 0 0 20px rgba(255, 0, 255, 0.1);
+.chance-card:hover .card-inner {
+    border-color: var(--neon-gold);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4), 0 10px 40px rgba(255, 215, 0, 0.2), inset 0 0 30px rgba(255, 215, 0, 0.1);
 }
 
-.clicker-card h2 {
-    color: #ff00ff;
-    text-shadow: 0 0 10px #ff00ff;
+.skill-card .card-inner {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 15px rgba(0, 128, 255, 0.2), inset 0 0 20px rgba(0, 128, 255, 0.05);
 }
 
-/* Tic-Tac-Toe - Cyan Neon */
-.tictactoe-card {
-    border-color: #00ffff;
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+.skill-card:hover .card-inner {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 30px rgba(0, 128, 255, 0.4), 0 10px 40px rgba(0, 128, 255, 0.2), inset 0 0 30px rgba(0, 128, 255, 0.1);
 }
 
-.tictactoe-card:hover {
-    box-shadow: 
-        0 0 25px rgba(0, 255, 255, 0.6),
-        0 0 50px rgba(0, 255, 255, 0.4),
-        inset 0 0 25px rgba(0, 255, 255, 0.15);
-    border-color: #00ffff;
-}
-
-.tictactoe-card h2 {
-    color: #00ffff;
-    text-shadow: 0 0 10px #00ffff;
-}
-
-/* Memory - Yellow Neon */
-.memory-card {
-    border-color: #ffff00;
-    box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
-}
-
-.memory-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 255, 0, 0.6),
-        0 0 50px rgba(255, 255, 0, 0.4),
-        inset 0 0 25px rgba(255, 255, 0, 0.15);
-    border-color: #ffff00;
-}
-
-.memory-card h2 {
-    color: #ffff00;
-    text-shadow: 0 0 10px #ffff00;
-}
-
-/* Balloon Pop - Red Neon */
-.balloon-card {
-    border-color: #ff0044;
-    box-shadow: 0 0 15px rgba(255, 0, 68, 0.3);
-}
-
-.balloon-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 0, 68, 0.6),
-        0 0 50px rgba(255, 0, 68, 0.4),
-        inset 0 0 25px rgba(255, 0, 68, 0.15);
-    border-color: #ff0044;
-}
-
-.balloon-card h2 {
-    color: #ff0044;
-    text-shadow: 0 0 10px #ff0044;
-}
-
-/* Reaction - Electric Blue Neon */
-.reaction-card {
-    border-color: #00aaff;
-    box-shadow: 0 0 15px rgba(0, 170, 255, 0.3);
-}
-
-.reaction-card:hover {
-    box-shadow: 
-        0 0 25px rgba(0, 170, 255, 0.6),
-        0 0 50px rgba(0, 170, 255, 0.4),
-        inset 0 0 25px rgba(0, 170, 255, 0.15);
-    border-color: #00aaff;
-}
-
-.reaction-card h2 {
-    color: #00aaff;
-    text-shadow: 0 0 10px #00aaff;
-}
-
-/* Shooting Gallery - Gold Neon */
-.shooting-card {
-    border-color: #ffd700;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
-}
-
-.shooting-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 215, 0, 0.6),
-        0 0 50px rgba(255, 215, 0, 0.4),
-        inset 0 0 25px rgba(255, 215, 0, 0.15);
-    border-color: #ffd700;
-}
-
-.shooting-card h2 {
-    color: #ffd700;
-    text-shadow: 0 0 10px #ffd700;
-}
-
-/* Endless Runner - Purple Neon */
-.runner-card {
-    border-color: #9d00ff;
-    box-shadow: 0 0 15px rgba(157, 0, 255, 0.3);
-}
-
-.runner-card:hover {
-    box-shadow: 
-        0 0 25px rgba(157, 0, 255, 0.6),
-        0 0 50px rgba(157, 0, 255, 0.4),
-        inset 0 0 25px rgba(157, 0, 255, 0.15);
-    border-color: #9d00ff;
-}
-
-.runner-card h2 {
-    color: #9d00ff;
-    text-shadow: 0 0 10px #9d00ff;
-}
-
-/* Maze Escape - Neon Green */
-.maze-card {
-    border-color: #00ff00;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-}
-
-.maze-card:hover {
-    box-shadow: 
-        0 0 25px rgba(0, 255, 0, 0.6),
-        0 0 50px rgba(0, 255, 0, 0.4),
-        inset 0 0 25px rgba(0, 255, 0, 0.15);
-    border-color: #00ff00;
-    transform: translateY(-10px) scale(1.05);
-}
-
-.maze-card h2 {
-    color: #00ff00;
-    text-shadow: 0 0 10px #00ff00;
-}
-
-/* Color Match - Neon Pink */
-.color-card {
-    border-color: #ff00ff;
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
-}
-
-.color-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 0, 255, 0.6),
-        0 0 50px rgba(255, 0, 255, 0.4),
-        inset 0 0 25px rgba(255, 0, 255, 0.15);
-    border-color: #ff00ff;
-    transform: translateY(-10px) scale(1.05);
-}
-
-.color-card h2 {
-    color: #ff00ff;
-    text-shadow: 0 0 10px #ff00ff;
-}
-
-/* Dice Flip - Neon Yellow */
-.dice-card {
-    border-color: #ffff00;
-    box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
-}
-
-.dice-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 255, 0, 0.6),
-        0 0 50px rgba(255, 255, 0, 0.4),
-        inset 0 0 25px rgba(255, 255, 0, 0.15);
-    border-color: #ffff00;
-    transform: translateY(-10px) scale(1.05);
-}
-
-.dice-card h2 {
-    color: #ffff00;
-    text-shadow: 0 0 10px #ffff00;
-}
-
-/* Breakout - Neon Green */
-.breakout-card {
-    border-color: #00ff00;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-}
-
-.breakout-card:hover {
-    box-shadow: 
-        0 0 25px rgba(0, 255, 0, 0.6),
-        0 0 50px rgba(0, 255, 0, 0.4),
-        inset 0 0 25px rgba(0, 255, 0, 0.15);
-    border-color: #00ff00;
-    transform: translateY(-10px) scale(1.05);
-}
-
-.breakout-card h2 {
-    color: #00ff00;
-    text-shadow: 0 0 10px #00ff00;
-}
-
-/* Whack-a-Mole - Neon Magenta */
-.whackamole-card {
-    border-color: #ff00ff;
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
-}
-
-.whackamole-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 0, 255, 0.6),
-        0 0 50px rgba(255, 0, 255, 0.4),
-        inset 0 0 25px rgba(255, 0, 255, 0.15);
-    border-color: #ff00ff;
-    transform: translateY(-10px) scale(1.05);
-}
-
-.whackamole-card h2 {
-    color: #ff00ff;
-    text-shadow: 0 0 10px #ff00ff;
-}
-
-/* Catcher - Neon Magenta */
-.catcher-card {
-    border-color: #ff00ff;
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
-}
-
-.catcher-card:hover {
-    box-shadow: 
-        0 0 25px rgba(255, 0, 255, 0.6),
-        0 0 50px rgba(255, 0, 255, 0.4),
-        inset 0 0 25px rgba(255, 0, 255, 0.15);
-    border-color: #ff00ff;
-    transform: translateY(-10px) scale(1.05);
-}
-
-.catcher-card h2 {
-    color: #ff00ff;
-    text-shadow: 0 0 10px #ff00ff;
-}
-
+/* Card Content */
 .card-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    font-size: 3rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    animation: iconBounce 2s ease-in-out infinite;
 }
 
-.game-card h2 {
-    font-size: 1.5rem;
+@keyframes iconBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.game-card:hover .card-icon {
+    animation: iconJump 0.5s ease;
+}
+
+@keyframes iconJump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.2); }
+}
+
+.card-inner h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
     margin-bottom: 0.5rem;
-    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px currentColor;
 }
 
-.game-card p {
-    color: #aaa;
-    font-size: 0.9rem;
-}
+.classic-card h3 { color: var(--neon-green); }
+.puzzle-card h3 { color: var(--neon-yellow); }
+.action-card h3 { color: var(--neon-red); }
+.chance-card h3 { color: var(--neon-gold); }
+.skill-card h3 { color: var(--neon-blue); }
 
-.footer {
-    color: #666;
+.card-inner p {
     font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.play-btn {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    border-radius: 25px;
+    border: 2px solid;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.classic-card .play-btn {
+    color: var(--neon-green);
+    border-color: var(--neon-green);
+}
+
+.classic-card:hover .play-btn {
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--neon-green);
+}
+
+.puzzle-card .play-btn {
+    color: var(--neon-yellow);
+    border-color: var(--neon-yellow);
+}
+
+.puzzle-card:hover .play-btn {
+    background: var(--neon-yellow);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--neon-yellow);
+}
+
+.action-card .play-btn {
+    color: var(--neon-red);
+    border-color: var(--neon-red);
+}
+
+.action-card:hover .play-btn {
+    background: var(--neon-red);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--neon-red);
+}
+
+.chance-card .play-btn {
+    color: var(--neon-gold);
+    border-color: var(--neon-gold);
+}
+
+.chance-card:hover .play-btn {
+    background: var(--neon-gold);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--neon-gold);
+}
+
+.skill-card .play-btn {
+    color: var(--neon-blue);
+    border-color: var(--neon-blue);
+}
+
+.skill-card:hover .play-btn {
+    background: var(--neon-blue);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--neon-blue);
+}
+
+/* ========================================
+   Footer
+   ======================================== */
+
+.main-footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 2rem;
+    color: #555;
+    font-size: 0.85rem;
     letter-spacing: 0.1em;
 }
 
-@media (max-width: 768px) {
-    .title {
-        font-size: 2.5rem;
+.main-footer p {
+    animation: footerPulse 2s ease-in-out infinite;
+}
+
+@keyframes footerPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* ========================================
+   Mobile Optimizations
+   ======================================== */
+
+@media (max-width: 500px) {
+    .main-header {
+        padding: 2rem 1rem 1.5rem;
     }
     
-    .game-card {
-        width: 200px;
-        padding: 1.5rem;
+    .subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .card-inner {
+        padding: 1.25rem;
     }
     
     .card-icon {
-        font-size: 3rem;
+        font-size: 2.5rem;
     }
+    
+    .card-inner h3 {
+        font-size: 1rem;
+    }
+    
+    .card-inner p {
+        font-size: 0.75rem;
+    }
+    
+    .play-btn {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* ========================================
+   Scrollbar Styling
+   ======================================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--neon-cyan);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-magenta);
 }

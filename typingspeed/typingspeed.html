@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Speed - Neon Arcade</title>
+    <link rel="stylesheet" href="typingspeed.css">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">TYPING SPEED</h1>
+        
+        <div class="score-display">
+            <div class="timer">TIME: <span id="timer">60</span>s</div>
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="wpm">WPM: <span id="wpm">0</span></div>
+        </div>
+        
+        <div class="best-score">
+            BEST WPM: <span id="bestWpm">--</span>
+        </div>
+        
+        <div id="wordDisplay" class="word-display">
+            Press START to begin
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="wordInput" class="word-input" placeholder="Type here..." autocomplete="off" disabled>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="buttons">
+            <button id="startBtn" class="btn start-btn">START</button>
+            <button id="restartBtn" class="btn restart-btn" style="display: none;">RESTART</button>
+        </div>
+        
+        <div class="instructions">
+            <p>Type the displayed word as fast as you can!</p>
+            <p>Press <span>ENTER</span> to submit each word</p>
+        </div>
+    </div>
+    
+    <script src="typingspeed.js"></script>
+</body>
+</html>

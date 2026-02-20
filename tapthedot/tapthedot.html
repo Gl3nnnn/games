@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tap the Dot - Neon Arcade</title>
+    <link rel="stylesheet" href="tapthedot.css">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">TAP THE DOT</h1>
+        
+        <div class="score-display">
+            <div class="timer">TIME: <span id="timer">30</span>s</div>
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="high-score">HIGH: <span id="highScore">--</span></div>
+        </div>
+        
+        <div id="gameArea" class="game-area">
+            <div id="startScreen" class="start-screen">
+                <p>Tap the dot as many times as you can!</p>
+                <button id="startBtn" class="btn start-btn">START</button>
+            </div>
+            
+            <div id="dot" class="dot hidden">●</div>
+            
+            <div id="endScreen" class="end-screen hidden">
+                <h2>TIME'S UP!</h2>
+                <p class="final-score">Score: <span id="finalScore">0</span></p>
+                <p class="new-record hidden" id="newRecord">🎉 NEW HIGH SCORE! 🎉</p>
+                <button id="playAgainBtn" class="btn play-again-btn">PLAY AGAIN</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>Click or tap the dot before it moves!</p>
+            <p>Press <span>SPACE</span> to start</p>
+        </div>
+    </div>
+    
+    <script src="tapthedot.js"></script>
+</body>
+</html>

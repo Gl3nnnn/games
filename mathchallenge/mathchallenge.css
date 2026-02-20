@@ -1,0 +1,340 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    background: #0a0a0f;
+    background-image: 
+        linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, 0.03) 25%, rgba(0, 255, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.03) 75%, rgba(0, 255, 255, 0.03) 76%, transparent 77%),
+        linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, 0.03) 25%, rgba(0, 255, 255, 0.03) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, 0.03) 75%, rgba(0, 255, 255, 0.03) 76%, transparent 77%);
+    background-size: 50px 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.game-container {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+}
+
+.back-btn {
+    position: absolute;
+    top: -60px;
+    left: 0;
+    color: #0ff;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid #0ff;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #0ff;
+    color: #0a0a0f;
+    box-shadow: 0 0 20px #0ff;
+}
+
+.game-title {
+    font-size: 2.8rem;
+    color: #ffff00;
+    text-shadow: 
+        0 0 10px #ffff00,
+        0 0 20px #ffff00,
+        0 0 40px #ffff00;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.score-display {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.timer, .score, .streak {
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+}
+
+.timer span {
+    color: #ff0044;
+    text-shadow: 0 0 10px #ff0044;
+}
+
+.score span {
+    color: #0ff;
+    text-shadow: 0 0 10px #0ff;
+}
+
+.streak span {
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+    font-weight: bold;
+}
+
+.best-score {
+    color: #ff00ff;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 10px #ff00ff;
+}
+
+.best-score span {
+    font-weight: bold;
+}
+
+.game-area {
+    background: linear-gradient(135deg, rgba(255, 255, 0, 0.1) 0%, rgba(0, 255, 255, 0.1) 100%);
+    border: 3px solid #ffff00;
+    border-radius: 15px;
+    padding: 2rem;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 
+        0 0 20px rgba(255, 255, 0, 0.3),
+        inset 0 0 30px rgba(255, 255, 0, 0.1);
+}
+
+.start-screen p {
+    color: #aaa;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.operations {
+    color: #666 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.highlight {
+    color: #ffff00;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ffff00;
+}
+
+.game-screen {
+    width: 100%;
+}
+
+.problem {
+    font-size: 3rem;
+    color: #ffff00;
+    text-shadow: 0 0 20px #ffff00;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.problem.correct {
+    animation: correctPop 0.3s ease;
+}
+
+.problem.incorrect {
+    animation: incorrectShake 0.3s ease;
+}
+
+@keyframes correctPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.input-container {
+    margin-bottom: 1rem;
+}
+
+.answer-input {
+    width: 150px;
+    padding: 1rem;
+    font-size: 2rem;
+    font-family: 'Orbitron', sans-serif;
+    background: rgba(0, 0, 0, 0.5);
+    border: 2px solid #ffff00;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.answer-input:focus {
+    border-color: #00ff00;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.answer-input::placeholder {
+    color: #666;
+}
+
+/* Remove spinner from number input */
+.answer-input::-webkit-outer-spin-button,
+.answer-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.answer-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.btn {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    padding: 0.8rem 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.1em;
+}
+
+.start-btn, .submit-btn {
+    background: transparent;
+    border: 2px solid #ffff00;
+    color: #ffff00;
+}
+
+.start-btn:hover, .submit-btn:hover {
+    background: #ffff00;
+    color: #0a0a0f;
+    box-shadow: 0 0 20px #ffff00;
+}
+
+.end-screen {
+    text-align: center;
+}
+
+.end-screen h2 {
+    color: #ff0044;
+    font-size: 2.5rem;
+    text-shadow: 0 0 20px #ff0044;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+}
+
+.final-score {
+    margin-bottom: 1.5rem;
+}
+
+.final-score p {
+    color: #fff;
+    font-size: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.final-score span {
+    color: #0ff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0ff;
+}
+
+.high-score-msg {
+    color: #00ff00 !important;
+    text-shadow: 0 0 10px #00ff00 !important;
+    animation: glow 0.5s ease infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #00ff00; }
+    to { text-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+}
+
+.play-again-btn {
+    background: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+}
+
+.play-again-btn:hover {
+    background: #00ff00;
+    color: #0a0a0f;
+    box-shadow: 0 0 20px #00ff00;
+}
+
+.message {
+    height: 30px;
+    margin-top: 1rem;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+}
+
+.message.success {
+    color: #00ff00;
+    text-shadow: 0 0 10px #00ff00;
+}
+
+.message.error {
+    color: #ff0000;
+    text-shadow: 0 0 10px #ff0000;
+}
+
+.instructions {
+    margin-top: 1.5rem;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.instructions span {
+    font-weight: bold;
+    color: #0ff;
+}
+
+.instructions p {
+    margin: 0.3rem 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 500px) {
+    .game-title {
+        font-size: 2rem;
+    }
+    
+    .game-area {
+        padding: 1.5rem;
+    }
+    
+    .problem {
+        font-size: 2.2rem;
+    }
+    
+    .answer-input {
+        width: 120px;
+        font-size: 1.5rem;
+    }
+    
+    .score-display {
+        gap: 1rem;
+    }
+}

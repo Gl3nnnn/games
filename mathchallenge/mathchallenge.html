@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Challenge - Neon Arcade</title>
+    <link rel="stylesheet" href="mathchallenge.css">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">MATH CHALLENGE</h1>
+        
+        <div class="score-display">
+            <div class="timer">TIME: <span id="timer">30</span>s</div>
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="streak">STREAK: <span id="streak">0</span></div>
+        </div>
+        
+        <div class="best-score">
+            HIGH SCORE: <span id="highScore">--</span>
+        </div>
+        
+        <div id="gameArea" class="game-area">
+            <div id="startScreen" class="start-screen">
+                <p>Solve simple math problems as fast as you can!</p>
+                <p class="operations">Operations: <span class="highlight">+</span> <span class="highlight">−</span> <span class="highlight">×</span></p>
+                <button id="startBtn" class="btn start-btn">START</button>
+            </div>
+            
+            <div id="gameScreen" class="game-screen hidden">
+                <div id="problem" class="problem">
+                    2 + 2 = ?
+                </div>
+                
+                <div class="input-container">
+                    <input type="number" id="answerInput" class="answer-input" placeholder="?" autocomplete="off">
+                </div>
+                
+                <button id="submitBtn" class="btn submit-btn">SUBMIT</button>
+            </div>
+            
+            <div id="endScreen" class="end-screen hidden">
+                <h2>TIME'S UP!</h2>
+                <div class="final-score">
+                    <p>Final Score: <span id="finalScore">0</span></p>
+                    <p class="high-score-msg" id="highScoreMsg"></p>
+                </div>
+                <button id="playAgainBtn" class="btn play-again-btn">PLAY AGAIN</button>
+            </div>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="instructions">
+            <p>Solve as many problems as you can in 30 seconds!</p>
+            <p>Press <span>ENTER</span> to submit your answer</p>
+        </div>
+    </div>
+    
+    <script src="mathchallenge.js"></script>
+</body>
+</html>

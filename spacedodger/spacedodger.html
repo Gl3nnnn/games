@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Dodger - Neon Arcade</title>
+    <link rel="stylesheet" href="spacedodger.css">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">SPACE DODGER</h1>
+        
+        <div class="score-display">
+            <div class="score">SCORE: <span id="score">0</span></div>
+            <div class="high-score">HIGH: <span id="highScore">--</span></div>
+        </div>
+        
+        <div id="gameArea" class="game-area">
+            <div id="startScreen" class="start-screen">
+                <p>Dodge the falling asteroids!</p>
+                <p class="hint">Use ← → arrows or swipe to move</p>
+                <button id="startBtn" class="btn start-btn">START</button>
+            </div>
+            
+            <div id="player" class="player">🚀</div>
+            
+            <div id="gameOverScreen" class="game-over-screen hidden">
+                <h2>GAME OVER</h2>
+                <p class="final-score">Score: <span id="finalScore">0</span></p>
+                <p class="new-record hidden" id="newRecord">🎉 NEW HIGH SCORE! 🎉</p>
+                <button id="playAgainBtn" class="btn play-again-btn">PLAY AGAIN</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <p>Avoid the asteroids!</p>
+            <p>Press <span>SPACE</span> to start</p>
+        </div>
+    </div>
+    
+    <script src="spacedodger.js"></script>
+</body>
+</html>

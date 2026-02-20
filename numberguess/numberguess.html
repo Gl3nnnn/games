@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guess - Neon Arcade</title>
+    <link rel="stylesheet" href="numberguess.css">
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        
+        <h1 class="game-title">NUMBER GUESS</h1>
+        
+        <div class="score-display">
+            <div class="attempts">ATTEMPTS: <span id="attempts">0</span></div>
+            <div class="best-attempts">BEST: <span id="bestAttempts">--</span> attempts</div>
+        </div>
+        
+        <div id="gameArea" class="game-area">
+            <div id="startScreen" class="start-screen">
+                <p>I'm thinking of a number between <span class="highlight">1</span> and <span class="highlight">50</span></p>
+                <button id="startBtn" class="btn start-btn">START GAME</button>
+            </div>
+            
+            <div id="gameScreen" class="game-screen hidden">
+                <p class="hint-text" id="hintText">Guess the number!</p>
+                <div class="input-container">
+                    <input type="number" id="guessInput" class="guess-input" placeholder="?" min="1" max="50">
+                </div>
+                <button id="guessBtn" class="btn guess-btn">GUESS</button>
+            </div>
+            
+            <div id="winScreen" class="win-screen hidden">
+                <div class="win-icon">🎉</div>
+                <h2>YOU GOT IT!</h2>
+                <p class="win-number">The number was <span id="secretNumber">--</span></p>
+                <p class="win-attempts">Attempts: <span id="finalAttempts">0</span></p>
+                <button id="playAgainBtn" class="btn play-again-btn">PLAY AGAIN</button>
+            </div>
+        </div>
+        
+        <div id="message" class="message"></div>
+        
+        <div class="instructions">
+            <p>Guess the secret number between 1 and 50</p>
+            <p>I'll give you friendly hints along the way!</p>
+        </div>
+    </div>
+    
+    <script src="numberguess.js"></script>
+</body>
+</html>
