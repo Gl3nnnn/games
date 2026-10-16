@@ -159,6 +159,7 @@ function startGame() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('spaceDodger', score);
     gameRunning = false;
     
     clearInterval(gameLoop);

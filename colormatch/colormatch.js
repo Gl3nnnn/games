@@ -155,6 +155,7 @@ function handleButtonClick(index) {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('colorMatch', level);
     isPlaying = false;
     statusEl.textContent = 'Game Over!';
     

@@ -81,6 +81,7 @@ function loseLife() {
         finalScoreEl.textContent = score;
         gameOverEl.classList.remove('hidden');
         Sfx.play('gameover');
+        Scores.submit('jezzball', score);
     } else {
         grow = null;
         player.x = W / 2;

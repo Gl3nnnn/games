@@ -215,6 +215,7 @@ function startGame() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('blockdrop', score);
     isGameOver = true;
     isRunning = false;
     if (dropTimer) clearInterval(dropTimer);

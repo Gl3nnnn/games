@@ -202,6 +202,7 @@ function gameLoop() {
         gameRunning = false;
         saveHighScore();
         finalScoreEl.textContent = score;
+        Scores.submit('endlessRunner', score);
         gameOverEl.classList.remove('hidden');
     } else {
         requestAnimationFrame(gameLoop);

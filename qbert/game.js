@@ -85,6 +85,7 @@ function loseLife() {
         finalScoreEl.textContent = score;
         gameOverEl.classList.remove('hidden');
         Sfx.play('gameover');
+        Scores.submit('qbert', score);
     } else {
         resetEntities();
     }

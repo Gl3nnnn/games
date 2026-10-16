@@ -109,6 +109,7 @@ function endGame(winner) {
             xWins++;
             xWinsEl.textContent = xWins;
             localStorage.setItem('tttXWins', xWins);
+            Scores.submit('tictactoe', xWins);
         } else {
             oWins++;
             oWinsEl.textContent = oWins;

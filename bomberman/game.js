@@ -94,6 +94,8 @@ function loseLife() {
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
+    FX.shake(400, 9);
+    FX.flash('#ff2244', 200);
     if (lives <= 0) {
         isGameOver = true; isRunning = false;
         if (score > highScore) {
@@ -104,6 +106,7 @@ function loseLife() {
         finalScoreEl.textContent = score;
         gameOverEl.classList.remove('hidden');
         Sfx.play('gameover');
+        Scores.submit('bomberman', score);
     } else {
         player.x = cx(1); player.y = cy(1);
         bombs = [];
@@ -147,6 +150,7 @@ function explodeBomb(b) {
     b.exploded = true;
     flames.push({ c: b.c, r: b.r, life: 500 });
     Sfx.play('explode');
+    FX.shake(180, 5);
     const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
     for (const [dc, dr] of dirs) {
         for (let i = 1; i <= b.range; i++) {

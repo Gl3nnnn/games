@@ -1,0 +1,38 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: #0a0a0f; color: #fff; min-height: 100vh;
+    font-family: 'Orbitron', sans-serif; padding: 2rem 1rem 4rem;
+}
+.records-container { max-width: 1100px; margin: 0 auto; text-align: center; }
+.back-btn { display: inline-block; color: #0ff; text-decoration: none; font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 1rem; }
+.back-btn:hover { text-shadow: 0 0 10px #0ff; }
+.title { font-size: 2.4rem; color: #ffcc00; text-shadow: 0 0 24px #ffcc00; letter-spacing: 0.15em; margin-bottom: 0.4rem; }
+.subtitle { color: #888; font-size: 0.85rem; letter-spacing: 0.1em; margin-bottom: 2rem; }
+.rec-group { margin-bottom: 2.2rem; text-align: left; }
+.rec-group-title {
+    font-size: 1.1rem; color: #0ff; text-shadow: 0 0 12px #0ff; letter-spacing: 0.2em;
+    border-bottom: 1px solid rgba(0,255,255,0.25); padding-bottom: 0.4rem; margin-bottom: 1rem;
+}
+.rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.rec-card {
+    background: rgba(0,255,255,0.04); border: 1px solid rgba(0,255,255,0.18);
+    border-radius: 8px; padding: 12px 14px;
+}
+.rec-name { font-size: 0.72rem; color: #0ff; letter-spacing: 0.1em; margin-bottom: 8px; text-shadow: 0 0 6px rgba(0,255,255,0.5); }
+.rec-row { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; padding: 2px 0; color: #aaa; }
+.rec-row.top { color: #ffcc00; text-shadow: 0 0 8px rgba(255,204,0,0.6); }
+.rec-row.legacy { color: #0f0; }
+.rec-row.muted { color: #555; font-size: 0.65rem; }
+.rec-row .rk { width: 24px; text-align: left; opacity: 0.7; }
+.rec-row .ini { width: 36px; letter-spacing: 0.2em; }
+.rec-row .val { flex: 1; text-align: right; }
+.rec-row .val.small { font-size: 0.62rem; text-align: right; }
+.actions { display: flex; gap: 14px; justify-content: center; margin-top: 2.5rem; flex-wrap: wrap; }
+.action-btn {
+    background: transparent; border: 2px solid #0ff; color: #0ff; font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem; padding: 0.7rem 1.5rem; border-radius: 5px; cursor: pointer;
+    letter-spacing: 0.1em; text-decoration: none; display: inline-block;
+}
+.action-btn:hover { background: #0ff; color: #0a0a0f; box-shadow: 0 0 20px #0ff; }
+.action-btn.danger { border-color: #f44; color: #f44; }
+.action-btn.danger:hover { background: #f44; color: #0a0a0f; box-shadow: 0 0 20px #f44; }

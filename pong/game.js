@@ -61,6 +61,7 @@ function endGame() {
         highScore++;
         localStorage.setItem('pongHighScore', highScore);
         highScoreEl.textContent = highScore;
+        Scores.submit('pong', highScore);
     }
     finalScoreEl.textContent = `${s1} - ${s2}`;
     gameOverEl.classList.remove('hidden');

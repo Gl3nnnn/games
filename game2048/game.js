@@ -6,9 +6,11 @@ const overTitleEl = document.getElementById('overTitle');
 const gameOverEl = document.getElementById('gameOver');
 const restartBtn = document.getElementById('restartBtn');
 const newGameBtn = document.getElementById('newGameBtn');
+const undoBtn = document.getElementById('undoBtn');
 
 let grid, score, best = parseInt(localStorage.getItem('g2048HighScore')) || 0;
 let animating = false;
+let undoSnap = null, undoUsed = false;
 
 highScoreEl.textContent = best;
 
@@ -55,6 +57,7 @@ function slideLine(line) {
 
 function move(dir) {
     if (animating || (gameOverEl && !gameOverEl.classList.contains('hidden'))) return;
+    const snap = { grid: grid.map(r => r.slice()), score };
     let moved = false;
     const mergedCells = [];
     let gained = 0;
@@ -94,6 +97,7 @@ function move(dir) {
     }
 
     if (!moved) return;
+    undoSnap = snap;
     Sfx.play('move');
     if (gained) {
         score += gained;
@@ -119,6 +123,7 @@ function move(dir) {
 
 function endGame(won) {
     Sfx.play(won ? 'win' : 'gameover');
+    Scores.submit('g2048', score);
     finalScoreEl.textContent = score;
     overTitleEl.textContent = won ? 'YOU WIN!' : 'GAME OVER';
     gameOverEl.classList.remove('hidden');
@@ -145,10 +150,29 @@ function newGame() {
     grid = emptyGrid();
     score = 0;
     window._reached2048 = false;
+    undoSnap = null;
+    undoUsed = false;
+    if (undoBtn) { undoBtn.disabled = false; undoBtn.classList.remove('used'); }
     scoreEl.textContent = 0;
     gameOverEl.classList.add('hidden');
     addTile();
     addTile();
+}
+
+function undo() {
+    if (!undoSnap || undoUsed || animating) return;
+    grid = undoSnap.grid.map(r => r.slice());
+    score = undoSnap.score;
+    scoreEl.textContent = score;
+    undoSnap = null;
+    undoUsed = true;
+    if (undoBtn) { undoBtn.disabled = true; undoBtn.classList.add('used'); }
+    if (gameOverEl && !gameOverEl.classList.contains('hidden')) {
+        gameOverEl.classList.add('hidden');
+    }
+    window._reached2048 = false;
+    render();
+    Sfx.play('select');
 }
 
 document.addEventListener('keydown', (e) => {
@@ -159,6 +183,7 @@ document.addEventListener('keydown', (e) => {
         ArrowDown: 'down', s: 'down', S: 'down'
     };
     if (map[e.key]) { e.preventDefault(); move(map[e.key]); }
+    if (e.key === 'u' || e.key === 'U' || (e.ctrlKey && e.key === 'z')) { e.preventDefault(); undo(); }
 });
 
 let touchStart = null;
@@ -177,5 +202,6 @@ boardEl.addEventListener('touchend', (e) => {
 
 restartBtn.addEventListener('click', newGame);
 newGameBtn.addEventListener('click', newGame);
+if (undoBtn) undoBtn.addEventListener('click', undo);
 
 newGame();

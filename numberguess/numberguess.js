@@ -34,6 +34,7 @@ function saveBestAttempts(attemptsCount) {
         bestAttemptsEl.textContent = attemptsCount;
         showMessage('New Best! Fewer attempts!', 'success');
     }
+    Scores.submit('numberguess', attemptsCount, { lowerBetter: true });
 }
 
 function showMessage(text, type) {

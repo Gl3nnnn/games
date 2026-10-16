@@ -105,6 +105,7 @@ function startCountdown() {
 
 function endGame() {
     Sfx.play('gameover');
+    Scores.submit('whackamole', score);
     isGameRunning = false;
     clearInterval(countdownTimer);
     clearTimeout(moleTimer);

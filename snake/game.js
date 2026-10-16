@@ -20,6 +20,8 @@ let isGameOver = false;
 let lives = 3;
 const MAX_LIVES = 3;
 
+let bonus = null, bonusTimer = 0, foodsEaten = 0;
+
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
 const finalScoreEl = document.getElementById('finalScore');
@@ -41,6 +43,9 @@ function initGame() {
     nextDirection = { x: 1, y: 0 };
     score = 0;
     lives = MAX_LIVES;
+    bonus = null;
+    bonusTimer = 0;
+    foodsEaten = 0;
     scoreEl.textContent = score;
     if (livesEl) livesEl.textContent = lives;
     isPaused = false;
@@ -54,13 +59,24 @@ function spawnFood() {
         x: Math.floor(Math.random() * TILE_COUNT),
         y: Math.floor(Math.random() * TILE_COUNT)
     };
-    
+
     for (let segment of snake) {
         if (segment.x === food.x && segment.y === food.y) {
             spawnFood();
             break;
         }
     }
+}
+
+function spawnBonus() {
+    let bx, by, tries = 0;
+    do {
+        bx = Math.floor(Math.random() * TILE_COUNT);
+        by = Math.floor(Math.random() * TILE_COUNT);
+        tries++;
+    } while (tries < 100 && (snake.some(s => s.x === bx && s.y === by) || (food.x === bx && food.y === by)));
+    bonus = { x: bx, y: by };
+    bonusTimer = 55;
 }
 
 function update() {
@@ -85,14 +101,26 @@ function update() {
     }
     
     snake.unshift(head);
-    
+
     if (head.x === food.x && head.y === food.y) {
         score += 5;
         Sfx.play('eat');
         scoreEl.textContent = score;
+        foodsEaten++;
+        if (foodsEaten % 5 === 0 && !bonus) spawnBonus();
         spawnFood();
     } else {
         snake.pop();
+    }
+
+    if (bonus && head.x === bonus.x && head.y === bonus.y) {
+        score += 50;
+        Sfx.play('powerup');
+        scoreEl.textContent = score;
+        bonus = null;
+    } else if (bonus) {
+        bonusTimer--;
+        if (bonusTimer <= 0) bonus = null;
     }
 }
 
@@ -113,6 +141,7 @@ function loseLife() {
         ];
         direction = { x: 1, y: 0 };
         nextDirection = { x: 1, y: 0 };
+        bonus = null;
         spawnFood();
     }
 }
@@ -162,12 +191,35 @@ function draw() {
         Math.PI * 2
     );
     ctx.fill();
-    
+
+    if (bonus) {
+        const blink = bonusTimer < 16 && Math.floor(bonusTimer / 4) % 2 === 0;
+        if (!blink) {
+            ctx.save();
+            ctx.shadowColor = '#ffaa00';
+            ctx.shadowBlur = 16;
+            ctx.fillStyle = '#ffaa00';
+            const cx = bonus.x * GRID_SIZE + GRID_SIZE / 2;
+            const cy = bonus.y * GRID_SIZE + GRID_SIZE / 2;
+            ctx.beginPath();
+            for (let i = 0; i < 10; i++) {
+                const r = i % 2 === 0 ? GRID_SIZE * 0.42 : GRID_SIZE * 0.18;
+                const a = -Math.PI / 2 + (i * Math.PI) / 5;
+                const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+                i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+    }
+
     ctx.shadowBlur = 0;
 }
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('snake', score);
     isGameOver = true;
     isGameRunning = false;
     

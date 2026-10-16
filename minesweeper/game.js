@@ -107,6 +107,7 @@ function endGame(won) {
             localStorage.setItem('minesweeperBestTime', bestTime);
             bestTimeEl.textContent = bestTime + 's';
         }
+        Scores.submit('minesweeper', time, { lowerBetter: true });
     } else {
         overTitleEl.textContent = 'BOOM!';
         overMsgEl.textContent = 'You hit a mine!';
@@ -149,6 +150,21 @@ boardEl.addEventListener('click', (e) => {
     if (!cell) return;
     const r = +cell.dataset.r, c = +cell.dataset.c;
     if (flagMode) { flagMode = false; toggleFlag(r, c); return; }
+    if (revealed[r][c]) {
+        const n = countMines(r, c);
+        if (!n) return;
+        const flags = neighbors(r, c).filter(([nr, nc]) => flagged[nr][nc]).length;
+        if (flags === n) {
+            Sfx.play('blip');
+            neighbors(r, c).forEach(([nr, nc]) => {
+                if (!flagged[nr][nc] && !revealed[nr][nc]) {
+                    if (firstClick) { placeMines(nr, nc); firstClick = false; startTimer(); }
+                    reveal(nr, nc);
+                }
+            });
+        }
+        return;
+    }
     if (firstClick) {
         placeMines(r, c);
         firstClick = false;

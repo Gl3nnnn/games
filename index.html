@@ -18,6 +18,7 @@
     <header class="main-header">
         <h1 class="title">NEON ARCADE</h1>
         <p class="subtitle">Choose Your Game</p>
+        <button id="shuffleBtn" class="shuffle-btn">🎲 SHUFFLE — TRY YOUR LUCK</button>
     </header>
 
     <main class="container">
@@ -288,6 +289,30 @@
                         <span class="play-btn">PLAY NOW</span>
                     </div>
                 </a>
+                <a href="moonpatrol/index.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🌙</div>
+        <h3>MOON PATROL</h3>
+                        <p>Jump craters and blast UFOs across the moon!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="robotron/index.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🤖</div>
+                        <h3>ROBOTRON: 2084</h3>
+                        <p>Twin-stick carnage. Rescue the last humans!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
+                <a href="burgertime/index.html" class="game-card action-card">
+                    <div class="card-inner">
+                        <div class="card-icon">🍔</div>
+                        <h3>BURGER TIME</h3>
+                        <p>Walk the ingredients into towering burgers!</p>
+                        <span class="play-btn">PLAY NOW</span>
+                    </div>
+                </a>
             </div>
         </section>
 
@@ -361,7 +386,82 @@
     </main>
 
     <footer class="main-footer">
-        <p>🕹️ NEON ARCADE · 36 GAMES · <a href="records.html">🏆 HALL OF FAME</a></p>
+        <div class="score-marquee" id="scoreMarquee"><div class="marquee-inner" id="marqueeInner"></div></div>
+        <p>🕹️ NEON ARCADE · 39 GAMES · <a href="records.html">🏆 HALL OF FAME</a></p>
     </footer>
+
+    <div id="coinWipe" class="coin-wipe hidden"><div class="coin-text">INSERT COIN</div></div>
+
+    <script src="arcade.js"></script>
+    <script>
+    (function () {
+        var links = Array.prototype.slice.call(document.querySelectorAll('.game-grid a[href]'));
+        var coinWipe = document.getElementById('coinWipe');
+
+        function goTo(href) {
+            coinWipe.classList.remove('hidden');
+            coinWipe.classList.remove('play');
+            void coinWipe.offsetWidth;
+            coinWipe.classList.add('play');
+            if (window.Sfx) Sfx.play('coin');
+            setTimeout(function () { window.location.href = href; }, 700);
+        }
+
+        links.forEach(function (a) {
+            a.addEventListener('click', function (e) {
+                e.preventDefault();
+                goTo(a.getAttribute('href'));
+            });
+        });
+
+        var shuffleBtn = document.getElementById('shuffleBtn');
+        if (shuffleBtn) shuffleBtn.addEventListener('click', function () {
+            var pick = links[Math.floor(Math.random() * links.length)];
+            if (pick) goTo(pick.getAttribute('href'));
+        });
+
+        var inner = document.getElementById('marqueeInner');
+        if (inner) {
+            var entries = [];
+            try {
+                for (var i = 0; i < localStorage.length; i++) {
+                    var k = localStorage.key(i);
+                    if (/HighScore$|BestTime$/.test(k)) {
+                        var v = parseInt(localStorage.getItem(k)) || 0;
+                        if (v > 0) entries.push({ k: k, v: v });
+                    }
+                }
+            } catch (e) {}
+            entries.sort(function (a, b) { return b.v - a.v; });
+            var NAMES = {
+                snakeHighScore: 'SNAKE', breakoutHighScore: 'BREAKOUT', pacmanHighScore: 'PAC-MAN',
+                mazeescapeHighScore: 'MAZE ESCAPE', balloonpopHighScore: 'BALLOON POP',
+                spacedodgerHighScore: 'SPACE DODGER', numberguessHighScore: 'NUMBER GUESS',
+                mathchallengeHighScore: 'MATH CHALLENGE', tapthedotHighScore: 'TAP THE DOT',
+                colormatchHighScore: 'COLOR MATCH', whackamoleHighScore: 'WHACK-A-MOLE',
+                tictactoeHighScore: 'TIC-TAC-TOE', reactionHighScore: 'REACTION TEST',
+                shootinggalleryHighScore: 'SHOOTING GALLERY', endlessrunnerHighScore: 'ENDLESS RUNNER',
+                clickerHighScore: 'CLICKER', typingspeedHighScore: 'TYPE SPEED',
+                diceflipHighScore: 'DICE FLIP', flappyHighScore: 'FLAPPY NEON',
+                pongHighScore: 'PONG', spaceinvadersHighScore: 'SPACE INVADERS',
+                blockdropHighScore: 'BLOCK DROP', asteroidsHighScore: 'ASTEROIDS',
+                froggerHighScore: 'FROGGER', game2048HighScore: '2048',
+                minesweeperHighScore: 'MINESWEEPER', missilecmdHighScore: 'MISSILE COMMAND',
+                galagaHighScore: 'GALAGA', barrelrunHighScore: 'BARREL RUN',
+                digdugHighScore: 'DIG DUG', centipedeHighScore: 'CENTIPEDE',
+                qbertHighScore: 'Q*BERT', bombermanHighScore: 'BOMBERMAN',
+                jezzballHighScore: 'JEZZBALL', moonpatrolHighScore: 'MOON PATROL',
+                robotronHighScore: 'ROBOTRON', burgerTimeHighScore: 'BURGER TIME',
+                minesweeperBestTime: 'MINESWEEPER (TIME)'
+            };
+            var items = entries.slice(0, 12).map(function (e) {
+                return '🏆 ' + (NAMES[e.k] || e.k) + ' — ' + e.v.toLocaleString();
+            });
+            if (!items.length) items = ['★ INSERT COIN TO SET THE HIGH SCORE ★', '★ BE THE FIRST ARCADE LEGEND ★'];
+            var text = items.join('  ◆  ') + '  ◆  ';
+            inner.textContent = text + text;
+        }
+    })();
+    </script>
 </body>
 </html>

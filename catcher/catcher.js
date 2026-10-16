@@ -130,6 +130,7 @@ function playCatchSound() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('catcher', score);
     isGameRunning = false;
     isGameOver = true;
     clearInterval(objectSpawnTimer);

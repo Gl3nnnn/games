@@ -169,6 +169,7 @@ function draw() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('flappy', score);
     isGameOver = true;
     isGameRunning = false;
     

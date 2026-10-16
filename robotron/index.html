@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotron: 2084 - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">ROBOTRON: 2084</h1>
+
+        <div class="score-display">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>HIGH: <span id="highScore">0</span></div>
+            <div>LIVES: <span id="lives">3</span></div>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="640" height="400"></canvas>
+            <div id="pauseOverlay" class="overlay hidden">
+                <h2>PAUSED</h2>
+                <p>Press P or tap to resume</p>
+            </div>
+            <div id="startScreen" class="overlay">
+                <h2>ROBOTRON: 2084</h2>
+                <p>Destroy the robots. Rescue the last human family.</p>
+                <p class="hint"><span>WASD</span> move · <span>ARROWS</span> shoot · <span>P</span> pause</p>
+                <p class="hint">Mobile: D-pad moves · tap to shoot · ⏸ auto-fires</p>
+                <p class="blink">PRESS ANY KEY TO START</p>
+            </div>
+            <div id="gameOver" class="overlay hidden">
+                <h2>GAME OVER</h2>
+                <p>Score: <span id="finalScore">0</span></p>
+                <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+            </div>
+        </div>
+
+        <p class="controls-info">Grunts chase you. Spheroids spawn enforcers. Brains hunt. Save every human for +1000.</p>
+    </div>
+    <script src="../arcade.js" data-dpad="1"></script>
+    <script src="game.js"></script>
+</body>
+</html>

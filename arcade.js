@@ -1,4 +1,4 @@
-/* arcade.js - shared Neon Arcade engine: 8-bit SFX, CRT effects, mute, D-pad, pause */
+/* arcade.js - shared Neon Arcade engine: 8-bit SFX, CRT, mute, D-pad, pause, gamepad, FX, chiptune BGM */
 (function () {
     var script = document.currentScript;
     var wantDpad = !!(script && script.dataset.dpad === '1');
@@ -70,6 +70,76 @@
         set muted(v) { muted = v; localStorage.setItem('arcadeMuted', v ? '1' : '0'); updateButtons(); }
     };
 
+    /* ---------- FX LAYER (screen shake + flash) ---------- */
+    var fxShakeTimer = null;
+    window.FX = {
+        shake: function (ms, power) {
+            try {
+                ms = ms || 300; power = power || 6;
+                document.body.classList.remove('fx-shake');
+                void document.body.offsetWidth;
+                document.body.style.setProperty('--fxShake', power + 'px');
+                document.body.classList.add('fx-shake');
+                clearTimeout(fxShakeTimer);
+                fxShakeTimer = setTimeout(function () { document.body.classList.remove('fx-shake'); }, ms);
+            } catch (e) {}
+        },
+        flash: function (color, ms) {
+            try {
+                ms = ms || 150;
+                var f = document.createElement('div');
+                f.className = 'fx-flash';
+                f.style.background = color || '#ffffff';
+                f.style.animation = 'fxFlashOut ' + ms + 'ms ease-out forwards';
+                document.body.appendChild(f);
+                setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, ms + 30);
+            } catch (e) {}
+        }
+    };
+
+    /* ---------- CHIPTUNE BGM ENGINE ---------- */
+    var musicOn = localStorage.getItem('arcadeMusic') === '1';
+    var musicSeq = null, musicStep = 0;
+    var MUSIC = {
+        tempo: 0.135,
+        bass: [40, 0, 40, 0, 43, 0, 43, 0, 45, 0, 45, 0, 43, 0, 40, 0],
+        lead: [64, 0, 67, 0, 71, 0, 67, 0, 64, 0, 62, 0, 59, 0, 62, 0]
+    };
+    function midi(n) { return 440 * Math.pow(2, (n - 69) / 12); }
+    function musicTick() {
+        if (muted || !musicOn) return;
+        var b = MUSIC.bass[musicStep % 16], l = MUSIC.lead[musicStep % 16];
+        try {
+            var a = ac(), t = a.currentTime;
+            if (b) {
+                var o1 = a.createOscillator(), g1 = a.createGain();
+                o1.type = 'triangle'; o1.frequency.setValueAtTime(midi(b), t);
+                g1.gain.setValueAtTime(0.028, t);
+                g1.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+                o1.connect(g1); g1.connect(a.destination);
+                o1.start(t); o1.stop(t + 0.14);
+            }
+            if (l) {
+                var o2 = a.createOscillator(), g2 = a.createGain();
+                o2.type = 'square'; o2.frequency.setValueAtTime(midi(l), t);
+                g2.gain.setValueAtTime(0.016, t);
+                g2.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+                o2.connect(g2); g2.connect(a.destination);
+                o2.start(t); o2.stop(t + 0.12);
+            }
+        } catch (e) {}
+        musicStep++;
+    }
+    function startMusic() { if (!musicSeq) musicSeq = setInterval(musicTick, MUSIC.tempo * 1000); }
+    function stopMusic() { clearInterval(musicSeq); musicSeq = null; }
+    function syncMusic() { if (musicOn) startMusic(); else stopMusic(); }
+    function updateMusicBtn() {
+        var b = document.getElementById('arcadeMusicBtn');
+        if (b) b.textContent = musicOn ? 'MUSIC ON' : 'MUSIC OFF';
+    }
+    updateMusicBtn();
+    syncMusic();
+
     /* ---------- CRT OVERLAY ---------- */
     var style = document.createElement('style');
     style.textContent =
@@ -95,7 +165,23 @@
         '.pause-overlay .pl{font-family:Orbitron,sans-serif;font-size:42px;color:#0ff;' +
         'text-shadow:0 0 18px #0ff;letter-spacing:0.25em;animation:crtPulse 1.2s infinite;}' +
         '.pause-overlay .ph{font-family:Orbitron,sans-serif;font-size:13px;color:#888;letter-spacing:0.1em;}' +
-        '@keyframes crtPulse{0%,100%{opacity:1}50%{opacity:0.4}}';
+        '@keyframes crtPulse{0%,100%{opacity:1}50%{opacity:0.4}}' +
+        '.crt-boot{position:fixed;inset:0;background:#000;z-index:99992;pointer-events:none;' +
+        'animation:crtBoot .85s ease-out forwards;}' +
+        '@keyframes crtBoot{' +
+        '0%{transform:scaleY(0.004);opacity:1;background:#000;}' +
+        '25%{transform:scaleY(0.004);opacity:1;background:#fff;}' +
+        '60%{transform:scaleY(1);opacity:0.85;background:#fff;}' +
+        '100%{transform:scaleY(1);opacity:0;background:#fff;}}' +
+        'body.fx-shake{animation:fxShake .32s ease-in-out;}' +
+        '@keyframes fxShake{' +
+        '0%,100%{transform:translate(0,0)}' +
+        '15%{transform:translate(calc(var(--fxShake,6px) * -1), calc(var(--fxShake,6px) * 0.4))}' +
+        '35%{transform:translate(var(--fxShake,6px), calc(var(--fxShake,6px) * -0.5))}' +
+        '55%{transform:translate(calc(var(--fxShake,6px) * -0.7), calc(var(--fxShake,6px) * 0.3))}' +
+        '75%{transform:translate(calc(var(--fxShake,6px) * 0.5), calc(var(--fxShake,6px) * -0.2))}}' +
+        '.fx-flash{position:fixed;inset:0;pointer-events:none;z-index:99988;opacity:0.5;}' +
+        '@keyframes fxFlashOut{from{opacity:0.5}to{opacity:0}}';
     document.head.appendChild(style);
 
     var crt = document.createElement('div');
@@ -105,12 +191,14 @@
     var bar = document.createElement('div');
     bar.className = 'arcade-bar';
     bar.innerHTML = '<button class="arcade-btn" id="arcadeMuteBtn" title="Mute/unmute sounds"></button>' +
+        '<button class="arcade-btn" id="arcadeMusicBtn" title="Toggle chiptune music"></button>' +
         '<button class="arcade-btn" id="arcadeCrtBtn" title="Toggle CRT effect">CRT</button>';
     document.body.appendChild(bar);
 
     function updateButtons() {
         var mb = document.getElementById('arcadeMuteBtn');
         if (mb) mb.textContent = muted ? 'SOUND OFF' : 'SOUND ON';
+        updateMusicBtn();
     }
     updateButtons();
     crt.style.display = crtOn ? '' : 'none';
@@ -126,6 +214,141 @@
         localStorage.setItem('arcadeCrt', crtOn ? '1' : '0');
         crt.style.display = crtOn ? '' : 'none';
     });
+    document.getElementById('arcadeMusicBtn').addEventListener('click', function () {
+        musicOn = !musicOn;
+        localStorage.setItem('arcadeMusic', musicOn ? '1' : '0');
+        updateMusicBtn();
+        syncMusic();
+        if (!muted) SFX.play('blip');
+    });
+
+    /* ---------- CRT POWER-ON BOOT (once per page load) ---------- */
+    try {
+        var boot = document.createElement('div');
+        boot.className = 'crt-boot';
+        document.body.appendChild(boot);
+        setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 900);
+    } catch (e) {}
+
+    /* ---------- RETRO HIGH-SCORE INITIALS (top-5 per game) ---------- */
+    var ScoreStyle = document.createElement('style');
+    ScoreStyle.textContent =
+        '.hs-entry{position:fixed;inset:0;z-index:99987;background:rgba(3,3,8,0.94);' +
+        'display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;' +
+        'font-family:Orbitron,sans-serif;}' +
+        '.hs-entry .hs-title{font-size:1.5rem;color:#ffcc00;text-shadow:0 0 18px #ffcc00;letter-spacing:0.2em;animation:crtPulse 1s infinite;}' +
+        '.hs-entry .hs-sub{font-size:0.8rem;color:#0ff;letter-spacing:0.12em;}' +
+        '.hs-entry .hs-letters{display:flex;gap:14px;}' +
+        '.hs-entry .hs-slot{width:44px;height:56px;border:2px solid #0ff;border-radius:6px;' +
+        'display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:#0f0;' +
+        'text-shadow:0 0 12px #0f0;background:rgba(0,255,255,0.05);}' +
+        '.hs-entry .hs-slot.active{border-color:#ffcc00;box-shadow:0 0 14px #ffcc00;color:#ffcc00;}' +
+        '.hs-entry .hs-help{font-size:0.65rem;color:#888;letter-spacing:0.08em;text-align:center;line-height:1.7;}' +
+        '.hs-entry .hs-help b{color:#0ff;}';
+    document.head.appendChild(ScoreStyle);
+
+    var ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    function scoresKey(id) { return 'arcadeScores_' + id; }
+    function readScores(id) {
+        try {
+            var raw = localStorage.getItem(scoresKey(id));
+            var arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr : [];
+        } catch (e) { return []; }
+    }
+    function writeScores(id, arr) {
+        try { localStorage.setItem(scoresKey(id), JSON.stringify(arr.slice(0, 5))); } catch (e) {}
+    }
+    function qualifies(id, score, lowerBetter) {
+        var arr = readScores(id);
+        if (arr.length < 5) return true;
+        var worst = arr[arr.length - 1].s;
+        return lowerBetter ? score < worst : score > worst;
+    }
+    function insertScore(id, score, initials, lowerBetter) {
+        var arr = readScores(id);
+        arr.push({ s: score, i: initials, t: Date.now() });
+        arr.sort(function (a, b) { return lowerBetter ? a.s - b.s : b.s - a.s; });
+        writeScores(id, arr);
+    }
+
+    function showEntry(id, score, lowerBetter, done) {
+        var slots = [0, 0, 0];
+        var active = 0;
+        var wrap = document.createElement('div');
+        wrap.className = 'hs-entry';
+        wrap.innerHTML =
+            '<div class="hs-title">' + (lowerBetter ? '⚡ NEW BEST TIME!' : '🏆 NEW HIGH SCORE!') + '</div>' +
+            '<div class="hs-sub">' + score.toLocaleString() + (lowerBetter ? ' SEC' : ' PTS') + ' — ENTER YOUR INITIALS</div>' +
+            '<div class="hs-letters">' +
+            '<div class="hs-slot" data-i="0">A</div>' +
+            '<div class="hs-slot" data-i="1">A</div>' +
+            '<div class="hs-slot" data-i="2">A</div>' +
+            '</div>' +
+            '<div class="hs-help">TYPE A–Z · <b>←→</b> MOVE · <b>↑↓</b> CHANGE · <b>ENTER</b> CONFIRM</div>';
+        document.body.appendChild(wrap);
+        var slotEls = wrap.querySelectorAll('.hs-slot');
+        function render() {
+            slotEls.forEach(function (el, i) {
+                el.textContent = ALPHA[slots[i]];
+                el.classList.toggle('active', i === active);
+            });
+        }
+        render();
+        function onKey(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var k = e.key;
+            if (/^[a-zA-Z]$/.test(k)) {
+                slots[active] = k.toUpperCase().charCodeAt(0) - 65;
+                if (active < 2) active++;
+                Sfx.play('blip');
+            } else if (k === 'ArrowUp') {
+                slots[active] = (slots[active] + 1) % 26; Sfx.play('blip');
+            } else if (k === 'ArrowDown') {
+                slots[active] = (slots[active] + 25) % 26; Sfx.play('blip');
+            } else if (k === 'ArrowLeft') {
+                active = Math.max(0, active - 1); Sfx.play('blip');
+            } else if (k === 'ArrowRight') {
+                active = Math.min(2, active + 1); Sfx.play('blip');
+            } else if (k === 'Enter' || k === ' ') {
+                finish();
+                return;
+            } else if (k === 'Backspace') {
+                slots[active] = 0; Sfx.play('blip');
+            } else {
+                return;
+            }
+            render();
+        }
+        function finish() {
+            document.removeEventListener('keydown', onKey, true);
+            if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+            var initials = slots.map(function (i) { return ALPHA[i]; }).join('');
+            insertScore(id, score, initials, lowerBetter);
+            Sfx.play('coin');
+            done();
+        }
+        document.addEventListener('keydown', onKey, true);
+    }
+
+    window.Scores = {
+        submit: function (id, score, opts) {
+            try {
+                opts = opts || {};
+                if (!id || score == null || isNaN(score)) return;
+                if (opts.lowerBetter ? score <= 0 : score <= 0) return;
+                if (!qualifies(id, score, opts.lowerBetter)) return;
+                var run = function () {
+                    if (opts.lowerBetter && score > 0) {
+                        /* legacy best-time kept by the game itself */
+                    }
+                };
+                showEntry(id, score, !!opts.lowerBetter, run);
+            } catch (e) {}
+        },
+        get: readScores
+    };
 
     /* ---------- TOUCH D-PAD (opt-in via data-dpad="1") ---------- */
     var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
@@ -200,4 +423,47 @@
             if ((e.key === 'p' || e.key === 'P') && !e.repeat) togglePause();
         });
     }
+
+    /* ---------- GAMEPAD API (auto for all pages) ---------- */
+    (function () {
+        var prev = {};
+        var axisHeld = { left: false, right: false, up: false, down: false };
+        var dead = 0.5;
+        function press(key, code, down) {
+            document.dispatchEvent(new KeyboardEvent(down ? 'keydown' : 'keyup', {
+                key: key, code: code, bubbles: true, cancelable: true
+            }));
+        }
+        function setBtn(id, down, key, code) {
+            if (prev[id] === down) return;
+            prev[id] = down;
+            press(key, code, down);
+        }
+        function setAxis(name, down, key, code) {
+            if (axisHeld[name] === down) return;
+            axisHeld[name] = down;
+            press(key, code, down);
+        }
+        function poll() {
+            var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+            for (var i = 0; i < pads.length; i++) {
+                var gp = pads[i];
+                if (!gp) continue;
+                setBtn('a' + i, !!(gp.buttons[0] && gp.buttons[0].pressed), 'Enter', 'Enter');
+                setBtn('b' + i, !!(gp.buttons[1] && gp.buttons[1].pressed), ' ', 'Space');
+                setBtn('start' + i, !!(gp.buttons[9] && gp.buttons[9].pressed), 'p', 'KeyP');
+                setBtn('up' + i, !!(gp.buttons[12] && gp.buttons[12].pressed), 'ArrowUp', 'ArrowUp');
+                setBtn('down' + i, !!(gp.buttons[13] && gp.buttons[13].pressed), 'ArrowDown', 'ArrowDown');
+                setBtn('left' + i, !!(gp.buttons[14] && gp.buttons[14].pressed), 'ArrowLeft', 'ArrowLeft');
+                setBtn('right' + i, !!(gp.buttons[15] && gp.buttons[15].pressed), 'ArrowRight', 'ArrowRight');
+                var ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
+                setAxis('left', ax < -dead, 'ArrowLeft', 'ArrowLeft');
+                setAxis('right', ax > dead, 'ArrowRight', 'ArrowRight');
+                setAxis('up', ay < -dead, 'ArrowUp', 'ArrowUp');
+                setAxis('down', ay > dead, 'ArrowDown', 'ArrowDown');
+            }
+            requestAnimationFrame(poll);
+        }
+        if (navigator.getGamepads) requestAnimationFrame(poll);
+    })();
 })();

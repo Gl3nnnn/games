@@ -12,7 +12,7 @@ const MAZE = [
     '####.###.#.###.####',
     '####.#.......#.####',
     '####.#.##-##.#.####',
-    '####.#.#   #.#.####',
+    '    .#.#   #.#.    ',
     '####.#.#####.#.####',
     '#........#........#',
     '#.##.###.#.###.##.#',
@@ -26,6 +26,7 @@ const MAZE = [
 ];
 const C = 22, COLS = 19, ROWS = 21;
 const W = COLS * C, H = ROWS * C;
+const TUNNEL_ROW = 10;
 const DIRS = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 const OPPOSITE = { up: 'down', down: 'up', left: 'right', right: 'left' };
 
@@ -37,6 +38,7 @@ const GHOST_DEFS = [
 ];
 
 let pac, ghosts, maze, dots, pelletCount, frightenedTimer, ghostCombo;
+let fruit = null, dotsEaten = 0, fruitTimer = 0;
 let score, lives, level, isGameOver, isPaused, isRunning, mouthPhase;
 let highScore = parseInt(localStorage.getItem('pacmanHighScore')) || 0;
 
@@ -57,6 +59,9 @@ function buildLevel() {
     maze = MAZE.map(r => r.split(''));
     dots = [];
     pelletCount = 0;
+    dotsEaten = 0;
+    fruit = null;
+    fruitTimer = 0;
     for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
             if (maze[r][c] === '.') { dots.push([c, r]); maze[r][c] = ' '; pelletCount++; }
@@ -66,6 +71,7 @@ function buildLevel() {
 }
 
 function canWalk(col, row, isGhost) {
+    if (row === TUNNEL_ROW && (col < 0 || col >= COLS)) return true;
     if (col < 0 || col >= COLS || row < 0 || row >= ROWS) return false;
     const t = maze[row][col];
     if (t === '#') return false;
@@ -82,7 +88,11 @@ function makeMover(col, row, speed) {
 
 function stepTo(m, dir) {
     const [dx, dy] = DIRS[dir];
-    const nc = m.col + dx, nr = m.row + dy;
+    let nc = m.col + dx, nr = m.row + dy;
+    if (nr === TUNNEL_ROW) {
+        if (nc < 0) nc = COLS - 1;
+        else if (nc >= COLS) nc = 0;
+    }
     if (!canWalk(nc, nr, m.isGhost)) return false;
     m.fromCol = m.col; m.fromRow = m.row;
     m.toCol = nc; m.toRow = nr;
@@ -175,6 +185,12 @@ function addScore(n) {
 }
 
 function eatDot() {
+    if (fruit && pac.col === fruit.col && pac.row === fruit.row) {
+        addScore(fruit.value);
+        Sfx.play('coin');
+        fruit = null;
+        fruitTimer = 0;
+    }
     const key = `${pac.col},${pac.row}`;
     const idx = dots.findIndex(d => `${d[0]},${d[1]}` === key);
     if (idx >= 0) {
@@ -182,6 +198,11 @@ function eatDot() {
         pelletCount--;
         addScore(10);
         Sfx.play('chomp');
+        dotsEaten++;
+        if (dotsEaten === 70 || dotsEaten === 170) {
+            fruit = { col: 9, row: 14, value: 100 + (level - 1) * 200 };
+            fruitTimer = 60 * 14;
+        }
         if (pelletCount <= 0) {
             level++;
             levelEl.textContent = level;
@@ -204,6 +225,8 @@ function eatDot() {
 
 function die() {
     Sfx.play('die');
+    FX.shake(380, 8);
+    FX.flash('#ff2244', 180);
     lives--;
     livesEl.textContent = lives;
     if (lives <= 0) { gameOver(); return; }
@@ -212,6 +235,7 @@ function die() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('pacman', score);
     isGameOver = true; isRunning = false;
     finalScoreEl.textContent = score;
     gameOverEl.classList.remove('hidden');
@@ -222,6 +246,10 @@ function update() {
 
     mouthPhase += 0.25;
     if (frightenedTimer > 0) frightenedTimer--;
+    if (fruitTimer > 0) {
+        fruitTimer--;
+        if (fruitTimer <= 0) fruit = null;
+    }
 
     if (!pac.moving) {
         const q = pac.queued;
@@ -368,6 +396,16 @@ function draw() {
     ctx.fillStyle = '#05050a';
     ctx.fillRect(0, 0, W, H);
     drawMaze();
+    if (fruit) {
+        const fx = fruit.col * C + C / 2, fy = fruit.row * C + C / 2;
+        ctx.shadowColor = '#ff2222'; ctx.shadowBlur = 10;
+        ctx.fillStyle = '#ff2222';
+        ctx.beginPath(); ctx.arc(fx - 4, fy + 2, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(fx + 4, fy + 2, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#00cc44'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(fx, fy - 2); ctx.quadraticCurveTo(fx + 2, fy - 8, fx + 6, fy - 8); ctx.stroke();
+        ctx.shadowBlur = 0;
+    }
     drawPac();
     ghosts.forEach(drawGhost);
 

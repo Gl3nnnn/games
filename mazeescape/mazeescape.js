@@ -172,6 +172,7 @@ function winGame() {
         localStorage.setItem('mazeBestTime', finalTime);
         bestTimeEl.textContent = finalTime + 's';
     }
+    Scores.submit('maze', parseFloat(finalTime), { lowerBetter: true });
     
     winMessage.classList.remove('hidden');
     

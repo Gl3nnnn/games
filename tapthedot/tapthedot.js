@@ -118,6 +118,7 @@ function startGame() {
 
 function endGame() {
     Sfx.play('gameover');
+    Scores.submit('tapDot', score);
     gameRunning = false;
     clearInterval(timerInterval);
     clearTimeout(moveTimeout);

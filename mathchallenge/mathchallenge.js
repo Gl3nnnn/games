@@ -111,6 +111,7 @@ function startGame() {
 
 function endGame() {
     Sfx.play('gameover');
+    Scores.submit('mathChallenge', score);
     gameRunning = false;
     clearInterval(timerInterval);
     

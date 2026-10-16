@@ -109,6 +109,7 @@ function endGame() {
     wpmEl.textContent = finalWpm;
     
     saveBestWpm(finalWpm);
+    Scores.submit('typingspeed', finalWpm);
     
     wordDisplay.textContent = 'GAME OVER!';
     wordDisplay.style.color = '#ff00ff';

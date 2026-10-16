@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const W = canvas.width, H = canvas.height;
 
-let ship, asteroids, bullets, particles, stars;
-let score, lives, wave, isGameOver, isPaused, isRunning, respawnTimer;
+let ship, asteroids, bullets, particles, stars, saucers, sBullets;
+let score, lives, wave, isGameOver, isPaused, isRunning, respawnTimer, saucerTimer;
 let highScore = parseInt(localStorage.getItem('asteroidsHighScore')) || 0;
 
 const scoreEl = document.getElementById('score');
@@ -47,6 +47,20 @@ function makeAsteroid(x, y, size) {
     };
 }
 
+function spawnSaucer() {
+    const big = wave < 2 || Math.random() < 0.7;
+    const fromLeft = Math.random() < 0.5;
+    saucers.push({
+        x: fromLeft ? -30 : W + 30,
+        y: 30 + Math.random() * 70,
+        vx: (fromLeft ? 1 : -1) * (big ? 1.2 : 2.0) * (1 + wave * 0.04),
+        size: big ? 17 : 10, big,
+        fireTimer: 30 + Math.random() * 50,
+        phase: Math.random() * Math.PI * 2
+    });
+    saucerTimer = 420 + Math.random() * 360;
+}
+
 function spawnWave() {
     const count = 3 + Math.min(wave - 1, 5);
     asteroids = [];
@@ -57,6 +71,7 @@ function spawnWave() {
         } while (Math.hypot(x - ship.x, y - ship.y) < 130);
         asteroids.push(makeAsteroid(x, y, 40));
     }
+    saucerTimer = 300 + Math.random() * 200;
     waveEl.textContent = wave;
 }
 
@@ -91,6 +106,7 @@ function splitAsteroid(i) {
     score += pts; scoreEl.textContent = score;
     explode(a.x, a.y, '#00ffff');
     Sfx.play('explode');
+    FX.shake(140, 3);
     if (a.size > 18) {
         const ns = a.size * 0.55;
         for (let k = 0; k < 2; k++) {
@@ -105,6 +121,8 @@ function splitAsteroid(i) {
 function killShip() {
     if (ship.inv > 0) return;
     Sfx.play('die');
+    FX.shake(420, 10);
+    FX.flash('#ff0044', 220);
     explode(ship.x, ship.y, '#00ff41', 24);
     lives--; livesEl.textContent = lives;
     if (lives <= 0) { gameOver(); return; }
@@ -136,6 +154,27 @@ function update() {
         wrap(a);
     });
 
+    if (saucers.length === 0) {
+        saucerTimer--;
+        if (saucerTimer <= 0) spawnSaucer();
+    }
+    saucers.forEach(s => {
+        s.x += s.vx;
+        s.phase += 0.05;
+        s.y += Math.sin(s.phase) * 0.4;
+        s.fireTimer--;
+        if (s.fireTimer <= 0 && s.x > 0 && s.x < W && !isGameOver) {
+            const spread = s.big ? 0.9 : 0.12;
+            const ang = Math.atan2(ship.y - s.y, ship.x - s.x) + (Math.random() - 0.5) * spread;
+            sBullets.push({ x: s.x, y: s.y, vx: Math.cos(ang) * 3.5, vy: Math.sin(ang) * 3.5, life: 110 });
+            Sfx.play('shoot');
+            s.fireTimer = s.big ? 70 + Math.random() * 60 : 35 + Math.random() * 30;
+        }
+    });
+    saucers = saucers.filter(s => s.x > -40 && s.x < W + 40);
+    sBullets.forEach(b => { b.x += b.vx; b.y += b.vy; b.life--; });
+    sBullets = sBullets.filter(b => b.life > 0 && b.x > -10 && b.x < W + 10 && b.y > -10 && b.y < H + 10);
+
     particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life--; });
     particles = particles.filter(p => p.life > 0);
 
@@ -143,6 +182,55 @@ function update() {
         const a = asteroids[i];
         if (Math.hypot(a.x - ship.x, a.y - ship.y) < a.size * 0.8 + 10) {
             if (ship.inv <= 0) killShip();
+        }
+    }
+
+    for (const s of saucers) {
+        if (Math.hypot(s.x - ship.x, s.y - ship.y) < s.size + 10 && ship.inv <= 0) killShip();
+    }
+    for (let i = sBullets.length - 1; i >= 0; i--) {
+        if (Math.hypot(sBullets[i].x - ship.x, sBullets[i].y - ship.y) < 10) {
+            sBullets.splice(i, 1);
+            if (ship.inv <= 0) killShip();
+        }
+    }
+
+    for (let bi = bullets.length - 1; bi >= 0; bi--) {
+        for (let si = saucers.length - 1; si >= 0; si--) {
+            const s = saucers[si];
+            if (Math.hypot(bullets[bi].x - s.x, bullets[bi].y - s.y) < s.size + 4) {
+                bullets.splice(bi, 1);
+                saucers.splice(si, 1);
+                score += s.big ? 200 : 1000; scoreEl.textContent = score;
+                explode(s.x, s.y, '#ff66ff', 18);
+                Sfx.play('explode');
+                FX.shake(200, 5);
+                FX.flash('rgba(255,102,255,0.3)', 100);
+                break;
+            }
+        }
+    }
+
+    for (let bi = bullets.length - 1; bi >= 0; bi--) {
+        for (let si = sBullets.length - 1; si >= 0; si--) {
+            if (Math.hypot(bullets[bi].x - sBullets[si].x, bullets[bi].y - sBullets[si].y) < 8) {
+                const pb = bullets[bi];
+                explode(pb.x, pb.y, '#ffffff', 5);
+                bullets.splice(bi, 1);
+                sBullets.splice(si, 1);
+                break;
+            }
+        }
+    }
+
+    for (let si = sBullets.length - 1; si >= 0; si--) {
+        for (let ai = asteroids.length - 1; ai >= 0; ai--) {
+            const a = asteroids[ai];
+            if (Math.hypot(sBullets[si].x - a.x, sBullets[si].y - a.y) < a.size * 0.85) {
+                sBullets.splice(si, 1);
+                splitAsteroid(ai);
+                break;
+            }
         }
     }
 
@@ -203,6 +291,31 @@ function draw() {
     });
     ctx.shadowBlur = 0;
 
+    ctx.shadowColor = '#ff66ff';
+    ctx.shadowBlur = 10;
+    saucers.forEach(s => {
+        ctx.strokeStyle = '#ff66ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s.x - s.size, s.y + s.size * 0.4);
+        ctx.lineTo(s.x + s.size, s.y + s.size * 0.4);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(s.x, s.y - s.size * 0.05, s.size * 0.55, s.size * 0.42, 0, Math.PI, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(s.x - s.size * 0.75, s.y + s.size * 0.4);
+        ctx.lineTo(s.x - s.size * 0.5, s.y + s.size * 0.12);
+        ctx.moveTo(s.x + s.size * 0.75, s.y + s.size * 0.4);
+        ctx.lineTo(s.x + s.size * 0.5, s.y + s.size * 0.12);
+        ctx.stroke();
+    });
+    ctx.shadowColor = '#ff3355';
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#ff3355';
+    sBullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, 2.2, 0, Math.PI * 2); ctx.fill(); });
+    ctx.shadowBlur = 0;
+
     ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 10;
     ctx.fillStyle = '#ffffff';
     bullets.forEach(b => { ctx.beginPath(); ctx.arc(b.x, b.y, 2.4, 0, Math.PI * 2); ctx.fill(); });
@@ -236,6 +349,7 @@ function draw() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('asteroids', score);
     isGameOver = true; isRunning = false;
     if (score > highScore) {
         highScore = score;
@@ -250,6 +364,7 @@ function initGame() {
     ship = newShip();
     score = 0; lives = 3; wave = 1;
     bullets = []; particles = [];
+    saucers = []; sBullets = []; saucerTimer = 400;
     isGameOver = false; isPaused = false;
     scoreEl.textContent = 0; livesEl.textContent = 3;
     spawnWave();

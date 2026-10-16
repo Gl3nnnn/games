@@ -106,6 +106,7 @@ function winGame() {
         bestMovesEl.textContent = bestMoves;
         localStorage.setItem('memoryBestMoves', bestMoves);
     }
+    Scores.submit('memory', moves, { lowerBetter: true });
 }
 
 resetBtn.addEventListener('click', initGame);

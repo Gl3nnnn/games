@@ -104,6 +104,8 @@ function playerShoot() {
 
 function hitPlayer() {
     Sfx.play('hit');
+    FX.shake(350, 8);
+    FX.flash('#ff2244', 180);
     lives--;
     livesEl.textContent = lives;
     playerBullets = []; alienBullets = [];
@@ -140,6 +142,7 @@ function update() {
                 a.alive = false; b.y = -100;
                 score += ALIEN_TYPES[a.type].points; scoreEl.textContent = score;
                 Sfx.play('explode');
+                FX.flash('rgba(0,255,255,0.3)', 80);
                 break;
             }
         }
@@ -224,6 +227,7 @@ function draw() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('spaceinvaders', score);
     isGameOver = true; isRunning = false;
     if (alienMoveTimer) clearInterval(alienMoveTimer);
     if (score > highScore) {

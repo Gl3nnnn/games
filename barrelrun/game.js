@@ -57,6 +57,8 @@ function loseLife() {
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
+    FX.shake(380, 8);
+    FX.flash('#ff2244', 180);
     if (lives <= 0) {
         isGameOver = true; isRunning = false;
         if (score > highScore) {
@@ -67,6 +69,7 @@ function loseLife() {
         finalScoreEl.textContent = score;
         gameOverEl.classList.remove('hidden');
         Sfx.play('gameover');
+        Scores.submit('barrelrun', score);
     } else {
         player = { x: 42, row: 5, y: ROWS[5], climbing: null, vy: 0, jumping: false, face: 1 };
         barrels = [];

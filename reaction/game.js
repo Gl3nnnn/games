@@ -25,6 +25,7 @@ function saveBestScore(time) {
         localStorage.setItem('reactionBestScore', time);
         bestTimeEl.textContent = time;
     }
+    Scores.submit('reaction', time, { lowerBetter: true });
 }
 
 function clearAllTimeouts() {

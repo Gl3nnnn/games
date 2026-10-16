@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burger Time - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">BURGER TIME</h1>
+
+        <div class="score-display">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>HIGH: <span id="highScore">0</span></div>
+            <div>LIVES: <span id="lives">3</span></div>
+            <div>PEPPER: <span id="pepper">5</span></div>
+        </div>
+
+        <div class="canvas-wrap">
+            <canvas id="gameCanvas" width="600" height="360"></canvas>
+            <div id="pauseOverlay" class="overlay hidden">
+                <h2>PAUSED</h2>
+                <p>Press P or tap to resume</p>
+            </div>
+            <div id="startScreen" class="overlay">
+                <h2>BURGER TIME</h2>
+                <p>Walk across ingredients to drop them. Stack every burger!</p>
+                <p class="hint"><span>←→</span> move · <span>↑↓</span> ladders · <span>SPACE</span> pepper · <span>P</span> pause</p>
+                <p class="blink">PRESS ANY KEY TO START</p>
+            </div>
+            <div id="gameOver" class="overlay hidden">
+                <h2>GAME OVER</h2>
+                <p>Score: <span id="finalScore">0</span></p>
+                <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+            </div>
+        </div>
+
+        <p class="controls-info">Stun the food monsters with pepper. Don't let them catch the chef!</p>
+    </div>
+    <script src="../arcade.js" data-dpad="1"></script>
+    <script src="game.js"></script>
+</body>
+</html>

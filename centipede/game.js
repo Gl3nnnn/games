@@ -68,6 +68,7 @@ function loseLife() {
         finalScoreEl.textContent = score;
         gameOverEl.classList.remove('hidden');
         Sfx.play('gameover');
+        Scores.submit('centipede', score);
     } else {
         player.x = W / 2;
         player.y = 470;

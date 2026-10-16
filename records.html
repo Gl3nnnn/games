@@ -6,187 +6,121 @@
     <title>Hall of Fame - Neon Arcade</title>
     <link rel="icon" type="image/png" href="logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Orbitron', 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            background: #0a0a0f;
-            background-image:
-                linear-gradient(0deg, transparent 24%, rgba(0,255,255,0.03) 25%, rgba(0,255,255,0.03) 26%, transparent 27%, transparent 74%, rgba(0,255,255,0.03) 75%, rgba(0,255,255,0.03) 76%, transparent 77%),
-                linear-gradient(90deg, transparent 24%, rgba(0,255,255,0.03) 25%, rgba(0,255,255,0.03) 26%, transparent 27%, transparent 74%, rgba(0,255,255,0.03) 75%, rgba(0,255,255,0.03) 76%, transparent 77%);
-            background-size: 50px 50px;
-            display: flex; justify-content: center; align-items: center;
-            padding: 3rem 1rem;
-        }
-        .hof {
-            position: relative;
-            width: 100%;
-            max-width: 760px;
-            text-align: center;
-            background: rgba(10,10,15,0.92);
-            border: 3px solid #ffcc00;
-            border-radius: 16px;
-            padding: 2.4rem 2.2rem;
-            box-shadow: 0 0 34px rgba(255,204,0,0.35), inset 0 0 24px rgba(0,0,0,0.5);
-        }
-        .back-btn {
-            position: absolute; top: -58px; left: 0;
-            color: #0ff; text-decoration: none; font-size: 0.9rem;
-            padding: 0.45rem 0.9rem; border: 2px solid #0ff; border-radius: 5px; transition: all 0.3s;
-        }
-        .back-btn:hover { background: #0ff; color: #0a0a0f; box-shadow: 0 0 20px #0ff; }
-        h1 {
-            font-size: 2.2rem; color: #ffcc00; letter-spacing: 0.18em;
-            text-shadow: 0 0 14px #ffcc00, 0 0 34px rgba(255,204,0,0.6);
-            margin-bottom: 0.4rem;
-        }
-        .sub { color: #777; font-size: 0.8rem; letter-spacing: 0.12em; margin-bottom: 1.6rem; }
-        table { width: 100%; border-collapse: collapse; }
-        th {
-            color: #0ff; font-size: 0.75rem; letter-spacing: 0.15em;
-            padding: 0.55rem 0.4rem; border-bottom: 2px solid rgba(0,255,255,0.4);
-        }
-        td {
-            padding: 0.5rem 0.4rem; font-size: 0.85rem;
-            border-bottom: 1px solid rgba(255,255,255,0.07); color: #ddd;
-        }
-        td.game { text-align: left; color: #fff; letter-spacing: 0.05em; }
-        td.val { color: #ffcc00; text-shadow: 0 0 8px rgba(255,204,0,0.6); font-weight: 700; }
-        td.val.none { color: #444; text-shadow: none; font-weight: 400; }
-        td.note { color: #666; font-size: 0.7rem; letter-spacing: 0.05em; }
-        tr:hover td { background: rgba(0,255,255,0.05); }
-        .group-title {
-            text-align: left; color: #b366ff; font-size: 0.75rem; letter-spacing: 0.2em;
-            padding-top: 1.2rem !important; border-bottom: 1px solid rgba(179,102,255,0.4) !important;
-            color: #b366ff;
-        }
-        .actions { margin-top: 1.8rem; display: flex; gap: 12px; justify-content: center; }
-        .btn {
-            background: transparent; border: 2px solid #ffcc00; color: #ffcc00;
-            font-family: 'Orbitron', sans-serif; font-size: 0.85rem;
-            padding: 0.6rem 1.5rem; border-radius: 5px; cursor: pointer;
-            letter-spacing: 0.1em; transition: all 0.3s;
-        }
-        .btn:hover { background: #ffcc00; color: #0a0a0f; box-shadow: 0 0 20px rgba(255,204,0,0.5); }
-        .btn.danger { border-color: #ff3d5f; color: #ff3d5f; }
-        .btn.danger:hover { background: #ff3d5f; color: #0a0a0f; box-shadow: 0 0 20px rgba(255,61,95,0.5); }
-        @media (max-width: 520px) {
-            h1 { font-size: 1.5rem; }
-            td { font-size: 0.72rem; padding: 0.42rem 0.25rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="records.css">
 </head>
 <body>
-    <div class="hof">
-        <a href="index.html" class="back-btn">← BACK</a>
-        <h1>🏆 HALL OF FAME</h1>
-        <p class="sub">YOUR BEST RUNS ACROSS ALL 36 GAMES</p>
-        <table>
-            <thead>
-                <tr><th>GAME</th><th>RECORD</th><th>TYPE</th></tr>
-            </thead>
-            <tbody id="recordsBody"></tbody>
-        </table>
+    <div class="records-container">
+        <a href="index.html" class="back-btn">← BACK TO ARCADE</a>
+        <h1 class="title">🏆 HALL OF FAME</h1>
+        <p class="subtitle">Top 5 legends of every machine</p>
+
+        <div id="groups"></div>
+
         <div class="actions">
-            <button id="backBtn" class="btn">BACK TO ARCADE</button>
-            <button id="clearBtn" class="btn danger">CLEAR ALL RECORDS</button>
+            <button id="clearBtn" class="action-btn danger">🗑 CLEAR ALL RECORDS</button>
+            <a href="index.html" class="action-btn">🕹️ BACK TO GAMES</a>
         </div>
     </div>
     <script src="arcade.js"></script>
     <script>
-        var RECORDS = [
-            { group: 'CLASSIC GAMES' },
-            { key: 'snakeHighScore', name: 'Snake', note: 'high score' },
-            { key: 'flappyHighScore', name: 'Flappy Bird', note: 'high score' },
-            { key: 'breakoutHighScore', name: 'Breakout', note: 'high score' },
-            { key: 'pongHighScore', name: 'Pong', note: 'high score' },
-            { key: 'asteroidsHighScore', name: 'Asteroids', note: 'high score' },
-            { key: 'froggerHighScore', name: 'Frogger', note: 'high score' },
-            { key: 'barrelrunHighScore', name: 'Barrel Run', note: 'high score' },
-            { key: 'digdugHighScore', name: 'Dig Dug', note: 'high score' },
-            { key: 'centipedeHighScore', name: 'Centipede', note: 'high score' },
-            { key: 'qbertHighScore', name: 'Q*bert', note: 'high score' },
-            { key: 'bombermanHighScore', name: 'Bomberman', note: 'high score' },
-            { key: 'jezzballHighScore', name: 'JezzBall', note: 'high score' },
-            { group: 'PUZZLE & MEMORY' },
-            { key: 'memoryBestMoves', name: 'Memory', note: 'fewest moves', lower: true },
-            { key: 'colorMatchBestLevel', name: 'Color Match', note: 'best level' },
-            { key: 'tttXWins', name: 'Tic-Tac-Toe', note: 'X wins' },
-            { key: 'mazeBestTime', name: 'Maze Escape', note: 'best time (s)', lower: true },
-            { key: 'blockdropHighScore', name: 'Block Drop', note: 'high score' },
-            { key: 'g2048HighScore', name: '2048', note: 'high score' },
-            { key: 'minesweeperBestTime', name: 'Minesweeper', note: 'best time (s)', lower: true },
-            { group: 'ACTION & REFLEX' },
-            { key: 'balloonPopHighScore', name: 'Balloon Pop', note: 'high score' },
-            { key: 'reactionBestScore', name: 'Reaction', note: 'best time (ms)', lower: true },
-            { key: 'shootingGalleryHighScore', name: 'Shooting Gallery', note: 'high score' },
-            { key: 'endlessRunnerHighScore', name: 'Endless Runner', note: 'high score' },
-            { key: 'whackamoleHighScore', name: 'Whack-A-Mole', note: 'high score' },
-            { key: 'tapDotHighScore', name: 'Tap the Dot', note: 'high score' },
-            { key: 'spaceDodgerHighScore', name: 'Space Dodger', note: 'high score' },
-            { key: 'spaceinvadersHighScore', name: 'Space Invaders', note: 'high score' },
-            { key: 'galagaHighScore', name: 'Galaga', note: 'high score' },
-            { key: 'pacmanHighScore', name: 'Maze Chase', note: 'high score' },
-            { key: 'missilecmdHighScore', name: 'Missile Command', note: 'high score' },
-            { group: 'CHANCE & LUCK' },
-            { key: 'clickerHighScore', name: 'Clicker', note: 'high score' },
-            { key: 'diceflipCoinWins', name: 'Dice & Coin', note: 'coin wins' },
-            { key: 'catcherHighScore', name: 'Catcher', note: 'high score' },
-            { group: 'SKILL CHALLENGE' },
-            { key: 'typingBestWpm', name: 'Typing Speed', note: 'best WPM' },
-            { key: 'numberGuessBest', name: 'Number Guess', note: 'fewest attempts', lower: true },
-            { key: 'mathChallengeHighScore', name: 'Math Challenge', note: 'high score' }
+    (function () {
+        var GAMES = [
+            { g: 'CLASSIC', id: 'snake', name: 'SNAKE', legacy: 'snakeHighScore' },
+            { g: 'CLASSIC', id: 'breakout', name: 'BREAKOUT', legacy: 'breakoutHighScore' },
+            { g: 'CLASSIC', id: 'pacman', name: 'PAC-MAN', legacy: 'pacmanHighScore' },
+            { g: 'CLASSIC', id: 'flappy', name: 'FLAPPY NEON', legacy: 'flappyHighScore' },
+            { g: 'CLASSIC', id: 'pong', name: 'PONG (WINS)', legacy: 'pongHighScore' },
+            { g: 'CLASSIC', id: 'frogger', name: 'FROGGER', legacy: 'froggerHighScore' },
+            { g: 'CLASSIC', id: 'balloonPop', name: 'BALLOON POP', legacy: 'balloonPopHighScore' },
+            { g: 'CLASSIC', id: 'spaceDodger', name: 'SPACE DODGER', legacy: 'spaceDodgerHighScore' },
+            { g: 'CLASSIC', id: 'endlessRunner', name: 'ENDLESS RUNNER', legacy: 'endlessRunnerHighScore' },
+            { g: 'CLASSIC', id: 'catcher', name: 'CATCHER', legacy: 'catcherHighScore' },
+            { g: 'CLASSIC', id: 'blockdrop', name: 'BLOCK DROP', legacy: 'blockdropHighScore' },
+            { g: 'PUZZLE & MIND', id: 'maze', name: 'MAZE ESCAPE', legacy: 'mazeBestTime', lb: 1, suffix: 's' },
+            { g: 'PUZZLE & MIND', id: 'memory', name: 'MEMORY', legacy: 'memoryBestMoves', lb: 1, suffix: ' moves' },
+            { g: 'PUZZLE & MIND', id: 'g2048', name: '2048', legacy: 'g2048HighScore' },
+            { g: 'PUZZLE & MIND', id: 'minesweeper', name: 'MINESWEEPER', legacy: 'minesweeperBestTime', lb: 1, suffix: 's' },
+            { g: 'PUZZLE & MIND', id: 'tictactoe', name: 'TIC-TAC-TOE (X WINS)', legacy: 'tttXWins' },
+            { g: 'PUZZLE & MIND', id: 'mathChallenge', name: 'MATH CHALLENGE', legacy: 'mathChallengeHighScore' },
+            { g: 'PUZZLE & MIND', id: 'numberguess', name: 'NUMBER GUESS', legacy: 'numberGuessBest', lb: 1, suffix: ' tries' },
+            { g: 'PUZZLE & MIND', id: 'clicker', name: 'CLICKER', legacy: 'clickerHighScore' },
+            { g: 'PUZZLE & MIND', id: 'diceflip', name: 'DICE FLIP (WINS)', legacy: 'diceflipCoinWins' },
+            { g: 'SKILL & ARCADE', id: 'reaction', name: 'REACTION TEST', legacy: 'reactionBestScore', lb: 1, suffix: 'ms' },
+            { g: 'SKILL & ARCADE', id: 'tapDot', name: 'TAP THE DOT', legacy: 'tapDotHighScore' },
+            { g: 'SKILL & ARCADE', id: 'shootingGallery', name: 'SHOOTING GALLERY', legacy: 'shootingGalleryHighScore' },
+            { g: 'SKILL & ARCADE', id: 'colorMatch', name: 'COLOR MATCH', legacy: 'colorMatchBestLevel' },
+            { g: 'SKILL & ARCADE', id: 'whackamole', name: 'WHACK-A-MOLE', legacy: 'whackamoleHighScore' },
+            { g: 'SKILL & ARCADE', id: 'typingspeed', name: 'TYPE SPEED (WPM)', legacy: 'typingBestWpm' },
+            { g: 'SKILL & ARCADE', id: 'barrelRun', name: 'BARREL RUN', legacy: 'barrelrunHighScore' },
+            { g: 'ACTION', id: 'spaceinvaders', name: 'SPACE INVADERS', legacy: 'spaceinvadersHighScore' },
+            { g: 'ACTION', id: 'asteroids', name: 'ASTEROIDS', legacy: 'asteroidsHighScore' },
+            { g: 'ACTION', id: 'galaga', name: 'GALAGA', legacy: 'galagaHighScore' },
+            { g: 'ACTION', id: 'missilecmd', name: 'MISSILE COMMAND', legacy: 'missilecmdHighScore' },
+            { g: 'ACTION', id: 'digdug', name: 'DIG DUG', legacy: 'digdugHighScore' },
+            { g: 'ACTION', id: 'centipede', name: 'CENTIPEDE', legacy: 'centipedeHighScore' },
+            { g: 'ACTION', id: 'qbert', name: 'Q*BERT', legacy: 'qbertHighScore' },
+            { g: 'ACTION', id: 'bomberman', name: 'BOMBERMAN', legacy: 'bombermanHighScore' },
+            { g: 'ACTION', id: 'jezzball', name: 'JEZZBALL', legacy: 'jezzballHighScore' },
+            { g: 'ACTION', id: 'moonpatrol', name: 'MOON PATROL', legacy: 'moonpatrolHighScore' },
+            { g: 'ACTION', id: 'robotron', name: 'ROBOTRON: 2084', legacy: 'robotronHighScore' },
+            { g: 'ACTION', id: 'burgerTime', name: 'BURGER TIME', legacy: 'burgerTimeHighScore' }
         ];
 
-        function render() {
-            var body = document.getElementById('recordsBody');
-            body.innerHTML = '';
-            RECORDS.forEach(function (rec) {
-                var tr = document.createElement('tr');
-                if (rec.group) {
-                    var td = document.createElement('td');
-                    td.className = 'group-title';
-                    td.colSpan = 3;
-                    td.textContent = rec.group;
-                    tr.appendChild(td);
-                } else {
-                    var raw = localStorage.getItem(rec.key);
-                    var g = document.createElement('td');
-                    g.className = 'game';
-                    g.textContent = rec.name;
-                    var v = document.createElement('td');
-                    v.className = 'val' + (raw === null ? ' none' : '');
-                    if (raw === null) {
-                        v.textContent = '---';
-                    } else {
-                        var num = parseFloat(raw);
-                        v.textContent = isNaN(num) ? raw : (Math.round(num * 10) / 10).toString();
+        var root = document.getElementById('groups');
+        var groupOrder = ['CLASSIC', 'PUZZLE & MIND', 'SKILL & ARCADE', 'ACTION'];
+
+        function fmt(g, v) { return v + (g.suffix || ''); }
+
+        groupOrder.forEach(function (gn) {
+            var sec = document.createElement('section');
+            sec.className = 'rec-group';
+            var h = document.createElement('h2');
+            h.className = 'rec-group-title';
+            h.textContent = gn;
+            sec.appendChild(h);
+            var wrap = document.createElement('div');
+            wrap.className = 'rec-grid';
+            GAMES.filter(function (x) { return x.g === gn; }).forEach(function (game) {
+                var card = document.createElement('div');
+                card.className = 'rec-card';
+                var rows = '';
+                var list = [];
+                try { list = window.Scores.get(game.id) || []; } catch (e) {}
+                if (list.length) {
+                    for (var i = 0; i < 5; i++) {
+                        var e = list[i];
+                        rows += '<div class="rec-row' + (i === 0 ? ' top' : '') + '">' +
+                            '<span class="rk">#' + (i + 1) + '</span>' +
+                            '<span class="ini">' + (e ? e.i : '···') + '</span>' +
+                            '<span class="val">' + (e ? fmt(game, e.s.toLocaleString()) : '—') + '</span></div>';
                     }
-                    var n = document.createElement('td');
-                    n.className = 'note';
-                    n.textContent = rec.note;
-                    tr.appendChild(g);
-                    tr.appendChild(v);
-                    tr.appendChild(n);
+                } else {
+                    var legacy = 0;
+                    try { legacy = parseInt(localStorage.getItem(game.legacy)) || 0; } catch (e) {}
+                    rows = '<div class="rec-row legacy"><span class="rk">★</span><span class="ini">HI</span>' +
+                        '<span class="val">' + (legacy ? fmt(game, legacy.toLocaleString()) : '—') + '</span></div>' +
+                        '<div class="rec-row muted"><span class="rk"></span><span class="ini"></span>' +
+                        '<span class="val small">beat it to join the table</span></div>';
                 }
-                body.appendChild(tr);
+                card.innerHTML = '<div class="rec-name">' + game.name + '</div>' + rows;
+                wrap.appendChild(card);
             });
-        }
-
-        document.getElementById('backBtn').addEventListener('click', function () {
-            location.href = 'index.html';
+            sec.appendChild(wrap);
+            root.appendChild(sec);
         });
+
         document.getElementById('clearBtn').addEventListener('click', function () {
-            if (!confirm('Clear ALL saved high scores and records?')) return;
-            RECORDS.forEach(function (rec) {
-                if (rec.key) localStorage.removeItem(rec.key);
-            });
-            Sfx.play('gameover');
-            render();
+            if (!confirm('Clear ALL arcade records?')) return;
+            var doomed = [];
+            for (var i = 0; i < localStorage.length; i++) {
+                var k = localStorage.key(i);
+                if (k && (k.indexOf('arcadeScores_') === 0 || /HighScore$|Best(Time|Moves|Score|Wpm|Level|Attempts)$/.test(k))) doomed.push(k);
+            }
+            doomed.forEach(function (k) { localStorage.removeItem(k); });
+            Sfx.play('die');
+            location.reload();
         });
-
-        render();
+    })();
     </script>
 </body>
 </html>

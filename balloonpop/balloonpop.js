@@ -131,6 +131,7 @@ function startGame() {
 
 function stopGame() {
     gameRunning = false;
+    if (typeof score !== 'undefined' && score > 0) Scores.submit('balloonPop', score);
     startBtn.disabled = false;
     
     if (balloonInterval) {

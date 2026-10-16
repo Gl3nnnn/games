@@ -1,6 +1,6 @@
 # Neon Arcade 🕹️
 
-A collection of 36 classic arcade-style browser games built with HTML, CSS, and JavaScript. Each game features a sleek neon aesthetic and can be played directly in your web browser.
+A collection of 39 classic arcade-style browser games built with HTML, CSS, and JavaScript. Each game features a sleek neon aesthetic and can be played directly in your web browser.
 
 ![Neon Arcade](logo.png)
 
@@ -46,7 +46,10 @@ A collection of 36 classic arcade-style browser games built with HTML, CSS, and 
 | 👾 **Space Invaders** | Hold the line against the alien swarm! |
 | 🛸 **Galaga** | Shoot down the diving bug fleet! |
 | 🟡 **Maze Chase** | Eat every dot and outsmart the ghosts! |
-| 💥 **Missile Command** | Defend your cities from incoming warheads! |
+| 💥 **Missile Command** | Defend your cities from MIRVs & smart bombs! |
+| 🌙 **Moon Patrol** | Jump craters and blast UFOs across the moon! |
+| 🤖 **Robotron: 2084** | Twin-stick carnage — rescue the last humans! |
+| 🍔 **Burger Time** | Walk the ingredients into towering burgers! |
 
 ### Chance & Luck
 | Game | Description |
@@ -74,9 +77,10 @@ No installation required - just open in your browser!
 ## 📁 Project Structure
 
 ```
-├── index.html          # Main arcade hub
-├── records.html        # Hall of Fame - all your high scores
-├── arcade.js           # Shared engine: 8-bit SFX, CRT, mute, D-pad, pause
+├── index.html          # Main arcade hub (shuffle, score marquee, coin-wipe)
+├── records.html        # Hall of Fame - top-5 tables for every game
+├── records.css         # Hall of Fame styles
+├── arcade.js           # Shared engine: SFX, BGM, CRT boot, gamepad, FX, D-pad, pause, initials
 ├── style.css           # Global styles (neon theme)
 ├── logo.png            # Site logo
 ├── snake/              # Snake game
@@ -121,13 +125,17 @@ No installation required - just open in your browser!
 
 - ✨ Neon visual theme throughout all games
 - 🔊 Retro 8-bit sound effects in every game (shared `arcade.js` engine)
-- 📺 Optional CRT scanline & flicker overlay (toggle in-game)
+- 🎵 Optional chiptune background music (toggle in-game, persists)
+- 📺 CRT power-on boot animation + scanline & flicker overlay
+- 🎮 Gamepad support — plug in a controller and play (stick/D-pad, A, Start)
+- 🕹️ Retro initials entry — top-5 high-score tables with 3-letter arcade tags
+- 💥 Screen shake & flash FX on hits and explosions
 - 🔇 Global mute button - settings persist across games
 - ⏸️ Press **P** to pause in-game
 - 📱 Touch D-pad controls appear automatically on mobile devices
-- 🏆 Hall of Fame (`records.html`) aggregates all high scores in one place
+- 🏆 Hall of Fame (`records.html`) with per-game top-5 tables
+- 🎲 Shuffle button + high-score marquee + INSERT COIN transitions on the hub
 - 📱 Responsive design works on desktop and mobile
-- 🎯 Intuitive controls for each type of game
 - 💾 Local storage for high scores
 - 🚀 Smooth animations and transitions
 

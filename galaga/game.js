@@ -93,6 +93,7 @@ function firePlayer() {
 function killEnemy(e) {
     e.dead = true;
     Sfx.play('explode');
+    FX.flash('rgba(255,180,0,0.25)', 70);
     score += ROW_PTS[e.row];
     scoreEl.textContent = score;
     for (let i = 0; i < 8; i++) {
@@ -103,6 +104,8 @@ function killEnemy(e) {
 function hitPlayer() {
     if (player.inv > 0) return;
     Sfx.play('hit');
+    FX.shake(350, 8);
+    FX.flash('#ff2244', 180);
     lives--;
     livesEl.textContent = lives;
     for (let i = 0; i < 20; i++)
@@ -115,6 +118,7 @@ function hitPlayer() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('galaga', score);
     isGameOver = true; isRunning = false;
     if (score > highScore) {
         highScore = score;

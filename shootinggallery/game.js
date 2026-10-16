@@ -175,6 +175,7 @@ function startGame() {
 function endGame() {
     gameRunning = false;
     Sfx.play(targetsLeft <= 0 ? 'win' : 'gameover');
+Scores.submit('shootingGallery', score);
     clearInterval(timerInterval);
     saveHighScore();
     

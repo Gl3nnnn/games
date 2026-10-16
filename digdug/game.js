@@ -72,6 +72,8 @@ function loseLife() {
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
+    FX.shake(400, 9);
+    FX.flash('#ff2244', 200);
     if (lives <= 0) {
         isGameOver = true; isRunning = false;
         if (score > highScore) {
@@ -82,6 +84,7 @@ function loseLife() {
         finalScoreEl.textContent = score;
         gameOverEl.classList.remove('hidden');
         Sfx.play('gameover');
+        Scores.submit('digdug', score);
     } else {
         player.x = cx(2); player.y = cy(17);
         shots = []; fires = [];
@@ -206,6 +209,8 @@ function updateShots() {
                     scoreEl.textContent = score;
                     enemies.splice(enemies.indexOf(e), 1);
                     Sfx.play('explode');
+                    FX.shake(160, 4);
+                    FX.flash('rgba(255,140,0,0.25)', 90);
                 } else {
                     Sfx.play('bounce');
                     e.tx = Math.round(e.x / CELL - 0.5);

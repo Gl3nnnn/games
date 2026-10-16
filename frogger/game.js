@@ -69,6 +69,8 @@ function resetFrog() {
 
 function die() {
     Sfx.play('die');
+    FX.shake(380, 8);
+    FX.flash('#ff2244', 180);
     lives--;
     livesEl.textContent = lives;
     if (lives <= 0) gameOver();
@@ -241,6 +243,7 @@ function loop() {
 
 function gameOver() {
     Sfx.play('gameover');
+    Scores.submit('frogger', score);
     isGameOver = true; isRunning = false;
     if (score > highScore) {
         highScore = score;

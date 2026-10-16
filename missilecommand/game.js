@@ -47,20 +47,29 @@ function initGame() {
 
 function aliveCities() { return cities.filter(c => c.alive); }
 
-function spawnEnemy() {
+function randomTarget() {
     const targets = [
         ...aliveCities().map(c => ({ x: c.x, type: 'city', ref: c })),
         ...bases.filter(b => b.alive).map(b => ({ x: b.x, type: 'base', ref: b }))
     ];
-    if (!targets.length) return;
-    const t = targets[Math.floor(Math.random() * targets.length)];
+    if (!targets.length) return null;
+    return targets[Math.floor(Math.random() * targets.length)];
+}
+
+function spawnEnemy() {
+    const t = randomTarget();
+    if (!t) return;
+    const mirv = wave >= 3 && Math.random() < 0.22;
+    const smart = !mirv && wave >= 4 && Math.random() < 0.15;
+    const sx = Math.random() * W;
     enemyMissiles.push({
-        sx: Math.random() * W, sy: 0,
+        sx, sy: 0,
         tx: t.x + (Math.random() * 10 - 5), ty: GROUND - (t.type === 'base' ? 4 : 8),
-        x: 0, y: 0, speed: 1.1 + wave * 0.25 + Math.random() * 0.7, ref: t.ref, type: t.type
+        x: sx, y: 0,
+        speed: smart ? 0.85 + wave * 0.12 : 1.1 + wave * 0.25 + Math.random() * 0.7,
+        ref: t.ref, type: t.type,
+        mirv, smart, splitAt: 0.3 + Math.random() * 0.25
     });
-    enemyMissiles[enemyMissiles.length - 1].x = enemyMissiles[enemyMissiles.length - 1].sx;
-    enemyMissiles[enemyMissiles.length - 1].y = 0;
 }
 
 function fire(tx, ty) {
@@ -94,8 +103,31 @@ function update() {
     }
 
     enemyMissiles.forEach(m => {
+        if (m.smart) {
+            const threatened = explosions.some(e => e.byPlayer && Math.hypot(m.x - e.x, m.y - e.y) < e.r + 22);
+            if (threatened) return;
+        }
         const dx = m.tx - m.x, dy = m.ty - m.y;
         const dist = Math.hypot(dx, dy);
+        const total = Math.hypot(m.tx - m.sx, m.ty - m.sy) || 1;
+        const traveled = Math.hypot(m.x - m.sx, m.y - m.sy);
+        if (m.mirv && !m.splitDone && traveled / total >= m.splitAt) {
+            m.splitDone = true;
+            m.done = true;
+            Sfx.play('blip');
+            const kids = 2 + (Math.random() < 0.5 ? 1 : 0);
+            for (let k = 0; k < kids; k++) {
+                const nt = randomTarget();
+                if (!nt) break;
+                enemyMissiles.push({
+                    sx: m.x, sy: m.y,
+                    tx: nt.x + (Math.random() * 10 - 5), ty: GROUND - (nt.type === 'base' ? 4 : 8),
+                    x: m.x, y: m.y, speed: m.speed * 1.15,
+                    ref: nt.ref, type: nt.type, mirv: false, smart: false
+                });
+            }
+            return;
+        }
         if (dist < m.speed) {
             m.done = true;
             addExplosion(m.tx, m.ty, false);
@@ -137,8 +169,9 @@ function update() {
     );
     if (deadEnemies.length) {
         deadEnemies.forEach(m => { m.done = true; });
-        score += 25 * deadEnemies.length;
+        score += deadEnemies.reduce((s, m) => s + (m.smart ? 100 : 25), 0);
         Sfx.play('explode');
+        FX.shake(150, 4);
         scoreEl.textContent = score;
     }
     enemyMissiles = enemyMissiles.filter(m => !m.done);
@@ -214,12 +247,15 @@ function draw() {
     });
 
     ctx.lineWidth = 2;
+    const smartPulse = 3 + Math.sin(Date.now() / 120);
     enemyMissiles.forEach(m => {
-        ctx.strokeStyle = '#ff3355';
-        ctx.shadowColor = '#ff3355'; ctx.shadowBlur = 6;
+        ctx.strokeStyle = m.smart ? '#ff8800' : '#ff3355';
+        ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 6;
         ctx.beginPath(); ctx.moveTo(m.sx, m.sy); ctx.lineTo(m.x, m.y); ctx.stroke();
-        ctx.fillStyle = '#ffff00';
-        ctx.beginPath(); ctx.arc(m.x, m.y, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = m.smart ? '#00ffff' : '#ffff00';
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.smart ? smartPulse : 2.5, 0, Math.PI * 2);
+        ctx.fill();
     });
     playerMissiles.forEach(m => {
         ctx.strokeStyle = '#00ff66';
@@ -260,6 +296,7 @@ function loop() {
 
 function endGame() {
     Sfx.play('gameover');
+    Scores.submit('missilecmd', score);
     isGameOver = true; isRunning = false;
     if (score > highScore) {
         highScore = score;
