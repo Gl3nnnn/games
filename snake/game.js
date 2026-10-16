@@ -87,7 +87,8 @@ function update() {
     snake.unshift(head);
     
     if (head.x === food.x && head.y === food.y) {
-        score += 10;
+        score += 5;
+        Sfx.play('eat');
         scoreEl.textContent = score;
         spawnFood();
     } else {
@@ -97,6 +98,7 @@ function update() {
 
 // Easy & Casual: Lose a life instead of instant game over
 function loseLife() {
+    Sfx.play('die');
     lives--;
     if (livesEl) livesEl.textContent = lives;
     
@@ -165,6 +167,7 @@ function draw() {
 }
 
 function gameOver() {
+    Sfx.play('gameover');
     isGameOver = true;
     isGameRunning = false;
     
@@ -179,6 +182,7 @@ function gameOver() {
 }
 
 function startGame() {
+    Sfx.play('select');
     if (isGameRunning) return;
     
     initGame();

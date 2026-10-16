@@ -120,6 +120,7 @@ function updateScore() {
     if (!gameRunning) return;
     
     score++;
+    Sfx.play('blip');
     scoreEl.textContent = score;
     
     // Gradually increase difficulty
@@ -133,6 +134,7 @@ function updateScore() {
 }
 
 function startGame() {
+    Sfx.play('select');
     gameRunning = true;
     score = 0;
     gameSpeed = 3;
@@ -156,6 +158,7 @@ function startGame() {
 }
 
 function gameOver() {
+    Sfx.play('gameover');
     gameRunning = false;
     
     clearInterval(gameLoop);

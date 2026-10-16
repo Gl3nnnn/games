@@ -56,6 +56,7 @@ function flipCard(card) {
     if (card.classList.contains('matched')) return;
     
     card.classList.add('flipped');
+    Sfx.play('blip');
     card.textContent = card.dataset.emoji;
     flippedCards.push(card);
     
@@ -75,6 +76,7 @@ function checkMatch() {
         card2.classList.add('matched');
         matchedPairs++;
         matchesEl.textContent = matchedPairs;
+        Sfx.play('coin');
         flippedCards = [];
         canFlip = true;
         
@@ -82,6 +84,7 @@ function checkMatch() {
             winGame();
         }
     } else {
+    Sfx.play('hit');
         setTimeout(() => {
             card1.classList.remove('flipped');
             card1.textContent = '';
@@ -95,6 +98,7 @@ function checkMatch() {
 
 function winGame() {
     winDisplay.classList.remove('hidden');
+    Sfx.play('win');
     finalMovesEl.textContent = moves;
     
     if (bestMoves === 0 || moves < bestMoves) {

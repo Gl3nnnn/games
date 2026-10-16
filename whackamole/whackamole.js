@@ -104,6 +104,7 @@ function startCountdown() {
 }
 
 function endGame() {
+    Sfx.play('gameover');
     isGameRunning = false;
     clearInterval(countdownTimer);
     clearTimeout(moleTimer);
@@ -139,6 +140,7 @@ function resetGame() {
 }
 
 function startGame() {
+    Sfx.play('select');
     if (isGameRunning) return;
     
     score = 0;

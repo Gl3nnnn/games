@@ -46,6 +46,7 @@ function showMessage(text, type) {
 }
 
 function startGame() {
+    Sfx.play('select');
     secretNumber = getRandomNumber();
     attempts = 0;
     gameStarted = true;
@@ -78,6 +79,7 @@ function makeGuess() {
     
     if (guess === secretNumber) {
         hintText.textContent = 'Correct!';
+        Sfx.play('win');
         hintText.className = 'hint-text correct';
         
         secretNumberEl.textContent = secretNumber;
@@ -91,9 +93,11 @@ function makeGuess() {
         showMessage('Congratulations! You won!', 'success');
     } else if (guess > secretNumber) {
         hintText.textContent = 'Too high! Try lower ↘';
+        Sfx.play('hit');
         hintText.className = 'hint-text high';
     } else {
         hintText.textContent = 'Too low! Try higher ↗';
+        Sfx.play('hit');
         hintText.className = 'hint-text low';
     }
     

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">TETRIS</h1>
+
+        <div class="score-display">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>HIGH SCORE: <span id="highScore">0</span></div>
+            <div>LINES: <span id="lines">0</span></div>
+            <div>LEVEL: <span id="level">1</span></div>
+        </div>
+
+        <div class="play-area">
+            <canvas id="gameCanvas" width="300" height="600"></canvas>
+            <div class="side-panel">
+                NEXT
+                <canvas id="nextCanvas" width="120" height="100"></canvas>
+            </div>
+        </div>
+
+        <div class="controls-info">
+            <p><span>← →</span> move &nbsp; <span>↑</span> rotate &nbsp; <span>↓</span> soft drop</p>
+            <p><span>SPACE</span> hard drop &nbsp; <span>P</span> pause</p>
+        </div>
+
+        <div id="gameOver" class="overlay hidden">
+            <h2>GAME OVER</h2>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+
+        <div id="startScreen" class="overlay start-screen">
+            <h2>PRESS ANY KEY TO START</h2>
+        </div>
+    </div>
+    <script src="../arcade.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

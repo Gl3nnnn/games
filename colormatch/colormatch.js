@@ -46,6 +46,7 @@ function setupEventListeners() {
 }
 
 function startGame() {
+    Sfx.play('select');
     if (isPlaying) return;
     
     isPlaying = true;
@@ -153,6 +154,7 @@ function handleButtonClick(index) {
 }
 
 function gameOver() {
+    Sfx.play('gameover');
     isPlaying = false;
     statusEl.textContent = 'Game Over!';
     

@@ -76,6 +76,7 @@ function showMessage(text, type) {
 }
 
 function startGame() {
+    Sfx.play('select');
     gameRunning = true;
     score = 0;
     streak = 0;
@@ -109,6 +110,7 @@ function startGame() {
 }
 
 function endGame() {
+    Sfx.play('gameover');
     gameRunning = false;
     clearInterval(timerInterval);
     
@@ -137,6 +139,7 @@ function checkAnswer() {
     
     if (userAnswer === currentAnswer) {
         score++;
+        Sfx.play('coin');
         streak++;
         scoreEl.textContent = score;
         streakEl.textContent = streak;

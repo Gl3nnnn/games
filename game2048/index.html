@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">2048</h1>
+
+        <div class="score-display">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>BEST: <span id="highScore">0</span></div>
+        </div>
+
+        <div id="board" class="board"></div>
+
+        <div class="controls-info">
+            <p><span>ARROW KEYS</span> / <span>WASD</span> or <span>SWIPE</span> to slide tiles</p>
+            <p>Join matching numbers to reach <span>2048</span>!</p>
+        </div>
+
+        <button id="newGameBtn" class="restart-btn">NEW GAME</button>
+
+        <div id="gameOver" class="overlay hidden">
+            <h2 id="overTitle">GAME OVER</h2>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+    </div>
+    <script src="../arcade.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

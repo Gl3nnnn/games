@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Invaders - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">SPACE INVADERS</h1>
+
+        <div class="score-display">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>HIGH SCORE: <span id="highScore">0</span></div>
+            <div>WAVE: <span id="wave">1</span></div>
+            <div>LIVES: <span id="lives">3</span></div>
+        </div>
+
+        <canvas id="gameCanvas" width="480" height="540"></canvas>
+
+        <div class="controls-info">
+            <p><span>← →</span> or <span>A D</span> move &nbsp; <span>SPACE</span> fire</p>
+            <p><span>P</span> pause</p>
+        </div>
+
+        <div id="gameOver" class="overlay hidden">
+            <h2>GAME OVER</h2>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+
+        <div id="startScreen" class="overlay start-screen">
+            <h2>PRESS ANY KEY TO START</h2>
+        </div>
+    </div>
+    <script src="../arcade.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

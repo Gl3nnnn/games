@@ -129,6 +129,7 @@ function playCatchSound() {
 }
 
 function gameOver() {
+    Sfx.play('gameover');
     isGameRunning = false;
     isGameOver = true;
     clearInterval(objectSpawnTimer);
@@ -155,6 +156,7 @@ function resetGame() {
 }
 
 function startGame() {
+    Sfx.play('select');
     if (isGameRunning) return;
     
     score = 0;

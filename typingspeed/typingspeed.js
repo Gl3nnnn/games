@@ -60,6 +60,7 @@ function showMessage(text, type) {
 }
 
 function startGame() {
+    Sfx.play('select');
     gameRunning = true;
     score = 0;
     timeLeft = 60;
@@ -98,6 +99,7 @@ function startGame() {
 }
 
 function endGame() {
+    Sfx.play('gameover');
     gameRunning = false;
     clearInterval(timerInterval);
     
@@ -124,6 +126,7 @@ function checkInput() {
     
     if (typed === currentWord) {
         score++;
+        Sfx.play('eat');
         wordsTyped++;
         scoreEl.textContent = score;
         

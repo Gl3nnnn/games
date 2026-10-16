@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">PONG</h1>
+
+        <div class="score-display">
+            <div>YOU: <span id="scoreP1">0</span></div>
+            <div>HIGH WINS: <span id="highScore">0</span></div>
+            <div>CPU: <span id="scoreP2">0</span></div>
+        </div>
+
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+        <div class="controls-info">
+            <p><span>W / S</span> or <span>MOUSE</span> move paddle (1P vs CPU)</p>
+            <p>Press <span>2</span> for 2-PLAYER mode: <span>W/S</span> vs <span>↑/↓</span> &nbsp; <span>P</span> pause</p>
+        </div>
+
+        <div id="gameOver" class="overlay hidden">
+            <h2 id="winText">YOU WIN!</h2>
+            <p>Final: <span id="finalScore">0 - 0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+
+        <div id="startScreen" class="overlay start-screen">
+            <h2>PRESS ANY KEY TO START</h2>
+        </div>
+    </div>
+    <script src="../arcade.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

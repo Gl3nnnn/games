@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minesweeper - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">MINESWEEPER</h1>
+
+        <div class="score-display">
+            <div>MINES: <span id="mineCount">15</span></div>
+            <div>BEST TIME: <span id="bestTime">--</span></div>
+            <div>TIME: <span id="timer">0</span></div>
+        </div>
+
+        <div id="board" class="board"></div>
+
+        <div class="controls-info">
+            <p><span>CLICK</span> to reveal &nbsp; <span>RIGHT-CLICK</span> or <span>HOLD</span> to flag</p>
+            <p>Clear all safe tiles without hitting a mine!</p>
+        </div>
+
+        <button id="restartBtn" class="restart-btn">NEW GAME</button>
+
+        <div id="gameOver" class="overlay hidden">
+            <h2 id="overTitle">BOOM!</h2>
+            <p id="overMsg">You hit a mine!</p>
+            <button id="againBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+    </div>
+    <script src="../arcade.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

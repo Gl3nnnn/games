@@ -154,6 +154,7 @@ function gameLoop() {
 }
 
 function startGame() {
+    Sfx.play('select');
     resetGame();
     gameRunning = true;
     startScreenEl.classList.add('hidden');
@@ -173,6 +174,7 @@ function startGame() {
 
 function endGame() {
     gameRunning = false;
+    Sfx.play(targetsLeft <= 0 ? 'win' : 'gameover');
     clearInterval(timerInterval);
     saveHighScore();
     
@@ -187,6 +189,7 @@ function endGame() {
 }
 
 function handleClick(e) {
+    Sfx.play('shoot');
     if (!gameRunning) return;
     
     const rect = canvas.getBoundingClientRect();
@@ -203,6 +206,7 @@ function handleClick(e) {
         
         if (distance <= target.size/2) {
             // Hit!
+            Sfx.play('hit');
             score += target.points;
             scoreEl.textContent = score;
             

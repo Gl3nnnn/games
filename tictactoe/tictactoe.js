@@ -60,6 +60,7 @@ function makeMove(index) {
     const cell = cells[index];
     cell.textContent = currentPlayer;
     cell.classList.add(currentPlayer.toLowerCase());
+    Sfx.play('blip');
     
     if (checkWinner()) {
         endGame(currentPlayer);
@@ -90,6 +91,7 @@ function highlightWinner(combo) {
 
 function endGame(winner) {
     gameActive = false;
+    Sfx.play(winner === 'draw' ? 'blip' : winner === 'X' ? 'win' : 'gameover');
     
     if (winner === 'draw') {
         winnerText.textContent = "It's a Draw!";
@@ -129,6 +131,7 @@ function makeAIMove() {
 }
 
 function resetGame() {
+    Sfx.play('select');
     boardState = ['', '', '', '', '', '', '', '', ''];
     currentPlayer = 'X';
     gameActive = true;

@@ -126,6 +126,7 @@ function collisionDetection() {
                     ballSpeedY = -ballSpeedY;
                     b.status = 0;
                     score += 10;
+                    Sfx.play('bounce');
                     scoreEl.textContent = score;
                     
                     // Check win condition
@@ -193,6 +194,7 @@ function draw() {
                 // Add some angle based on where it hit the paddle
                 const hitPoint = ballX - (paddleX + PADDLE_WIDTH / 2);
                 ballSpeedX = hitPoint * 0.1;
+                Sfx.play('blip');
             } else if (ballY + ballSpeedY > canvas.height - BALL_RADIUS) {
                 // Ball fell - game over
                 gameOver(false);
@@ -209,6 +211,7 @@ function draw() {
 
 // Game over function
 function gameOver(won) {
+    Sfx.play(won ? 'win' : 'gameover');
     isGameOver = true;
     isGameRunning = false;
     
@@ -234,6 +237,7 @@ function gameOver(won) {
 
 // Start the game
 function startGame() {
+    Sfx.play('select');
     if (isGameRunning) return;
     
     // Reset game state

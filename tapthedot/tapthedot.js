@@ -66,6 +66,7 @@ function handleDotClick(e) {
     e.stopPropagation();
     
     score++;
+    Sfx.play('coin');
     scoreEl.textContent = score;
     
     // Visual feedback
@@ -78,6 +79,7 @@ function handleDotClick(e) {
 }
 
 function startGame() {
+    Sfx.play('select');
     gameRunning = true;
     score = 0;
     timeLeft = 30;
@@ -115,6 +117,7 @@ function startGame() {
 }
 
 function endGame() {
+    Sfx.play('gameover');
     gameRunning = false;
     clearInterval(timerInterval);
     clearTimeout(moveTimeout);

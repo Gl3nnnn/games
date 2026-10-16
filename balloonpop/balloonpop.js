@@ -67,6 +67,7 @@ function popBalloon(balloon) {
     showPopEffect(x, y);
     
     score += 10;
+    Sfx.play('hit');
     poppedCount++;
     scoreEl.textContent = score;
     poppedCountEl.textContent = poppedCount;
@@ -104,6 +105,7 @@ function darkenColor(hex) {
 }
 
 function startGame() {
+    Sfx.play('select');
     if (gameRunning) return;
     
     gameRunning = true;

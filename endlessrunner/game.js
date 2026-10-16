@@ -57,6 +57,7 @@ function resetGame() {
 }
 
 function jump() {
+    Sfx.play('jump');
     if (!player.isJumping) {
         player.velocityY = player.jumpPower;
         player.isJumping = true;
@@ -128,6 +129,7 @@ function updatePowerUps() {
             player.y + player.height > powerUps[i].y) {
             
             powerUps.splice(i, 1);
+            Sfx.play('powerup');
             gameSpeed += 1;
             setTimeout(() => { gameSpeed = Math.max(3, gameSpeed - 1); }, 3000);
             continue;
@@ -196,6 +198,7 @@ function gameLoop() {
     draw();
 
     if (checkCollisions()) {
+    Sfx.play('die');
         gameRunning = false;
         saveHighScore();
         finalScoreEl.textContent = score;
@@ -206,6 +209,7 @@ function gameLoop() {
 }
 
 function startGame() {
+    Sfx.play('select');
     resetGame();
     gameRunning = true;
     startScreenEl.classList.add('hidden');

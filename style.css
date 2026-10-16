@@ -478,6 +478,17 @@ body {
     animation: footerPulse 2s ease-in-out infinite;
 }
 
+.main-footer a {
+    color: #0ff;
+    text-decoration: none;
+    text-shadow: 0 0 8px #0ff;
+}
+
+.main-footer a:hover {
+    color: #fff;
+    text-shadow: 0 0 14px #0ff;
+}
+
 @keyframes footerPulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }

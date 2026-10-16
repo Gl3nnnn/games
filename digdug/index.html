@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dig Dug - Neon Arcade</title>
+    <link rel="icon" type="image/png" href="../logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <a href="../index.html" class="back-btn">← BACK</a>
+        <h1 class="game-title">DIG DUG</h1>
+
+        <div class="score-display">
+            <div>SCORE: <span id="score">0</span></div>
+            <div>HIGH SCORE: <span id="highScore">0</span></div>
+            <div>LEVEL: <span id="level">1</span></div>
+            <div>LIVES: <span id="lives">3</span></div>
+        </div>
+
+        <canvas id="gameCanvas" width="440" height="440"></canvas>
+
+        <div class="controls-info">
+            <p><span>ARROW KEYS</span> to dig &middot; <span>SPACE</span> to pump</p>
+            <p>Tunnel through dirt, inflate the monsters, pop them twice!</p>
+        </div>
+
+        <div id="gameOver" class="overlay hidden">
+            <h2>GAME OVER</h2>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="restart-btn">PLAY AGAIN</button>
+        </div>
+
+        <div id="pauseOverlay" class="overlay hidden">
+            <h2>PAUSED</h2>
+            <p>Press <span>P</span> to resume</p>
+        </div>
+
+        <div id="startScreen" class="overlay start-screen">
+            <h2>PRESS ANY KEY TO START</h2>
+        </div>
+    </div>
+    <script src="../arcade.js" data-dpad="1"></script>
+    <script src="game.js"></script>
+</body>
+</html>

@@ -132,6 +132,7 @@ function movePlayer(x, y) {
     if (mazeLayout[y][x] === 1) return;
     
     playerPos = { x, y };
+    Sfx.play('move');
     renderMaze();
     
     if (!startTime) {
@@ -159,6 +160,7 @@ function stopTimer() {
 }
 
 function winGame() {
+    Sfx.play('win');
     gameWon = true;
     stopTimer();
     

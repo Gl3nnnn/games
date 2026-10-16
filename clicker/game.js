@@ -12,8 +12,8 @@ let autoClick = parseInt(localStorage.getItem('autoClick')) || 0;
 
 let clickPowerCost = parseInt(localStorage.getItem('clickPowerCost')) || 5;
 let autoClickCost = parseInt(localStorage.getItem('autoClickCost')) || 25;
-let megaClickCost = parseInt(localStorage.getItem('megaClickCost')) || 100;
-let superAutoCost = parseInt(localStorage.getItem('superAutoCost')) || 250;
+let megaClickCost = parseInt(localStorage.getItem('megaClickCost')) || 50;
+let superAutoCost = parseInt(localStorage.getItem('superAutoCost')) || 100;
 
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
@@ -84,6 +84,7 @@ function createClickEffect(x, y) {
 
 clickBtn.addEventListener('click', (e) => {
     addScore(clickPower);
+    Sfx.play('blip');
     createClickEffect(e.clientX, e.clientY);
 });
 
@@ -95,6 +96,7 @@ buyClickPowerBtn.addEventListener('click', () => {
         clickPowerCost = Math.floor(clickPowerCost * 1.2);
         updateDisplay();
         saveGame();
+        Sfx.play('coin');
     }
 });
 
@@ -106,6 +108,7 @@ buyAutoClickerBtn.addEventListener('click', () => {
         autoClickCost = Math.floor(autoClickCost * 1.2);
         updateDisplay();
         saveGame();
+        Sfx.play('coin');
     }
 });
 
@@ -117,6 +120,7 @@ buyMegaClickBtn.addEventListener('click', () => {
         megaClickCost = Math.floor(megaClickCost * 1.3);
         updateDisplay();
         saveGame();
+        Sfx.play('coin');
     }
 });
 
@@ -128,6 +132,7 @@ buySuperAutoBtn.addEventListener('click', () => {
         superAutoCost = Math.floor(superAutoCost * 1.3);
         updateDisplay();
         saveGame();
+        Sfx.play('coin');
     }
 });
 

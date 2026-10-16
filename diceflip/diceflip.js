@@ -51,6 +51,7 @@ function setupEventListeners() {
 
 function setMode(newMode) {
     mode = newMode;
+    Sfx.play('blip');
     
     if (mode === 'dice') {
         diceModeBtn.classList.add('active');
@@ -87,6 +88,7 @@ function setDiceCount(isOne) {
 function roll() {
     if (isRolling) return;
     isRolling = true;
+    Sfx.play('select');
     
     totalRolls++;
     totalRollsEl.textContent = totalRolls;

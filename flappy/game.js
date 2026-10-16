@@ -3,13 +3,13 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Easy & Casual settings:
-// - Lighter gravity (0.28 vs 0.4) for easier flight
+// - Lighter gravity (0.25 vs 0.4) for easier flight
 // - Easier jump (-5 vs -7)  
 // - Slower pipes (1.5 vs 2)
 // - Wider gaps (240 vs 180)
 // - More spacing between pipe sets (150 vs 110)
 
-const GRAVITY = 0.28;
+const GRAVITY = 0.25;
 const JUMP = -5;
 const PIPE_SPEED = 1.5;
 const PIPE_SPAWN_RATE = 150;
@@ -100,6 +100,7 @@ function update() {
         if (!pipes[i].passed && birdLeft > pipeRight) {
             pipes[i].passed = true;
             score++;
+            Sfx.play('coin');
             scoreEl.textContent = score;
         }
     }
@@ -167,6 +168,7 @@ function draw() {
 }
 
 function gameOver() {
+    Sfx.play('gameover');
     isGameOver = true;
     isGameRunning = false;
     
@@ -181,6 +183,7 @@ function gameOver() {
 }
 
 function startGame() {
+    Sfx.play('select');
     if (isGameRunning) return;
     
     initGame();
@@ -207,6 +210,7 @@ function resetGame() {
 }
 
 function jump() {
+    Sfx.play('jump');
     if (!isGameRunning) {
         startGame();
     }

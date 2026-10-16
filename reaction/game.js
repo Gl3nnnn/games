@@ -51,6 +51,7 @@ function setReadyState() {
 
 function setTooEarlyState() {
     gameState = 'tooearly';
+    Sfx.play('hit');
     waitingEl.classList.add('hidden');
     readyEl.classList.add('hidden');
     tooEarlyEl.classList.remove('hidden');
@@ -78,6 +79,7 @@ function handleClick(e) {
         attemptsEl.textContent = attemptsCount;
         saveBestScore(responseTime);
         gameState = 'recorded';
+        Sfx.play('coin');
         
         gameArea.className = 'game-area record';
         
@@ -89,6 +91,7 @@ function handleClick(e) {
 
 function startGame() {
     gameState = 'starting';
+    Sfx.play('select');
     setWaitingState();
     
     const randomDelay = Math.floor(Math.random() * 3000) + 1000;
