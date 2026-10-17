@@ -80,9 +80,9 @@ function update() {
             if (keys.w || keys.ArrowUp) p1.y -= 6;
             if (keys.s || keys.ArrowDown) p1.y += 6;
         }
-        const target = ball.y - PADDLE_H / 2;
+        const target = ball.vx > 0 ? ball.y - PADDLE_H / 2 : H / 2 - PADDLE_H / 2;
         const diff = target - p2.y;
-        p2.y += Math.max(-4.6, Math.min(4.6, diff));
+        p2.y += Math.max(-3.2, Math.min(3.2, diff * 0.5));
     }
 
     p1.y = Math.max(4, Math.min(H - PADDLE_H - 4, p1.y));
@@ -94,14 +94,14 @@ function update() {
     if (ball.y - BALL_R < 0) { ball.y = BALL_R; ball.vy *= -1; }
     if (ball.y + BALL_R > H) { ball.y = H - BALL_R; ball.vy *= -1; }
 
-    if (ball.x - BALL_R < 24 && ball.x - BALL_R > 14 &&
+    if (ball.x - BALL_R < 24 && ball.x > 14 &&
         ball.y > p1.y && ball.y < p1.y + PADDLE_H && ball.vx < 0) {
         ball.vx = Math.abs(ball.vx) * 1.05;
         ball.vy += ((ball.y - (p1.y + PADDLE_H / 2)) / PADDLE_H) * 4;
         capSpeed();
         Sfx.play('bounce');
     }
-    if (ball.x + BALL_R > W - 24 && ball.x + BALL_R < W - 14 &&
+    if (ball.x + BALL_R > W - 24 && ball.x < W - 14 &&
         ball.y > p2.y && ball.y < p2.y + PADDLE_H && ball.vx > 0) {
         ball.vx = -Math.abs(ball.vx) * 1.05;
         ball.vy += ((ball.y - (p2.y + PADDLE_H / 2)) / PADDLE_H) * 4;
@@ -167,7 +167,8 @@ document.addEventListener('keydown', (e) => {
     if (!isRunning && !isGameOver && k !== '2') { startGame(); }
     if (isGameOver) return;
     if (k === '2') { twoPlayer = true; if (!isRunning) startGame(); }
-    if (k === 'p' || k === 'P') isPaused = !isPaused;
+    if (k === 'p' || k === 'P') { if (!e.repeat) isPaused = !isPaused; }
+    if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(k)) mouseActive = false;
     keys[k] = true;
     if (['ArrowUp', 'ArrowDown', ' '].includes(e.key)) e.preventDefault();
 });

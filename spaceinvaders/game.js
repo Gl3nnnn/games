@@ -97,12 +97,14 @@ function alienFire() {
 }
 
 function playerShoot() {
-    if (playerBullets.length < 2 && !isGameOver && !isPaused)
+    if (playerBullets.length < 2 && !isGameOver && !isPaused) {
         playerBullets.push({ x: player.x + PLAYER_W / 2, y: player.y - 8, speed: 7 });
         Sfx.play('shoot');
+    }
 }
 
 function hitPlayer() {
+    if (isGameOver) return;
     Sfx.play('hit');
     FX.shake(350, 8);
     FX.flash('#ff2244', 180);
@@ -226,10 +228,12 @@ function draw() {
 }
 
 function gameOver() {
+    if (isGameOver) return;
     Sfx.play('gameover');
     Scores.submit('spaceinvaders', score);
     isGameOver = true; isRunning = false;
     if (alienMoveTimer) clearInterval(alienMoveTimer);
+    if (fireTimer) clearInterval(fireTimer);
     if (score > highScore) {
         highScore = score;
         localStorage.setItem('spaceinvadersHighScore', highScore);
@@ -270,7 +274,7 @@ document.addEventListener('keydown', (e) => {
     if (!isRunning) { startGame(); return; }
     keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = true;
     if (e.key === ' ') { e.preventDefault(); playerShoot(); }
-    if (e.key === 'p' || e.key === 'P') isPaused = !isPaused;
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; }
 });
 document.addEventListener('keyup', (e) => {
     keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = false;
@@ -296,6 +300,7 @@ restartBtn.addEventListener('click', () => {
     gameOverEl.classList.add('hidden');
     initGame();
     isRunning = true;
+    if (fireTimer) clearInterval(fireTimer);
     fireTimer = setInterval(alienFire, 900);
 });
 

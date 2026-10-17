@@ -69,6 +69,7 @@ function nextLevel() {
 }
 
 function loseLife() {
+    if (isGameOver) return;
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
@@ -173,7 +174,7 @@ function updateEnemies(dt) {
             if (er === pr && Math.abs(ec - pc) <= 5) {
                 const dir = pc > ec ? 1 : -1;
                 let clear = true;
-                for (let c = ec + dir; c !== pc; c += dir) {
+                for (let c = ec + dir; c !== pc && c >= 0 && c < COLS; c += dir) {
                     if (dirt[pr] && dirt[pr][c]) clear = false;
                 }
                 if (clear && ec !== pc) {
@@ -323,7 +324,7 @@ function loop(t) {
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'p' || e.key === 'P') {
-        if (isRunning && !isGameOver) {
+        if (!e.repeat && isRunning && !isGameOver) {
             paused = !paused;
             pauseEl.classList.toggle('hidden', !paused);
             if (paused) Sfx.play('blip');
@@ -332,7 +333,7 @@ document.addEventListener('keydown', (e) => {
     }
     keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = true;
     if (!isRunning && !isGameOver && startScreen && !startScreen.classList.contains('hidden')) startGame();
-    else if (e.key === ' ' && isRunning && !paused) shoot();
+    else if (e.key === ' ' && !e.repeat && isRunning && !paused) shoot();
 });
 document.addEventListener('keyup', (e) => {
     keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = false;

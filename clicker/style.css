@@ -278,3 +278,71 @@ body {
         gap: 0.5rem;
     }
 }
+
+.hidden {
+    display: none !important;
+}
+
+.time {
+    font-size: 18px;
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.overlay-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+    background: rgba(5, 5, 10, 0.93);
+}
+
+.overlay-screen h2 {
+    font-family: ''Orbitron'', sans-serif;
+    font-size: 2.2rem;
+    color: #ff00ff;
+    text-shadow: 0 0 20px #ff00ff;
+    letter-spacing: 4px;
+}
+
+.overlay-screen p {
+    font-family: ''Orbitron'', sans-serif;
+    color: #aaa;
+}
+
+.overlay-screen .final-line {
+    font-size: 1.3rem;
+    color: #ffff00;
+}
+
+.overlay-screen .record-line {
+    color: #00ff41;
+    min-height: 1.2em;
+}
+
+.big-btn {
+    font-family: ''Orbitron'', sans-serif;
+    font-size: 1.2rem;
+    padding: 0.9rem 2.6rem;
+    background: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+}
+
+.big-btn:hover {
+    background: #00ff00;
+    color: #0a0a0f;
+    box-shadow: 0 0 25px #00ff00;
+}

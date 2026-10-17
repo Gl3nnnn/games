@@ -13,8 +13,11 @@ const GRAVITY = 0.25;
 const JUMP = -5;
 const PIPE_SPEED = 1.5;
 const PIPE_SPAWN_RATE = 150;
-const PIPE_GAP = 240;
 const BIRD_SIZE = 30;
+
+function gapForScore() {
+    return Math.max(130, 170 - Math.floor(score / 2));
+}
 
 let bird = { x: 80, y: 250, velocity: 0 };
 let pipes = [];
@@ -23,6 +26,7 @@ let highScore = parseInt(localStorage.getItem('flappyHighScore')) || 0;
 let frameCount = 0;
 let isGameRunning = false;
 let isGameOver = false;
+let gameLoop = null;
 
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
@@ -45,14 +49,15 @@ function initGame() {
 }
 
 function spawnPipe() {
+    const gap = gapForScore();
     const minHeight = 50;
-    const maxHeight = canvas.height - PIPE_GAP - minHeight;
+    const maxHeight = canvas.height - gap - minHeight;
     const pipeHeight = Math.floor(Math.random() * (maxHeight - minHeight) + minHeight);
     
     pipes.push({
         x: canvas.width,
         topHeight: pipeHeight,
-        bottomY: pipeHeight + PIPE_GAP,
+        bottomY: pipeHeight + gap,
         passed: false
     });
 }
@@ -168,6 +173,7 @@ function draw() {
 }
 
 function gameOver() {
+    if (isGameOver) return;
     Sfx.play('gameover');
     Scores.submit('flappy', score);
     isGameOver = true;
@@ -191,6 +197,7 @@ function startGame() {
     isGameRunning = true;
     startScreenEl.classList.add('hidden');
     
+    if (gameLoop) clearInterval(gameLoop);
     gameLoop = setInterval(() => {
         update();
         draw();
@@ -211,6 +218,7 @@ function resetGame() {
 }
 
 function jump() {
+    if (document.documentElement.dataset.arcPaused === '1') return;
     Sfx.play('jump');
     if (!isGameRunning) {
         startGame();
@@ -222,6 +230,7 @@ function jump() {
 
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
+        if (e.repeat) return;
         e.preventDefault();
         jump();
     }

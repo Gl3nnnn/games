@@ -12,6 +12,7 @@ let flippedCards = [];
 let matchedPairs = 0;
 let moves = 0;
 let canFlip = true;
+let flipBackTimer = null;
 
 let bestMoves = parseInt(localStorage.getItem('memoryBestMoves')) || 0;
 if (bestMoves > 0) {
@@ -27,6 +28,8 @@ function shuffleArray(array) {
 }
 
 function initGame() {
+    clearTimeout(flipBackTimer);
+    flipBackTimer = null;
     cards = [...emojis, ...emojis];
     shuffleArray(cards);
     
@@ -85,7 +88,8 @@ function checkMatch() {
         }
     } else {
     Sfx.play('hit');
-        setTimeout(() => {
+        clearTimeout(flipBackTimer);
+        flipBackTimer = setTimeout(() => {
             card1.classList.remove('flipped');
             card1.textContent = '';
             card2.classList.remove('flipped');
@@ -106,7 +110,7 @@ function winGame() {
         bestMovesEl.textContent = bestMoves;
         localStorage.setItem('memoryBestMoves', bestMoves);
     }
-    Scores.submit('memory', moves, { lowerBetter: true });
+    Scores.submit('memory', moves, { lowerBetter: true, unit: 'MOVES' });
 }
 
 resetBtn.addEventListener('click', initGame);

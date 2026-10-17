@@ -120,6 +120,7 @@ function splitAsteroid(i) {
 
 function killShip() {
     if (ship.inv > 0) return;
+    if (isGameOver) return;
     Sfx.play('die');
     FX.shake(420, 10);
     FX.flash('#ff0044', 220);
@@ -348,6 +349,7 @@ function draw() {
 }
 
 function gameOver() {
+    if (isGameOver) return;
     Sfx.play('gameover');
     Scores.submit('asteroids', score);
     isGameOver = true; isRunning = false;
@@ -389,7 +391,7 @@ document.addEventListener('keydown', (e) => {
     if (!isRunning) { startGame(); return; }
     keys[e.key] = true;
     if (e.key === ' ') { e.preventDefault(); shoot(); }
-    if (e.key === 'p' || e.key === 'P') isPaused = !isPaused;
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; }
     if (['ArrowUp', 'ArrowLeft', 'ArrowRight', 'ArrowDown'].includes(e.key)) e.preventDefault();
 });
 document.addEventListener('keyup', (e) => { keys[e.key] = false; });

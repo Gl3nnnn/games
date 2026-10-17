@@ -3,7 +3,7 @@ const ctx = canvas.getContext('2d');
 
 // Easy & Casual settings: bigger grid squares (28 vs 20)
 const GRID_SIZE = 28;
-const TILE_COUNT = canvas.width / GRID_SIZE;
+const TILE_COUNT = Math.floor(canvas.width / GRID_SIZE);
 
 let snake = [];
 let food = { x: 0, y: 0 };
@@ -108,6 +108,7 @@ function update() {
         scoreEl.textContent = score;
         foodsEaten++;
         if (foodsEaten % 5 === 0 && !bonus) spawnBonus();
+        if (isGameRunning && !isGameOver) restartLoop();
         spawnFood();
     } else {
         snake.pop();
@@ -233,6 +234,18 @@ function gameOver() {
     gameOverEl.classList.remove('hidden');
 }
 
+function tickMs() {
+    return Math.max(70, 180 - foodsEaten * 6);
+}
+
+function restartLoop() {
+    if (gameLoop) clearInterval(gameLoop);
+    gameLoop = setInterval(() => {
+        update();
+        draw();
+    }, tickMs());
+}
+
 function startGame() {
     Sfx.play('select');
     if (isGameRunning) return;
@@ -241,12 +254,7 @@ function startGame() {
     isGameRunning = true;
     startScreenEl.classList.add('hidden');
     
-    if (gameLoop) clearInterval(gameLoop);
-    // Easy & Casual: slower game speed (180ms vs 100ms)
-    gameLoop = setInterval(() => {
-        update();
-        draw();
-    }, 180);
+    restartLoop();
 }
 
 function resetGame() {
@@ -255,12 +263,7 @@ function resetGame() {
     isGameOver = false;
     gameOverEl.classList.add('hidden');
     
-    if (gameLoop) clearInterval(gameLoop);
-    // Easy & Casual: slower game speed (180ms vs 100ms)
-    gameLoop = setInterval(() => {
-        update();
-        draw();
-    }, 180);
+    restartLoop();
 }
 
 document.addEventListener('keydown', (e) => {
@@ -270,6 +273,7 @@ document.addEventListener('keydown', (e) => {
     }
     
     if (e.code === 'Space') {
+        if (e.repeat) return;
         e.preventDefault();
         isPaused = !isPaused;
         return;

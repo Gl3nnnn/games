@@ -196,3 +196,12 @@ body {
     transform: scale(1.05);
     box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
 }
+
+#difficultySelect {
+    margin-left: 12px;
+    border-color: #ff6600;
+}
+
+#difficultySelect.hidden {
+    display: none;
+}

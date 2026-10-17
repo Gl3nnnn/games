@@ -203,3 +203,37 @@ body {
     transform: scale(1.05);
     box-shadow: 0 0 30px rgba(255, 102, 0, 0.8);
 }
+
+
+.game-over {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    background: rgba(5, 5, 10, 0.85);
+    border-radius: 11px;
+}
+
+.game-over.hidden {
+    display: none;
+}
+
+.go-title {
+    font-size: 34px;
+    color: #ff2244;
+    text-shadow: 0 0 20px #ff2244;
+    letter-spacing: 4px;
+}
+
+.go-score {
+    font-size: 18px;
+    color: #ffff00;
+    text-shadow: 0 0 10px #ffff00;
+}

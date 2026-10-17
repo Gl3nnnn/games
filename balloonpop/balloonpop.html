@@ -17,10 +17,16 @@
         <div class="score-display">
             <div class="score">SCORE: <span id="score">0</span></div>
             <div class="score">HIGH SCORE: <span id="highScore">0</span></div>
+            <div class="score">LIVES: <span id="lives">3</span></div>
         </div>
         
         <div class="game-area" id="gameArea">
             <div class="popped-count">Balloons Popped: <span id="poppedCount">0</span></div>
+            <div id="gameOver" class="game-over hidden">
+                <div class="go-title">GAME OVER</div>
+                <div class="go-score">SCORE: <span id="finalScore">0</span></div>
+                <button id="againBtn" class="start-btn">PLAY AGAIN</button>
+            </div>
         </div>
         
         <button id="startBtn" class="start-btn">START GAME</button>

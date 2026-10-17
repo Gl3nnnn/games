@@ -60,6 +60,7 @@ function buildLevel() {
     dots = [];
     pelletCount = 0;
     dotsEaten = 0;
+    mouthPhase = 0;
     fruit = null;
     fruitTimer = 0;
     for (let r = 0; r < ROWS; r++) {
@@ -89,11 +90,20 @@ function makeMover(col, row, speed) {
 function stepTo(m, dir) {
     const [dx, dy] = DIRS[dir];
     let nc = m.col + dx, nr = m.row + dy;
+    let wrap = false;
     if (nr === TUNNEL_ROW) {
-        if (nc < 0) nc = COLS - 1;
-        else if (nc >= COLS) nc = 0;
+        if (nc < 0) { nc = COLS - 1; wrap = true; }
+        else if (nc >= COLS) { nc = 0; wrap = true; }
     }
     if (!canWalk(nc, nr, m.isGhost)) return false;
+    if (wrap) {
+        m.col = nc; m.row = nr;
+        m.fromCol = nc; m.fromRow = nr;
+        m.toCol = nc; m.toRow = nr;
+        m.p = 1; m.dir = dir; m.moving = false;
+        if (m.facing !== undefined) m.facing = dir;
+        return true;
+    }
     m.fromCol = m.col; m.fromRow = m.row;
     m.toCol = nc; m.toRow = nr;
     m.p = 0; m.dir = dir; m.moving = true;
@@ -136,7 +146,7 @@ function chooseGhostDir(g) {
         Object.keys(DIRS).filter(d => { const [dx, dy] = DIRS[d]; return canWalk(g.col + dx, g.row + dy, true); });
     if (!valid.length) return null;
 
-    if (g.eyes || Math.random() < 0.12) {
+    if (g.eyes || (frightenedTimer <= 0 && Math.random() < 0.12)) {
         const t = ghostTarget(g);
         valid.sort((a, b) => {
             const [ax, ay] = DIRS[a], [bx, by] = DIRS[b];
@@ -199,7 +209,7 @@ function eatDot() {
         addScore(10);
         Sfx.play('chomp');
         dotsEaten++;
-        if (dotsEaten === 70 || dotsEaten === 170) {
+        if (dotsEaten === 70 || dotsEaten === 140) {
             fruit = { col: 9, row: 14, value: 100 + (level - 1) * 200 };
             fruitTimer = 60 * 14;
         }
@@ -444,7 +454,7 @@ function startGame() {
 document.addEventListener('keydown', (e) => {
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
-    if (e.key === 'p' || e.key === 'P') { isPaused = !isPaused; return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; return; }
     const map = {
         ArrowUp: 'up', w: 'up', W: 'up',
         ArrowDown: 'down', s: 'down', S: 'down',

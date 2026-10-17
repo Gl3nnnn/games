@@ -55,6 +55,7 @@ function nextLevel() {
 }
 
 function loseLife() {
+    if (isGameOver) return;
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
@@ -140,7 +141,7 @@ function updateBullets() {
 function updateTrains() {
     for (let ti = trains.length - 1; ti >= 0; ti--) {
         const t = trains[ti];
-        let headIdx = t.dir < 0 ? 0 : t.xs.length - 1;
+        let headIdx = t.dir < 0 ? t.xs.length - 1 : 0;
         let headX = t.xs[headIdx] + t.dir * t.speed;
 
         const hitMush = mushrooms.find(m => m.hp > 0 && Math.abs(m.x - headX) < 13 && Math.abs(m.y - t.y) < 13);
@@ -154,7 +155,7 @@ function updateTrains() {
                 score += 5;
                 scoreEl.textContent = score;
             }
-            headIdx = t.dir < 0 ? 0 : t.xs.length - 1;
+            headIdx = t.dir < 0 ? t.xs.length - 1 : 0;
             headX = t.xs[headIdx] + t.dir * t.speed;
         }
 
@@ -204,7 +205,7 @@ function draw() {
     }
 
     for (const t of trains) {
-        const headIdx = t.dir < 0 ? 0 : t.xs.length - 1;
+        const headIdx = t.dir < 0 ? t.xs.length - 1 : 0;
         t.xs.forEach((x, i) => {
             ctx.fillStyle = i === headIdx ? '#ff2244' : '#ff7733';
             ctx.beginPath();
@@ -249,7 +250,7 @@ function loop(t) {
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'p' || e.key === 'P') {
-        if (isRunning && !isGameOver) {
+        if (!e.repeat && isRunning && !isGameOver) {
             paused = !paused;
             pauseEl.classList.toggle('hidden', !paused);
             if (paused) Sfx.play('blip');

@@ -109,7 +109,7 @@ function endGame() {
     wpmEl.textContent = finalWpm;
     
     saveBestWpm(finalWpm);
-    Scores.submit('typingspeed', finalWpm);
+    Scores.submit('typingspeed', finalWpm, { unit: 'WPM' });
     
     wordDisplay.textContent = 'GAME OVER!';
     wordDisplay.style.color = '#ff00ff';
@@ -122,6 +122,7 @@ function endGame() {
 
 function checkInput() {
     if (!gameRunning) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     
     const typed = wordInput.value.trim().toLowerCase();
     
@@ -131,7 +132,8 @@ function checkInput() {
         wordsTyped++;
         scoreEl.textContent = score;
         
-        const wpm = Math.round((wordsTyped / (60 - timeLeft)) * 60);
+        const elapsed = Math.max(1, 60 - timeLeft);
+        const wpm = Math.round((wordsTyped / elapsed) * 60);
         wpmEl.textContent = wpm;
         
         wordDisplay.classList.add('correct');

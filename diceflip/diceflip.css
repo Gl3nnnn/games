@@ -286,3 +286,68 @@ body {
         padding: 0.4rem 1rem;
     }
 }
+
+.hidden {
+    display: none !important;
+}
+
+.bet-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.bet-btn {
+    border-color: #00ffff;
+    color: #00ffff;
+    font-size: 1rem;
+    padding: 0.7rem 1.6rem;
+}
+
+.bet-btn:hover {
+    background: #00ffff;
+    color: #0a0a0f;
+    box-shadow: 0 0 25px #00ffff;
+}
+
+#highBtn {
+    border-color: #ffaa00;
+    color: #ffaa00;
+}
+
+#highBtn:hover {
+    background: #ffaa00;
+    color: #0a0a0f;
+    box-shadow: 0 0 25px #ffaa00;
+}
+
+.game-over {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    background: rgba(5, 5, 10, 0.92);
+    border-radius: 10px;
+}
+
+.go-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    color: #ff2244;
+    text-shadow: 0 0 20px #ff2244;
+    letter-spacing: 4px;
+}
+
+.go-score {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+    color: #ffff00;
+}

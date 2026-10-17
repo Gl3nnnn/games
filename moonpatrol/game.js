@@ -5,7 +5,7 @@ const W = canvas.width, H = canvas.height;
 const GY = 330;
 const P_X = 90;
 
-let scrollX, speed, ground, segType, segLeft;
+let scrollX, speed, ground, segType, segLeft, segEmit;
 let player, hoppers, ufos, pBullets, eBullets, particles, stars;
 let score, lives, level, isGameOver, isPaused, isRunning;
 let ufoTimer, hopTimer, spawnGap;
@@ -29,6 +29,7 @@ function makeStars() {
 function newSeg() {
     const roll = Math.random();
     const lv = Math.min(level, 8);
+    segEmit = 0;
     if (roll < 0.14 + lv * 0.01) { segType = 'pit'; segLeft = 44 + Math.random() * 18; }
     else if (roll < 0.45) { segType = 'bump'; segLeft = 56; }
     else if (roll < 0.53 && lv >= 2) { segType = 'dbump'; segLeft = 100; }
@@ -37,7 +38,7 @@ function newSeg() {
 
 function seedGround() {
     ground = [];
-    segType = 'flat'; segLeft = 200;
+    segType = 'flat'; segLeft = 200; segEmit = 0;
     for (let i = 0; i < W + 80; i++) stepGround();
 }
 
@@ -46,8 +47,9 @@ function stepGround() {
     segLeft--;
     let y = GY, type = segType;
     if (segType === 'bump') y = GY - 16;
-    if (segType === 'dbump') y = (ground.length % 100 < 50) ? GY - 16 : GY;
+    if (segType === 'dbump') y = (segEmit % 100 < 50) ? GY - 16 : GY;
     if (segType === 'pit') y = H + 40;
+    segEmit++;
     ground.push({ y, type });
     if (ground.length > W + 80) ground.shift();
 }
@@ -155,7 +157,8 @@ function update() {
     player.y += player.vy;
     const gy = groundAt(P_X);
     if (gy > H) {
-        if (player.y > H - 20) killPlayer();
+        player.onGround = false;
+        if (player.y > GY + 30) killPlayer();
     } else if (player.y >= gy) {
         player.y = gy;
         player.vy = 0;
@@ -411,12 +414,15 @@ function togglePause() {
 }
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePause(); return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) { e.preventDefault(); togglePause(); } return; }
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
-    if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { e.preventDefault(); jump(); }
-    if (e.key === 'x' || e.key === 'X' || e.key === 'Enter') { e.preventDefault(); fire(); }
+    if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { if (!e.repeat) { e.preventDefault(); jump(); } }
+    if (e.key === 'x' || e.key === 'X' || e.key === 'Enter') { if (!e.repeat) { e.preventDefault(); fire(); } }
 });
+
+startScreenEl.addEventListener('click', () => { if (!isRunning) startGame(); });
+startScreenEl.addEventListener('touchstart', (e) => { e.preventDefault(); if (!isRunning) startGame(); }, { passive: false });
 
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();

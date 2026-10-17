@@ -6,19 +6,31 @@ const dice1 = document.getElementById('dice1');
 const dice2 = document.getElementById('dice2');
 const coin = document.getElementById('coin');
 const rollBtn = document.getElementById('rollBtn');
+const lowBtn = document.getElementById('lowBtn');
+const highBtn = document.getElementById('highBtn');
 const result = document.getElementById('result');
 const totalRollsEl = document.getElementById('totalRolls');
 const coinWinsEl = document.getElementById('coinWins');
+const gameScoreEl = document.getElementById('gameScore');
+const gameLivesEl = document.getElementById('gameLives');
+const finalScoreEl = document.getElementById('finalScore');
+const gameOverEl = document.getElementById('gameOver');
+const againBtn = document.getElementById('againBtn');
+const betControlsEl = document.querySelector('.bet-controls');
 
 let mode = 'dice';
 let oneDie = true;
 let totalRolls = 0;
 let coinWins = 0;
 let isRolling = false;
+let gameScore = 0;
+let gameLives = 3;
+let currentBet = null;
 
 function init() {
     loadStats();
     setupEventListeners();
+    updateBetLabels();
 }
 
 function loadStats() {
@@ -47,6 +59,80 @@ function setupEventListeners() {
     oneDieBtn.addEventListener('click', () => setDiceCount(true));
     twoDiceBtn.addEventListener('click', () => setDiceCount(false));
     rollBtn.addEventListener('click', roll);
+    lowBtn.addEventListener('click', () => placeBet('low'));
+    highBtn.addEventListener('click', () => placeBet('high'));
+    againBtn.addEventListener('click', resetGame);
+}
+
+function updateBetLabels() {
+    if (oneDie) {
+        lowBtn.textContent = 'LOW: 1-3';
+        highBtn.textContent = 'HIGH: 4-6';
+    } else {
+        lowBtn.textContent = 'LOW: 2-6';
+        highBtn.textContent = 'HIGH: 8-12';
+    }
+}
+
+function placeBet(bet) {
+    if (isRolling) return;
+    if (gameOverEl && !gameOverEl.classList.contains('hidden')) return;
+    if (mode !== 'dice') return;
+    currentBet = bet;
+    roll();
+}
+
+function resetGame() {
+    gameScore = 0;
+    gameLives = 3;
+    currentBet = null;
+    gameScoreEl.textContent = 0;
+    gameLivesEl.textContent = 3;
+    gameOverEl.classList.add('hidden');
+    result.textContent = 'Ready to roll!';
+}
+
+function gameOver() {
+    Sfx.play('gameover');
+    if (gameScore > 0) Scores.submit('diceflip', gameScore);
+    finalScoreEl.textContent = gameScore;
+    currentBet = null;
+    gameOverEl.classList.remove('hidden');
+}
+
+function resolveBet(total) {
+    if (!currentBet) return;
+    const bet = currentBet;
+    currentBet = null;
+    
+    let outcome;
+    if (!oneDie && total === 7) {
+        outcome = 'push';
+    } else if (oneDie ? total <= 3 : total <= 6) {
+        outcome = bet === 'low' ? 'win' : 'lose';
+    } else {
+        outcome = bet === 'high' ? 'win' : 'lose';
+    }
+    
+    if (outcome === 'push') {
+        result.textContent += ' \u2014 PUSH!';
+        Sfx.play('blip');
+        return;
+    }
+    if (outcome === 'win') {
+        const pts = oneDie ? 10 : 20;
+        gameScore += pts;
+        gameScoreEl.textContent = gameScore;
+        result.textContent += ' \u2014 YOU WIN +' + pts + '!';
+        Sfx.play('coin');
+    } else {
+        gameLives--;
+        gameLivesEl.textContent = Math.max(0, gameLives);
+        result.textContent += ' \u2014 YOU LOSE!';
+        Sfx.play('die');
+        FX.shake(300, 6);
+        if (gameLives <= 0) gameOver();
+    }
 }
 
 function setMode(newMode) {
@@ -57,6 +143,7 @@ function setMode(newMode) {
         diceModeBtn.classList.add('active');
         coinModeBtn.classList.remove('active');
         document.querySelector('.dice-controls').style.display = 'flex';
+        betControlsEl.style.display = 'flex';
         dice1.classList.remove('hidden');
         coin.classList.add('hidden');
         result.textContent = 'Ready to roll!';
@@ -64,6 +151,7 @@ function setMode(newMode) {
         coinModeBtn.classList.add('active');
         diceModeBtn.classList.remove('active');
         document.querySelector('.dice-controls').style.display = 'none';
+        betControlsEl.style.display = 'none';
         dice1.classList.add('hidden');
         dice2.classList.add('hidden');
         coin.classList.remove('hidden');
@@ -73,6 +161,7 @@ function setMode(newMode) {
 
 function setDiceCount(isOne) {
     oneDie = isOne;
+    updateBetLabels();
     
     if (oneDie) {
         oneDieBtn.classList.add('active');
@@ -132,8 +221,10 @@ function rollDice() {
                 dice2.textContent = final2;
                 dice2.classList.remove('rolling');
                 result.textContent = `You rolled ${final1} and ${final2} (Total: ${final1 + final2})`;
+                resolveBet(final1 + final2);
             } else {
                 result.textContent = `You rolled a ${final1}!`;
+                resolveBet(final1);
             }
             
             isRolling = false;
@@ -152,15 +243,15 @@ function flipCoin() {
         if (isHeads) {
             coin.querySelector('.coin-front').textContent = 'H';
             coin.querySelector('.coin-back').textContent = 'T';
-            result.textContent = 'Heads!';
+            result.textContent = 'Heads! You win!';
+            coinWins++;
+            coinWinsEl.textContent = coinWins;
+            Sfx.play('coin');
         } else {
             coin.querySelector('.coin-front').textContent = 'T';
             coin.querySelector('.coin-back').textContent = 'H';
-            result.textContent = 'Tails!';
+            result.textContent = 'Tails! No win.';
         }
-        
-        coinWins++;
-        coinWinsEl.textContent = coinWins;
         
         setTimeout(() => {
             coin.classList.remove('flipping');

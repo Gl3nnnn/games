@@ -7,17 +7,20 @@ const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
 const finalScoreEl = document.getElementById('finalScore');
 const newRecordEl = document.getElementById('newRecord');
+const missesEl = document.getElementById('misses');
 const startBtn = document.getElementById('startBtn');
 const playAgainBtn = document.getElementById('playAgainBtn');
 
 let score = 0;
 let timeLeft = 30;
+let misses = 0;
+const MAX_MISSES = 3;
 let timerInterval = null;
 let moveTimeout = null;
 let gameRunning = false;
 let moveDelay = 1500; // Start with 1.5 seconds
 
-const DOT_SIZE = 50;
+const DOT_SIZE = 35;
 
 function loadHighScore() {
     const highScore = localStorage.getItem('tapDotHighScore');
@@ -55,9 +58,22 @@ function moveDot() {
     dot.style.top = pos.y + 'px';
     
     // Gradually decrease move delay (increase speed)
-    moveDelay = Math.max(600, moveDelay - 20);
+    moveDelay = Math.max(350, moveDelay - 25);
     
-    moveTimeout = setTimeout(moveDot, moveDelay);
+    moveTimeout = setTimeout(onDotEscaped, moveDelay);
+}
+
+function onDotEscaped() {
+    if (!gameRunning) return;
+    misses++;
+    missesEl.textContent = misses;
+    Sfx.play('die');
+    FX.shake(200, 4);
+    if (misses >= MAX_MISSES) {
+        endGame();
+        return;
+    }
+    moveDot();
 }
 
 function handleDotClick(e) {
@@ -83,10 +99,12 @@ function startGame() {
     gameRunning = true;
     score = 0;
     timeLeft = 30;
+    misses = 0;
     moveDelay = 1500;
     
     scoreEl.textContent = score;
     timerEl.textContent = timeLeft;
+    missesEl.textContent = misses;
     
     startScreen.classList.add('hidden');
     endScreen.classList.add('hidden');
@@ -98,7 +116,7 @@ function startGame() {
     dot.style.top = pos.y + 'px';
     
     // Start moving the dot
-    moveTimeout = setTimeout(moveDot, moveDelay);
+    moveTimeout = setTimeout(onDotEscaped, moveDelay);
     
     // Start timer
     timerInterval = setInterval(() => {
@@ -143,12 +161,14 @@ function resetGame() {
     gameRunning = false;
     score = 0;
     timeLeft = 30;
+    misses = 0;
     moveDelay = 1500;
     
     timerEl.textContent = '30';
     timerEl.style.color = '#ff0044';
     timerEl.style.textShadow = '0 0 10px #ff0044';
     scoreEl.textContent = '0';
+    missesEl.textContent = '0';
     
     startScreen.classList.remove('hidden');
     endScreen.classList.add('hidden');

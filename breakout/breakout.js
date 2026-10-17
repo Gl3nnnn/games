@@ -14,7 +14,7 @@ const BRICK_OFFSET_LEFT = 35;
 const actualBrickWidth = (canvas.width - (BRICK_OFFSET_LEFT * 2) - (BRICK_PADDING * (BRICK_COLUMN_COUNT - 1))) / BRICK_COLUMN_COUNT;
 const actualBrickHeight = 20;
 
-const BALL_SPEED = 3;
+const BALL_SPEED = 4.5;
 const POWERUP_TYPES = ['multi', 'laser', 'wide', 'sticky', 'life'];
 const POWERUP_COLORS = { multi: '#00ffff', laser: '#ff4444', wide: '#00ff00', sticky: '#ff00ff', life: '#ffcc00' };
 const POWERUP_LABELS = { multi: 'M', laser: 'L', wide: 'W', sticky: 'S', life: '+' };
@@ -32,6 +32,22 @@ let isPaused = false;
 let isGameOver = false;
 let gameLoop = null;
 let lives = 3;
+let bricksBroken = 0;
+
+function boostSpeed() {
+    return BALL_SPEED + Math.floor(bricksBroken / 10) * 0.3;
+}
+
+function scaleBallsToBoost() {
+    const target = boostSpeed();
+    balls.forEach(b => {
+        const cur = Math.hypot(b.vx, b.vy);
+        if (cur > 0) {
+            b.vx *= target / cur;
+            b.vy *= target / cur;
+        }
+    });
+}
 
 let bricks = [];
 
@@ -176,6 +192,8 @@ function checkBrickHit(b) {
                     b.vy = -b.vy;
                     br.status = 0;
                     score += 10;
+                    bricksBroken++;
+                    if (bricksBroken % 10 === 0) scaleBallsToBoost();
                     Sfx.play('bounce');
                     scoreEl.textContent = score;
                     maybeDropPowerup(bx, by);
@@ -201,6 +219,8 @@ function checkLaserHit() {
                     if (L.x > bx && L.x < bx + actualBrickWidth && L.y > by && L.y < by + actualBrickHeight) {
                         br.status = 0;
                         score += 10;
+                        bricksBroken++;
+                        if (bricksBroken % 10 === 0) scaleBallsToBoost();
                         scoreEl.textContent = score;
                         Sfx.play('bounce');
                         maybeDropPowerup(bx, by);
@@ -257,7 +277,7 @@ function draw() {
 
     powerups.forEach(p => {
         ctx.fillStyle = POWERUP_COLORS[p.type];
-        ctx.shadowColor = p.type;
+        ctx.shadowColor = POWERUP_COLORS[p.type];
         ctx.shadowBlur = 10;
         ctx.beginPath();
         ctx.arc(p.x, p.y, 9, 0, Math.PI * 2);
@@ -373,6 +393,7 @@ function startGame() {
 
     score = 0;
     lives = 3;
+    bricksBroken = 0;
     if (livesEl) livesEl.textContent = lives;
     scoreEl.textContent = score;
     paddleW = PADDLE_WIDTH;
@@ -404,6 +425,7 @@ document.addEventListener('keydown', (e) => {
     }
 
     if (e.code === 'Space') {
+        if (e.repeat) return;
         e.preventDefault();
         isPaused = !isPaused;
         return;

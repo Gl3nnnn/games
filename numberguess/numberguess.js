@@ -34,7 +34,7 @@ function saveBestAttempts(attemptsCount) {
         bestAttemptsEl.textContent = attemptsCount;
         showMessage('New Best! Fewer attempts!', 'success');
     }
-    Scores.submit('numberguess', attemptsCount, { lowerBetter: true });
+    Scores.submit('numberguess', attemptsCount, { lowerBetter: true, unit: 'TRIES' });
 }
 
 function showMessage(text, type) {
@@ -62,11 +62,11 @@ function startGame() {
     gameScreen.classList.remove('hidden');
     
     guessInput.focus();
-    console.log('Secret number (for testing):', secretNumber);
 }
 
 function makeGuess() {
     if (!gameStarted) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     
     const guess = parseInt(guessInput.value);
     

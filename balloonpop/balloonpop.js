@@ -4,11 +4,16 @@ const highScoreEl = document.getElementById('highScore');
 const poppedCountEl = document.getElementById('poppedCount');
 const startBtn = document.getElementById('startBtn');
 const resetBtn = document.getElementById('resetBtn');
+const livesEl = document.getElementById('lives');
+const finalScoreEl = document.getElementById('finalScore');
+const gameOverEl = document.getElementById('gameOver');
+const againBtn = document.getElementById('againBtn');
 
 let score = 0;
 let poppedCount = 0;
+let lives = 3;
 let gameRunning = false;
-let balloonInterval = null;
+let spawnTimer = null;
 let speedMultiplier = 1;
 
 let highScore = parseInt(localStorage.getItem('balloonPopHighScore')) || 0;
@@ -50,6 +55,7 @@ function createBalloon() {
     setTimeout(() => {
         if (balloon.parentNode && !balloon.classList.contains('popped')) {
             balloon.remove();
+            if (document.documentElement.dataset.arcPaused !== '1') loseLife();
         }
     }, duration);
 }
@@ -104,6 +110,36 @@ function darkenColor(hex) {
     return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
 }
 
+function loseLife() {
+    if (!gameRunning) return;
+    lives--;
+    livesEl.textContent = Math.max(0, lives);
+    Sfx.play('die');
+    FX.shake(300, 6);
+    if (lives <= 0) endGame();
+}
+
+function endGame() {
+    stopGame();
+    const balloons = gameArea.querySelectorAll('.balloon');
+    balloons.forEach(b => b.remove());
+    finalScoreEl.textContent = score;
+    gameOverEl.classList.remove('hidden');
+}
+
+function scheduleSpawn() {
+    spawnTimer = setTimeout(() => {
+        if (!gameRunning) return;
+        if (document.documentElement.dataset.arcPaused === '1') {
+            scheduleSpawn();
+            return;
+        }
+        createBalloon();
+        speedMultiplier = Math.min(4.5, 1 + poppedCount / 15);
+        scheduleSpawn();
+    }, Math.max(300, 800 - poppedCount * 8));
+}
+
 function startGame() {
     Sfx.play('select');
     if (gameRunning) return;
@@ -111,22 +147,19 @@ function startGame() {
     gameRunning = true;
     score = 0;
     poppedCount = 0;
+    lives = 3;
     speedMultiplier = 1;
     scoreEl.textContent = 0;
     poppedCountEl.textContent = 0;
+    livesEl.textContent = 3;
     
     startBtn.disabled = true;
+    gameOverEl.classList.add('hidden');
     
     const balloons = gameArea.querySelectorAll('.balloon');
     balloons.forEach(b => b.remove());
     
-    balloonInterval = setInterval(() => {
-        createBalloon();
-        
-        if (poppedCount > 0 && poppedCount % 10 === 0) {
-            speedMultiplier = Math.min(2.5, 1 + (poppedCount / 50));
-        }
-    }, 800);
+    scheduleSpawn();
 }
 
 function stopGame() {
@@ -134,9 +167,9 @@ function stopGame() {
     if (typeof score !== 'undefined' && score > 0) Scores.submit('balloonPop', score);
     startBtn.disabled = false;
     
-    if (balloonInterval) {
-        clearInterval(balloonInterval);
-        balloonInterval = null;
+    if (spawnTimer) {
+        clearTimeout(spawnTimer);
+        spawnTimer = null;
     }
 }
 
@@ -145,9 +178,12 @@ function resetGame() {
     
     score = 0;
     poppedCount = 0;
+    lives = 3;
     speedMultiplier = 1;
     scoreEl.textContent = 0;
     poppedCountEl.textContent = 0;
+    livesEl.textContent = 3;
+    gameOverEl.classList.add('hidden');
     
     const balloons = gameArea.querySelectorAll('.balloon');
     balloons.forEach(b => b.remove());
@@ -157,4 +193,5 @@ function resetGame() {
 }
 
 startBtn.addEventListener('click', startGame);
+againBtn.addEventListener('click', startGame);
 resetBtn.addEventListener('click', resetGame);

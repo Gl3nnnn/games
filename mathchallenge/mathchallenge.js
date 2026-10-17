@@ -25,28 +25,28 @@ const operations = ['+', '−', '×'];
 
 function generateProblem() {
     const operation = operations[Math.floor(Math.random() * operations.length)];
+    const R = Math.min(50, 10 + Math.floor(score / 100) * 5);
     let num1, num2;
     
     switch (operation) {
         case '+':
-            num1 = Math.floor(Math.random() * 20) + 1;
-            num2 = Math.floor(Math.random() * 20) + 1;
+            num1 = Math.floor(Math.random() * R) + 1;
+            num2 = Math.floor(Math.random() * R) + 1;
             currentAnswer = num1 + num2;
             break;
         case '−':
-            num1 = Math.floor(Math.random() * 20) + 10;
+            num1 = Math.floor(Math.random() * R) + R;
             num2 = Math.floor(Math.random() * num1) + 1;
             currentAnswer = num1 - num2;
             break;
         case '×':
-            num1 = Math.floor(Math.random() * 10) + 1;
-            num2 = Math.floor(Math.random() * 10) + 1;
+            num1 = Math.floor(Math.random() * R) + 1;
+            num2 = Math.floor(Math.random() * R) + 1;
             currentAnswer = num1 * num2;
             break;
     }
     
     problemEl.textContent = `${num1} ${operation} ${num2} = ?`;
-    console.log('Answer (for testing):', currentAnswer);
 }
 
 function loadHighScore() {
@@ -130,6 +130,7 @@ function endGame() {
 
 function checkAnswer() {
     if (!gameRunning) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     
     const userAnswer = parseInt(answerInput.value);
     

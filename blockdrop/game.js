@@ -166,8 +166,9 @@ function drawNext() {
 }
 
 function softDrop() {
-    if (!collides(current, 0, 1)) current.y++;
-    else lockPiece();
+    if (!collides(current, 0, 1)) { current.y++; return true; }
+    lockPiece();
+    return false;
 }
 
 function hardDrop() {
@@ -231,12 +232,12 @@ function gameOver() {
 document.addEventListener('keydown', (e) => {
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
-    if (e.key === 'p' || e.key === 'P') { isPaused = !isPaused; return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; return; }
     if (isPaused) return;
     switch (e.key) {
         case 'ArrowLeft': e.preventDefault(); tryMove(-1, 0); break;
         case 'ArrowRight': e.preventDefault(); tryMove(1, 0); break;
-        case 'ArrowDown': e.preventDefault(); softDrop(); score += 1; updateUI(); break;
+        case 'ArrowDown': e.preventDefault(); if (softDrop()) score += 1; updateUI(); break;
         case 'ArrowUp': e.preventDefault(); tryRotate(); break;
         case ' ': e.preventDefault(); hardDrop(); break;
     }

@@ -398,7 +398,10 @@
         var links = Array.prototype.slice.call(document.querySelectorAll('.game-grid a[href]'));
         var coinWipe = document.getElementById('coinWipe');
 
+        var navLock = false;
         function goTo(href) {
+            if (navLock) return;
+            navLock = true;
             coinWipe.classList.remove('hidden');
             coinWipe.classList.remove('play');
             void coinWipe.offsetWidth;
@@ -406,9 +409,16 @@
             if (window.Sfx) Sfx.play('coin');
             setTimeout(function () { window.location.href = href; }, 700);
         }
+        function resetWipe() {
+            navLock = false;
+            coinWipe.classList.remove('play');
+            coinWipe.classList.add('hidden');
+        }
+        window.addEventListener('pageshow', resetWipe);
 
         links.forEach(function (a) {
             a.addEventListener('click', function (e) {
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
                 e.preventDefault();
                 goTo(a.getAttribute('href'));
             });
@@ -426,7 +436,7 @@
             try {
                 for (var i = 0; i < localStorage.length; i++) {
                     var k = localStorage.key(i);
-                    if (/HighScore$|BestTime$/.test(k)) {
+                    if (/HighScore$|BestTime$|BestMoves$|BestLevel$|BestScore$|BestWpm$|Best$|XWins$|CoinWins$/.test(k)) {
                         var v = parseInt(localStorage.getItem(k)) || 0;
                         if (v > 0) entries.push({ k: k, v: v });
                     }
@@ -435,24 +445,24 @@
             entries.sort(function (a, b) { return b.v - a.v; });
             var NAMES = {
                 snakeHighScore: 'SNAKE', breakoutHighScore: 'BREAKOUT', pacmanHighScore: 'PAC-MAN',
-                mazeescapeHighScore: 'MAZE ESCAPE', balloonpopHighScore: 'BALLOON POP',
-                spacedodgerHighScore: 'SPACE DODGER', numberguessHighScore: 'NUMBER GUESS',
-                mathchallengeHighScore: 'MATH CHALLENGE', tapthedotHighScore: 'TAP THE DOT',
-                colormatchHighScore: 'COLOR MATCH', whackamoleHighScore: 'WHACK-A-MOLE',
-                tictactoeHighScore: 'TIC-TAC-TOE', reactionHighScore: 'REACTION TEST',
-                shootinggalleryHighScore: 'SHOOTING GALLERY', endlessrunnerHighScore: 'ENDLESS RUNNER',
-                clickerHighScore: 'CLICKER', typingspeedHighScore: 'TYPE SPEED',
-                diceflipHighScore: 'DICE FLIP', flappyHighScore: 'FLAPPY NEON',
-                pongHighScore: 'PONG', spaceinvadersHighScore: 'SPACE INVADERS',
-                blockdropHighScore: 'BLOCK DROP', asteroidsHighScore: 'ASTEROIDS',
-                froggerHighScore: 'FROGGER', game2048HighScore: '2048',
-                minesweeperHighScore: 'MINESWEEPER', missilecmdHighScore: 'MISSILE COMMAND',
-                galagaHighScore: 'GALAGA', barrelrunHighScore: 'BARREL RUN',
-                digdugHighScore: 'DIG DUG', centipedeHighScore: 'CENTIPEDE',
-                qbertHighScore: 'Q*BERT', bombermanHighScore: 'BOMBERMAN',
-                jezzballHighScore: 'JEZZBALL', moonpatrolHighScore: 'MOON PATROL',
-                robotronHighScore: 'ROBOTRON', burgerTimeHighScore: 'BURGER TIME',
-                minesweeperBestTime: 'MINESWEEPER (TIME)'
+                flappyHighScore: 'FLAPPY NEON', pongHighScore: 'PONG',
+                balloonPopHighScore: 'BALLOON POP', spaceDodgerHighScore: 'SPACE DODGER',
+                endlessRunnerHighScore: 'ENDLESS RUNNER', catcherHighScore: 'CATCHER',
+                blockdropHighScore: 'BLOCK DROP', mazeBestTime: 'MAZE ESCAPE (TIME)',
+                memoryBestMoves: 'MEMORY (MOVES)', g2048HighScore: '2048',
+                minesweeperBestTime: 'MINESWEEPER (TIME)', tttXWins: 'TIC-TAC-TOE (WINS)',
+                mathChallengeHighScore: 'MATH CHALLENGE', numberGuessBest: 'NUMBER GUESS (TRIES)',
+                colorMatchBestLevel: 'COLOR MATCH (LEVEL)', reactionBestScore: 'REACTION (MS)',
+                tapDotHighScore: 'TAP THE DOT', shootingGalleryHighScore: 'SHOOTING GALLERY',
+                whackamoleHighScore: 'WHACK-A-MOLE', typingBestWpm: 'TYPE SPEED (WPM)',
+                barrelrunHighScore: 'BARREL RUN', spaceinvadersHighScore: 'SPACE INVADERS',
+                asteroidsHighScore: 'ASTEROIDS', galagaHighScore: 'GALAGA',
+                missilecmdHighScore: 'MISSILE COMMAND', digdugHighScore: 'DIG DUG',
+                centipedeHighScore: 'CENTIPEDE', qbertHighScore: 'Q*BERT',
+                bombermanHighScore: 'BOMBERMAN', jezzballHighScore: 'JEZZBALL',
+                moonpatrolHighScore: 'MOON PATROL', robotronHighScore: 'ROBOTRON',
+                burgerTimeHighScore: 'BURGER TIME', froggerHighScore: 'FROGGER',
+                clickerHighScore: 'CLICKER', diceflipCoinWins: 'DICE FLIP (WINS)'
             };
             var items = entries.slice(0, 12).map(function (e) {
                 return '🏆 ' + (NAMES[e.k] || e.k) + ' — ' + e.v.toLocaleString();

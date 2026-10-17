@@ -241,3 +241,22 @@ body {
         font-size: 1.8rem;
     }
 }
+
+.win-message .game-btn {
+    display: inline-block;
+    margin-top: 14px;
+}
+
+.win-message.lose {
+    border-color: #ff2244;
+    box-shadow: 0 0 50px rgba(255, 34, 68, 0.5);
+}
+
+.win-message.lose h2 {
+    color: #ff2244;
+    text-shadow: 0 0 20px #ff2244;
+}
+
+.win-message span#loseLevel {
+    color: #ffff00;
+}

@@ -1,10 +1,19 @@
 /* arcade.js - shared Neon Arcade engine: 8-bit SFX, CRT, mute, D-pad, pause, gamepad, FX, chiptune BGM */
 (function () {
     var script = document.currentScript;
-    var wantDpad = !!(script && script.dataset.dpad === '1');
+    var dpadMode = (script && script.dataset.dpad) || '0';
+    var wantDpad = dpadMode === '1' || dpadMode === 'wasd';
+    var dpadWasd = dpadMode === 'wasd';
     var wantPause = !!(script && script.dataset.pause === '1');
     var muted = localStorage.getItem('arcadeMuted') === '1';
     var crtOn = localStorage.getItem('arcadeCrt') !== '0';
+
+    function isTyping(e) {
+        var t = e.target;
+        if (!t) return false;
+        var tag = (t.tagName || '').toLowerCase();
+        return tag === 'input' || tag === 'textarea' || tag === 'select' || !!t.isContentEditable;
+    }
 
     /* ---------- SOUND ---------- */
     var actx = null;
@@ -79,6 +88,7 @@
                 document.body.classList.remove('fx-shake');
                 void document.body.offsetWidth;
                 document.body.style.setProperty('--fxShake', power + 'px');
+                document.body.style.setProperty('--fxShakeDur', ms + 'ms');
                 document.body.classList.add('fx-shake');
                 clearTimeout(fxShakeTimer);
                 fxShakeTimer = setTimeout(function () { document.body.classList.remove('fx-shake'); }, ms);
@@ -173,7 +183,7 @@
         '25%{transform:scaleY(0.004);opacity:1;background:#fff;}' +
         '60%{transform:scaleY(1);opacity:0.85;background:#fff;}' +
         '100%{transform:scaleY(1);opacity:0;background:#fff;}}' +
-        'body.fx-shake{animation:fxShake .32s ease-in-out;}' +
+        'body.fx-shake{animation:fxShake var(--fxShakeDur,.32s) ease-in-out;}' +
         '@keyframes fxShake{' +
         '0%,100%{transform:translate(0,0)}' +
         '15%{transform:translate(calc(var(--fxShake,6px) * -1), calc(var(--fxShake,6px) * 0.4))}' +
@@ -260,7 +270,7 @@
         try { localStorage.setItem(scoresKey(id), JSON.stringify(arr.slice(0, 5))); } catch (e) {}
     }
     function qualifies(id, score, lowerBetter) {
-        var arr = readScores(id);
+        var arr = readScores(id).filter(function (e) { return e && typeof e.s === 'number'; });
         if (arr.length < 5) return true;
         var worst = arr[arr.length - 1].s;
         return lowerBetter ? score < worst : score > worst;
@@ -272,14 +282,15 @@
         writeScores(id, arr);
     }
 
-    function showEntry(id, score, lowerBetter, done) {
+    function showEntry(id, score, lowerBetter, unit, done) {
         var slots = [0, 0, 0];
         var active = 0;
+        var timeStyle = lowerBetter && (!unit || unit === 'SEC');
         var wrap = document.createElement('div');
         wrap.className = 'hs-entry';
         wrap.innerHTML =
-            '<div class="hs-title">' + (lowerBetter ? '⚡ NEW BEST TIME!' : '🏆 NEW HIGH SCORE!') + '</div>' +
-            '<div class="hs-sub">' + score.toLocaleString() + (lowerBetter ? ' SEC' : ' PTS') + ' — ENTER YOUR INITIALS</div>' +
+            '<div class="hs-title">' + (timeStyle ? '⚡ NEW BEST TIME!' : (lowerBetter ? '🏆 NEW RECORD!' : '🏆 NEW HIGH SCORE!')) + '</div>' +
+            '<div class="hs-sub">' + score.toLocaleString() + ' ' + (unit || (lowerBetter ? 'SEC' : 'PTS')) + ' — ENTER YOUR INITIALS</div>' +
             '<div class="hs-letters">' +
             '<div class="hs-slot" data-i="0">A</div>' +
             '<div class="hs-slot" data-i="1">A</div>' +
@@ -296,6 +307,7 @@
         }
         render();
         function onKey(e) {
+            if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && /^[rR]$/.test(e.key))) return;
             e.preventDefault();
             e.stopPropagation();
             var k = e.key;
@@ -314,6 +326,9 @@
             } else if (k === 'Enter' || k === ' ') {
                 finish();
                 return;
+            } else if (k === 'Escape') {
+                cancel();
+                return;
             } else if (k === 'Backspace') {
                 slots[active] = 0; Sfx.play('blip');
             } else {
@@ -321,12 +336,19 @@
             }
             render();
         }
-        function finish() {
+        function cleanup() {
             document.removeEventListener('keydown', onKey, true);
             if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+        }
+        function finish() {
+            cleanup();
             var initials = slots.map(function (i) { return ALPHA[i]; }).join('');
             insertScore(id, score, initials, lowerBetter);
             Sfx.play('coin');
+            done();
+        }
+        function cancel() {
+            cleanup();
             done();
         }
         document.addEventListener('keydown', onKey, true);
@@ -337,14 +359,9 @@
             try {
                 opts = opts || {};
                 if (!id || score == null || isNaN(score)) return;
-                if (opts.lowerBetter ? score <= 0 : score <= 0) return;
+                if (score <= 0) return;
                 if (!qualifies(id, score, opts.lowerBetter)) return;
-                var run = function () {
-                    if (opts.lowerBetter && score > 0) {
-                        /* legacy best-time kept by the game itself */
-                    }
-                };
-                showEntry(id, score, !!opts.lowerBetter, run);
+                showEntry(id, score, !!opts.lowerBetter, opts.unit, function () {});
             } catch (e) {}
         },
         get: readScores
@@ -353,25 +370,35 @@
     /* ---------- TOUCH D-PAD (opt-in via data-dpad="1") ---------- */
     var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
     if (wantDpad && isTouch) {
+        var dpadKeys = dpadWasd
+            ? { ArrowUp: ['w', 'KeyW'], ArrowDown: ['s', 'KeyS'], ArrowLeft: ['a', 'KeyA'], ArrowRight: ['d', 'KeyD'] }
+            : null;
+        function dpadMap(key) {
+            if (dpadKeys && dpadKeys[key]) return { key: dpadKeys[key][0], code: dpadKeys[key][1] };
+            if (key === ' ') return { key: ' ', code: 'Space' };
+            if (key === 'p') return { key: 'p', code: 'KeyP' };
+            return { key: key, code: key };
+        }
         var dpad = document.createElement('div');
         dpad.className = 'dpad on';
         dpad.innerHTML =
             '<button class="d-up" data-key="ArrowUp">▲</button>' +
             '<button class="d-left" data-key="ArrowLeft">◀</button>' +
-            '<button class="d-mid" data-key=" ">⏸</button>' +
+            '<button class="d-mid" data-key="p">⏸</button>' +
             '<button class="d-right" data-key="ArrowRight">▶</button>' +
             '<button class="d-down" data-key="ArrowDown">▼</button>';
         document.body.appendChild(dpad);
         dpad.querySelectorAll('button').forEach(function (b) {
             var key = b.dataset.key;
-            var code = key === ' ' ? 'Space' : key;
             function down(e) {
                 e.preventDefault();
-                document.dispatchEvent(new KeyboardEvent('keydown', { key: key, code: code, bubbles: true, cancelable: true }));
+                var m = dpadMap(key);
+                document.dispatchEvent(new KeyboardEvent('keydown', { key: m.key, code: m.code, bubbles: true, cancelable: true }));
             }
             function up(e) {
                 e.preventDefault();
-                document.dispatchEvent(new KeyboardEvent('keyup', { key: key, code: code, bubbles: true, cancelable: true }));
+                var m = dpadMap(key);
+                document.dispatchEvent(new KeyboardEvent('keyup', { key: m.key, code: m.code, bubbles: true, cancelable: true }));
             }
             b.addEventListener('pointerdown', down);
             b.addEventListener('pointerup', up);
@@ -416,11 +443,12 @@
         }
         function togglePause() {
             paused = !paused;
+            document.documentElement.dataset.arcPaused = paused ? '1' : '0';
             if (paused) { showPause(); Sfx.play('blip'); }
             else if (pOverlay) pOverlay.style.display = 'none';
         }
         document.addEventListener('keydown', function (e) {
-            if ((e.key === 'p' || e.key === 'P') && !e.repeat) togglePause();
+            if ((e.key === 'p' || e.key === 'P') && !e.repeat && (!isTyping(e) || paused)) togglePause();
         });
     }
 
@@ -429,6 +457,13 @@
         var prev = {};
         var axisHeld = { left: false, right: false, up: false, down: false };
         var dead = 0.5;
+        var padKeys = dpadWasd
+            ? { ArrowUp: ['w', 'KeyW'], ArrowDown: ['s', 'KeyS'], ArrowLeft: ['a', 'KeyA'], ArrowRight: ['d', 'KeyD'] }
+            : null;
+        function remap(key, code) {
+            var m = padKeys && padKeys[key];
+            return m ? { key: m[0], code: m[1] } : { key: key, code: code };
+        }
         function press(key, code, down) {
             document.dispatchEvent(new KeyboardEvent(down ? 'keydown' : 'keyup', {
                 key: key, code: code, bubbles: true, cancelable: true
@@ -437,12 +472,14 @@
         function setBtn(id, down, key, code) {
             if (prev[id] === down) return;
             prev[id] = down;
-            press(key, code, down);
+            var m = remap(key, code);
+            press(m.key, m.code, down);
         }
         function setAxis(name, down, key, code) {
             if (axisHeld[name] === down) return;
             axisHeld[name] = down;
-            press(key, code, down);
+            var m = remap(key, code);
+            press(m.key, m.code, down);
         }
         function poll() {
             var pads = navigator.getGamepads ? navigator.getGamepads() : [];

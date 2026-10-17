@@ -9,6 +9,7 @@ const INITIAL_OBJECT_SPEED = 2;
 
 // Game state
 let score = 0;
+let lives = 3;
 let highScore = parseInt(localStorage.getItem('catcherHighScore')) || 0;
 let isGameRunning = false;
 let isPaused = false;
@@ -28,6 +29,7 @@ let currentObjectSpeed = INITIAL_OBJECT_SPEED;
 // DOM elements 
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
+const livesEl = document.getElementById('lives');
 const finalScoreEl = document.getElementById('finalScore');
 const gameOverEl = document.getElementById('gameOver');
 const startScreenEl = document.getElementById('startScreen');
@@ -58,14 +60,15 @@ function updateObjects() {
         const object = fallingObjects[i];
         object.y += currentObjectSpeed;
         
-        // Check if caught by basket
+        // Check if caught by basket (only in the crossing band above the basket)
         if (object.y + OBJECT_RADIUS >= basketY && 
+            object.y - OBJECT_RADIUS <= basketY &&
             object.x >= basketX && 
             object.x <= basketX + BASKET_WIDTH) {
             score += 10;
             scoreEl.textContent = score;
-            // Increase speed gradually
-            currentObjectSpeed += 0.02;
+            // Increase speed gradually (gentle creep, capped)
+            currentObjectSpeed = Math.min(7, currentObjectSpeed + 0.005);
             // Remove object from array
             fallingObjects.splice(i, 1);
             // Play catch sound
@@ -76,9 +79,18 @@ function updateObjects() {
         // Check if missed (fell off screen)
         if (object.y > canvas.height + OBJECT_RADIUS) {
             fallingObjects.splice(i, 1);
-            // No penalty for easy mode
+            loseLife();
         }
     }
+}
+
+function loseLife() {
+    if (!isGameRunning) return;
+    lives--;
+    livesEl.textContent = Math.max(0, lives);
+    Sfx.play('die');
+    FX.shake(300, 6);
+    if (lives <= 0) gameOver();
 }
 
 // Draw all falling objects
@@ -107,6 +119,7 @@ function drawBasket() {
 }
 
 function playCatchSound() {
+    if (window.Sfx && Sfx.muted) return;
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioCtx.createOscillator();
@@ -133,7 +146,10 @@ function gameOver() {
     Scores.submit('catcher', score);
     isGameRunning = false;
     isGameOver = true;
-    clearInterval(objectSpawnTimer);
+    if (objectSpawnTimer) {
+        clearTimeout(objectSpawnTimer);
+        objectSpawnTimer = null;
+    }
     
     if (score > highScore) {
         highScore = score;
@@ -143,6 +159,18 @@ function gameOver() {
     
     finalScoreEl.textContent = score;
     gameOverEl.classList.remove('hidden');
+}
+
+function scheduleSpawn() {
+    objectSpawnTimer = setTimeout(() => {
+        if (!isGameRunning) return;
+        if (document.documentElement.dataset.arcPaused === '1') {
+            scheduleSpawn();
+            return;
+        }
+        spawnObject();
+        scheduleSpawn();
+    }, Math.max(350, 800 - score / 2));
 }
 
 function resetGame() {
@@ -162,14 +190,19 @@ function startGame() {
     
     score = 0;
     scoreEl.textContent = score;
+    lives = 3;
+    livesEl.textContent = 3;
     isGameRunning = true;
     isPaused = false;
     isGameOver = false;
     gameOverEl.classList.add('hidden');
     startScreenEl.classList.add('hidden');
     
-    // Start spawning objects
-    objectSpawnTimer = setInterval(spawnObject, 800); // New object every 0.8 seconds
+    if (objectSpawnTimer) {
+        clearTimeout(objectSpawnTimer);
+        objectSpawnTimer = null;
+    }
+    scheduleSpawn();
     
     // Start gameloop
     gameLoop();
@@ -177,10 +210,6 @@ function startGame() {
 
 function gameLoop() {
     if (!isGameRunning) return;
-    if (isPaused) {
-        requestAnimationFrame(gameLoop);
-        return;
-    }
     
     // Clear canvas
     ctx.fillStyle = '#0a0a0f';
@@ -204,7 +233,7 @@ function gameLoop() {
     
     drawBasket();
     drawObjects();
-    updateObjects();
+    if (!isPaused) updateObjects();
     
     requestAnimationFrame(gameLoop);
 }
@@ -217,6 +246,7 @@ document.addEventListener('keydown', (e) => {
     }
     
     if (e.code === 'Space') {
+        if (e.repeat) return;
         e.preventDefault();
         isPaused = !isPaused;
         return;

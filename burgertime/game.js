@@ -193,7 +193,7 @@ function dropOrSlide(layer) {
         const dir = Math.sign(avg - layer.col);
         if (dir !== 0) {
             const nc = layer.col + dir;
-            if (nc >= 0 && nc < COLS && !layers.some(l => l.col === nc && l.floor === BOTTOM)) {
+            if (nc >= 0 && nc < COLS && !layers.some(l => l.col === nc && l.floor === BOTTOM && l.burger !== layer.burger)) {
                 layer.col = nc;
                 layer.cool = 22;
                 Sfx.play('blip');
@@ -240,6 +240,18 @@ function update() {
     }
 
     enemies.forEach(e => {
+        if (Math.abs(e.x - player.x) < 16 && e.floor === player.floor && !player.climbing) {
+            if (e.stun > 0) {
+                addScore(200);
+                Sfx.play('hit');
+                explode(e.x, FLOOR_Y[e.floor] - 12, e.def.color, 12);
+                e.x = colX(Math.floor(Math.random() * COLS));
+                e.floor = Math.floor(Math.random() * 3);
+                e.stun = 60;
+            } else if (player.inv <= 0) {
+                loseLife();
+            }
+        }
         if (e.stun > 0) { e.stun--; return; }
         if (e.climbing) {
             e.climbing.t += 1 / 32;
@@ -269,18 +281,6 @@ function update() {
             e.x += e.dir * 0.3;
             if (e.x < colX(0) || e.x > colX(COLS - 1)) e.dir *= -1;
             e.x = Math.max(colX(0), Math.min(colX(COLS - 1), e.x));
-        }
-        if (Math.abs(e.x - player.x) < 16 && e.floor === player.floor && !player.climbing) {
-            if (e.stun > 0) {
-                addScore(200);
-                Sfx.play('hit');
-                explode(e.x, FLOOR_Y[e.floor] - 12, e.def.color, 12);
-                e.x = colX(Math.floor(Math.random() * COLS));
-                e.floor = Math.floor(Math.random() * 3);
-                e.stun = 60;
-            } else if (player.inv <= 0) {
-                loseLife();
-            }
         }
     });
 
@@ -432,10 +432,10 @@ function togglePause() {
 }
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePause(); return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) { e.preventDefault(); togglePause(); } return; }
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
-    if (e.key === ' ') { e.preventDefault(); usePepper(); return; }
+    if (e.key === ' ') { if (e.repeat) return; e.preventDefault(); usePepper(); return; }
     if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
         e.preventDefault();
         keys[e.key] = true;
@@ -445,28 +445,37 @@ document.addEventListener('keydown', (e) => {
 });
 document.addEventListener('keyup', (e) => { keys[e.key] = false; });
 
+startScreenEl.addEventListener('click', () => { if (!isRunning) startGame(); });
+startScreenEl.addEventListener('touchstart', (e) => { e.preventDefault(); if (!isRunning) startGame(); }, { passive: false });
+
 let tStart = null;
+function clearMoveKeys() {
+    keys.ArrowLeft = keys.ArrowRight = keys.ArrowUp = keys.ArrowDown = false;
+}
 canvas.addEventListener('touchstart', (e) => {
     e.preventDefault();
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
     tStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    keys.ArrowRight = true;
+    clearMoveKeys();
+}, { passive: false });
+canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!tStart) return;
+    const dx = e.touches[0].clientX - tStart.x;
+    const dy = e.touches[0].clientY - tStart.y;
+    keys.ArrowLeft = dx < -10;
+    keys.ArrowRight = dx > 10;
+    keys.ArrowUp = dy < -10;
+    keys.ArrowDown = dy > 10;
 }, { passive: false });
 canvas.addEventListener('touchend', (e) => {
     if (!tStart) return;
     const dx = e.changedTouches[0].clientX - tStart.x;
     const dy = e.changedTouches[0].clientY - tStart.y;
-    keys.ArrowRight = false;
-    keys.ArrowLeft = false;
-    if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 10) keys.ArrowRight = true;
-        if (dx < -10) keys.ArrowLeft = true;
-    } else {
-        if (dy < -10) keys.ArrowUp = true;
-        if (dy > 10) keys.ArrowDown = true;
-    }
     tStart = null;
+    clearMoveKeys();
+    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) usePepper();
 });
 
 pauseOverlay.addEventListener('click', togglePause);

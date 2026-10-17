@@ -259,7 +259,7 @@ function loop(t) {
 }
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'p' || e.key === 'P') {
+    if ((e.key === 'p' || e.key === 'P') && !e.repeat) {
         if (isRunning && !isGameOver) {
             paused = !paused;
             pauseEl.classList.toggle('hidden', !paused);

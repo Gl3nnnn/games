@@ -19,6 +19,15 @@ let playerSequence = [];
 let level = 1;
 let isPlaying = false;
 let isShowingSequence = false;
+let pendingTimer = null;
+let showTimer = null;
+
+function clearTimers() {
+    clearTimeout(pendingTimer);
+    pendingTimer = null;
+    clearInterval(showTimer);
+    showTimer = null;
+}
 
 function init() {
     loadBestLevel();
@@ -48,6 +57,7 @@ function setupEventListeners() {
 function startGame() {
     Sfx.play('select');
     if (isPlaying) return;
+    clearTimers();
     
     isPlaying = true;
     sequence = [];
@@ -55,8 +65,9 @@ function startGame() {
     level = 1;
     levelEl.textContent = level;
     statusEl.textContent = 'Watch the pattern...';
+    isShowingSequence = true;
     
-    setTimeout(() => {
+    pendingTimer = setTimeout(() => {
         addToSequence();
     }, 500);
 }
@@ -75,9 +86,11 @@ function showSequence() {
     startBtn.disabled = true;
     
     let i = 0;
-    const interval = setInterval(() => {
+    clearInterval(showTimer);
+    showTimer = setInterval(() => {
         if (i >= sequence.length) {
-            clearInterval(interval);
+            clearInterval(showTimer);
+            showTimer = null;
             isShowingSequence = false;
             statusEl.textContent = 'Your turn!';
             return;
@@ -100,6 +113,7 @@ function flashButton(index) {
 }
 
 function playSound(index) {
+    if (window.Sfx && Sfx.muted) return;
     const frequencies = [261.63, 329.63, 392.00, 523.25];
     
     try {
@@ -146,16 +160,19 @@ function handleButtonClick(index) {
         }
         
         statusEl.textContent = 'Great! Next level...';
+        isShowingSequence = true;
         
-        setTimeout(() => {
+        pendingTimer = setTimeout(() => {
             addToSequence();
         }, 1000);
     }
 }
 
 function gameOver() {
+    clearTimers();
+    isShowingSequence = false;
     Sfx.play('gameover');
-    Scores.submit('colorMatch', level);
+    Scores.submit('colorMatch', level, { unit: 'LVL' });
     isPlaying = false;
     statusEl.textContent = 'Game Over!';
     
@@ -166,6 +183,7 @@ function gameOver() {
 }
 
 function resetGame() {
+    clearTimers();
     isPlaying = false;
     isShowingSequence = false;
     sequence = [];

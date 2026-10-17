@@ -84,7 +84,7 @@ function startDive(e) {
 }
 
 function firePlayer() {
-    if (bullets.length >= 2 || fireCooldown > 0 || isGameOver) return;
+    if (bullets.length >= 2 || fireCooldown > 0 || isGameOver || isPaused) return;
     Sfx.play('shoot');
     bullets.push({ x: player.x, y: player.y - 16, vy: -8.5 });
     fireCooldown = 10;
@@ -102,6 +102,7 @@ function killEnemy(e) {
 }
 
 function hitPlayer() {
+    if (isGameOver) return;
     if (player.inv > 0) return;
     Sfx.play('hit');
     FX.shake(350, 8);
@@ -117,6 +118,7 @@ function hitPlayer() {
 }
 
 function gameOver() {
+    if (isGameOver) return;
     Sfx.play('gameover');
     Scores.submit('galaga', score);
     isGameOver = true; isRunning = false;
@@ -334,7 +336,7 @@ document.addEventListener('keydown', (e) => {
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     keys[k] = true;
     if (e.key === ' ') { e.preventDefault(); firePlayer(); }
-    if (k === 'p') isPaused = !isPaused;
+    if (k === 'p' && !e.repeat) isPaused = !isPaused;
     if (['ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault();
 });
 document.addEventListener('keyup', (e) => {

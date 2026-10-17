@@ -10,6 +10,7 @@ const undoBtn = document.getElementById('undoBtn');
 
 let grid, score, best = parseInt(localStorage.getItem('g2048HighScore')) || 0;
 let animating = false;
+let addTileTimer = null;
 let undoSnap = null, undoUsed = false;
 
 highScoreEl.textContent = best;
@@ -111,12 +112,15 @@ function move(dir) {
     }
     render(mergedCells.map(([r, c]) => `${r},${c}`));
     animating = true;
-    setTimeout(() => {
+    clearTimeout(addTileTimer);
+    addTileTimer = setTimeout(() => {
         animating = false;
+        addTileTimer = null;
         addTile();
         if (!canMove()) endGame(false);
-        else if (grid.some(row => row.some(v => v >= 2048))) {
-            if (!window._reached2048) { window._reached2048 = true; }
+        else if (!window._reached2048 && grid.some(row => row.some(v => v >= 2048))) {
+            window._reached2048 = true;
+            endGame(true);
         }
     }, 130);
 }
@@ -147,6 +151,9 @@ function render(popCells = []) {
 
 function newGame() {
     Sfx.play('select');
+    clearTimeout(addTileTimer);
+    addTileTimer = null;
+    animating = false;
     grid = emptyGrid();
     score = 0;
     window._reached2048 = false;

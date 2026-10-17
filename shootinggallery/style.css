@@ -61,13 +61,13 @@ body {
     flex-wrap: wrap;
 }
 
-.score, .high-score, .time, .targets {
+.score, .high-score, .time, .targets, .misses {
     color: #fff;
     font-size: 1rem;
     letter-spacing: 0.1em;
 }
 
-.score span, .time span, .targets span {
+.score span, .time span, .targets span, .misses span {
     color: #0ff;
     text-shadow: 0 0 10px #0ff;
 }

@@ -15,7 +15,8 @@
         <h1 class="game-title">MAZE ESCAPE</h1>
         
         <div class="score-display">
-            <div class="timer">TIME: <span id="timer">0.0</span>s</div>
+            <div class="timer">LEVEL: <span id="level">1</span></div>
+            <div class="timer">TIME LEFT: <span id="timer">0.0</span>s</div>
             <div class="best-time">BEST: <span id="bestTime">--</span></div>
         </div>
         
@@ -32,9 +33,17 @@
         </div>
         
         <div id="winMessage" class="win-message hidden">
-            <h2>🎉 YOU ESCAPED! 🎉</h2>
+            <h2>&#127881; LEVEL <span id="winLevel">1</span> CLEARED! &#127881;</h2>
             <p>Time: <span id="finalTime">0</span>s</p>
+            <button id="nextBtn" class="game-btn">NEXT LEVEL</button>
         </div>
+        
+        <div id="loseMessage" class="win-message lose hidden">
+            <h2>TIME UP!</h2>
+            <p>You reached level <span id="loseLevel">1</span></p>
+            <button id="retryBtn" class="game-btn">TRY AGAIN</button>
+        </div>
+    </div>
     </div>
     
     <script src="../arcade.js" data-pause="1" data-dpad="1"></script>

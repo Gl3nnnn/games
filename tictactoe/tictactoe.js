@@ -14,6 +14,9 @@ let boardState = ['', '', '', '', '', '', '', '', ''];
 let currentPlayer = 'X';
 let gameActive = true;
 let gameMode = 'pvp';
+let difficulty = 'easy';
+
+const difficultySelect = document.getElementById('difficultySelect');
 
 let xWins = parseInt(localStorage.getItem('tttXWins')) || 0;
 let oWins = parseInt(localStorage.getItem('tttOWins')) || 0;
@@ -31,6 +34,13 @@ const WINNING_COMBINATIONS = [
 
 gameModeSelect.addEventListener('change', (e) => {
     gameMode = e.target.value;
+    difficultySelect.classList.toggle('hidden', gameMode !== 'pve');
+    resetGame();
+});
+
+difficultySelect.classList.add('hidden');
+difficultySelect.addEventListener('change', (e) => {
+    difficulty = e.target.value;
     resetGame();
 });
 
@@ -109,13 +119,24 @@ function endGame(winner) {
             xWins++;
             xWinsEl.textContent = xWins;
             localStorage.setItem('tttXWins', xWins);
-            Scores.submit('tictactoe', xWins);
+            Scores.submit('tictactoe', xWins, { unit: 'WINS' });
         } else {
             oWins++;
             oWinsEl.textContent = oWins;
             localStorage.setItem('tttOWins', oWins);
         }
     }
+}
+
+function findTacticalMove(player) {
+    for (const combo of WINNING_COMBINATIONS) {
+        const [a, b, c] = combo;
+        const vals = [boardState[a], boardState[b], boardState[c]];
+        if (vals.filter(v => v === player).length === 2 && vals.includes('')) {
+            return combo[vals.indexOf('')];
+        }
+    }
+    return null;
 }
 
 function makeAIMove() {
@@ -126,6 +147,23 @@ function makeAIMove() {
         .filter(index => index !== null);
     
     if (emptyCells.length === 0) return;
+    
+    if (difficulty === 'hard') {
+        let move = findTacticalMove('O');
+        if (move === null) move = findTacticalMove('X');
+        if (move === null && boardState[4] === '') move = 4;
+        if (move === null) {
+            const corners = [0, 2, 6, 8].filter(i => boardState[i] === '');
+            if (corners.length > 0) {
+                move = corners[Math.floor(Math.random() * corners.length)];
+            }
+        }
+        if (move === null) {
+            move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        }
+        makeMove(move);
+        return;
+    }
     
     const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
     makeMove(randomIndex);

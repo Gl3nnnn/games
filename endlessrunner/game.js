@@ -12,6 +12,7 @@ let score = 0;
 let highScore = 0;
 let frameCount = 0;
 let gameSpeed = 3;
+let runId = 0;
 
 function loadHighScore() {
     const savedScore = localStorage.getItem('endlessRunnerHighScore');
@@ -53,6 +54,7 @@ function resetGame() {
     score = 0;
     frameCount = 0;
     gameSpeed = 3;
+    runId++;
     scoreEl.textContent = '0';
 }
 
@@ -80,7 +82,8 @@ function updatePlayer() {
 }
 
 function spawnObstacle() {
-    if (frameCount % 120 === 0 && Math.random() > 0.3) {
+    const gap = Math.round(Math.max(60, 120 - score / 50));
+    if (frameCount % gap === 0 && Math.random() > 0.3) {
         const heightMult = Math.random() > 0.7 ? 1.5 : 1;
         obstacles.push({
             x: canvas.width,
@@ -92,13 +95,13 @@ function spawnObstacle() {
 }
 
 function spawnPowerUp() {
-    if (Math.random() < 0.002 && frameCount % 100 === 0) {
+    if (frameCount % 300 === 0 && Math.random() < 0.15) {
         powerUps.push({
             x: canvas.width,
             y: groundY - 80 - Math.random() * 40,
             width: 20,
             height: 20,
-            type: 'speed'
+            type: 'slowmo'
         });
     }
 }
@@ -112,8 +115,8 @@ function updateObstacles() {
             score++;
             scoreEl.textContent = score;
 
-            if (score % 500 === 0 && gameSpeed < 8) {
-                gameSpeed += 0.2;
+            if (score % 50 === 0 && gameSpeed < 10) {
+                gameSpeed += 0.3;
             }
         }
     }
@@ -130,8 +133,14 @@ function updatePowerUps() {
             
             powerUps.splice(i, 1);
             Sfx.play('powerup');
-            gameSpeed += 1;
-            setTimeout(() => { gameSpeed = Math.max(3, gameSpeed - 1); }, 3000);
+            const savedSpeed = gameSpeed;
+            const myRun = runId;
+            gameSpeed = Math.max(1.5, gameSpeed - 1.5);
+            setTimeout(() => {
+                if (gameRunning && runId === myRun && gameSpeed < savedSpeed) {
+                    gameSpeed = savedSpeed;
+                }
+            }, 3000);
             continue;
         }
 
@@ -210,6 +219,7 @@ function gameLoop() {
 }
 
 function startGame() {
+    if (gameRunning) return;
     Sfx.play('select');
     resetGame();
     gameRunning = true;
@@ -222,14 +232,18 @@ restartBtn.onclick = startGame;
 
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space') {
+        if (e.repeat) return;
         e.preventDefault();
-        if (!gameRunning && !gameOverEl.classList.contains('hidden') === false) {
+        if (!gameRunning) {
             startGame();
-        } else if (gameRunning) {
+        } else {
             jump();
         }
     }
 });
+
+startScreenEl.addEventListener('click', () => { if (!gameRunning) startGame(); });
+startScreenEl.addEventListener('touchstart', (e) => { e.preventDefault(); if (!gameRunning) startGame(); }, { passive: false });
 
 canvas.addEventListener('click', () => {
     if (gameRunning) {

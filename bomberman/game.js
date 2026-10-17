@@ -91,6 +91,7 @@ function nextLevel() {
 }
 
 function loseLife() {
+    if (isGameOver) return;
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
@@ -371,7 +372,7 @@ function loop(t) {
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'p' || e.key === 'P') {
-        if (isRunning && !isGameOver) {
+        if (!e.repeat && isRunning && !isGameOver) {
             paused = !paused;
             pauseEl.classList.toggle('hidden', !paused);
             if (paused) Sfx.play('blip');

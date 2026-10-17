@@ -73,6 +73,7 @@ function spawnEnemy() {
 }
 
 function fire(tx, ty) {
+    if (isPaused || isGameOver || !isRunning) return;
     if (ty > GROUND + 10) ty = GROUND;
     let best = null, bestD = Infinity;
     bases.forEach(b => {
@@ -346,7 +347,7 @@ canvas.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 document.addEventListener('keydown', (e) => {
-    if ((e.key === 'p' || e.key === 'P') && isRunning) isPaused = !isPaused;
+    if ((e.key === 'p' || e.key === 'P') && isRunning && !e.repeat) isPaused = !isPaused;
 });
 
 restartBtn.addEventListener('click', () => {

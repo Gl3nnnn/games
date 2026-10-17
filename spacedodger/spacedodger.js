@@ -15,6 +15,8 @@ let playerX = 0;
 let asteroids = [];
 let gameLoop = null;
 let asteroidSpawner = null;
+let scoreTicker = null;
+let overTimer = null;
 let gameSpeed = 3;
 let spawnRate = 1500;
 
@@ -152,9 +154,13 @@ function startGame() {
     initPlayer();
     
     // Start game loops
+    clearInterval(gameLoop);
+    clearInterval(asteroidSpawner);
+    clearInterval(scoreTicker);
+    clearTimeout(overTimer);
     gameLoop = setInterval(updateAsteroids, 30);
     asteroidSpawner = setInterval(spawnAsteroid, spawnRate);
-    setInterval(updateScore, 100);
+    scoreTicker = setInterval(updateScore, 100);
 }
 
 function gameOver() {
@@ -164,6 +170,7 @@ function gameOver() {
     
     clearInterval(gameLoop);
     clearInterval(asteroidSpawner);
+    clearInterval(scoreTicker);
     
     player.classList.add('hit');
     
@@ -176,7 +183,8 @@ function gameOver() {
         newRecordEl.classList.add('hidden');
     }
     
-    setTimeout(() => {
+    clearTimeout(overTimer);
+    overTimer = setTimeout(() => {
         gameOverScreen.classList.remove('hidden');
     }, 500);
 }
@@ -190,6 +198,10 @@ function resetGame() {
     
     clearInterval(gameLoop);
     clearInterval(asteroidSpawner);
+    clearInterval(scoreTicker);
+    clearTimeout(overTimer);
+    scoreTicker = null;
+    overTimer = null;
     
     player.classList.remove('hit');
     player.style.left = '0px';
@@ -204,6 +216,7 @@ function resetGame() {
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
     if (e.code === 'Space' && !gameRunning) {
+        if (e.repeat) return;
         e.preventDefault();
         startGame();
         return;

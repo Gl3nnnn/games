@@ -51,7 +51,7 @@
             { g: 'SKILL & ARCADE', id: 'colorMatch', name: 'COLOR MATCH', legacy: 'colorMatchBestLevel' },
             { g: 'SKILL & ARCADE', id: 'whackamole', name: 'WHACK-A-MOLE', legacy: 'whackamoleHighScore' },
             { g: 'SKILL & ARCADE', id: 'typingspeed', name: 'TYPE SPEED (WPM)', legacy: 'typingBestWpm' },
-            { g: 'SKILL & ARCADE', id: 'barrelRun', name: 'BARREL RUN', legacy: 'barrelrunHighScore' },
+            { g: 'SKILL & ARCADE', id: 'barrelrun', name: 'BARREL RUN', legacy: 'barrelrunHighScore' },
             { g: 'ACTION', id: 'spaceinvaders', name: 'SPACE INVADERS', legacy: 'spaceinvadersHighScore' },
             { g: 'ACTION', id: 'asteroids', name: 'ASTEROIDS', legacy: 'asteroidsHighScore' },
             { g: 'ACTION', id: 'galaga', name: 'GALAGA', legacy: 'galagaHighScore' },
@@ -86,12 +86,13 @@
                 var rows = '';
                 var list = [];
                 try { list = window.Scores.get(game.id) || []; } catch (e) {}
+                list = list.filter(function (x) { return x && typeof x.s === 'number' && isFinite(x.s); });
                 if (list.length) {
                     for (var i = 0; i < 5; i++) {
                         var e = list[i];
                         rows += '<div class="rec-row' + (i === 0 ? ' top' : '') + '">' +
                             '<span class="rk">#' + (i + 1) + '</span>' +
-                            '<span class="ini">' + (e ? e.i : '···') + '</span>' +
+                            '<span class="ini">' + (e && typeof e.i === 'string' ? e.i : '···') + '</span>' +
                             '<span class="val">' + (e ? fmt(game, e.s.toLocaleString()) : '—') + '</span></div>';
                     }
                 } else {
@@ -114,7 +115,7 @@
             var doomed = [];
             for (var i = 0; i < localStorage.length; i++) {
                 var k = localStorage.key(i);
-                if (k && (k.indexOf('arcadeScores_') === 0 || /HighScore$|Best(Time|Moves|Score|Wpm|Level|Attempts)$/.test(k))) doomed.push(k);
+                if (k && (k.indexOf('arcadeScores_') === 0 || /HighScore$|Best(Time|Moves|Score|Wpm|Level|Attempts)?$|XWins$|OWins$|Draws$|CoinWins$|TotalRolls$/.test(k))) doomed.push(k);
             }
             doomed.forEach(function (k) { localStorage.removeItem(k); });
             Sfx.play('die');

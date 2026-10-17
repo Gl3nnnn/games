@@ -87,3 +87,32 @@ body {
     .board { grid-template-columns: repeat(10, 30px); }
     .cell { width: 30px; height: 30px; font-size: 0.85rem; }
 }
+
+.difficulty {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.diff-btn {
+    font-family: ''Orbitron'', sans-serif;
+    font-size: 0.8rem;
+    padding: 8px 18px;
+    background: transparent;
+    border: 2px solid #00aaaa;
+    color: #00aaaa;
+    border-radius: 6px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.25s ease;
+}
+
+.diff-btn:hover {
+    box-shadow: 0 0 14px rgba(0, 255, 255, 0.4);
+}
+
+.diff-btn.active {
+    background: #00aaaa;
+    color: #0a0a0f;
+}

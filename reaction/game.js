@@ -25,7 +25,7 @@ function saveBestScore(time) {
         localStorage.setItem('reactionBestScore', time);
         bestTimeEl.textContent = time;
     }
-    Scores.submit('reaction', time, { lowerBetter: true });
+    Scores.submit('reaction', time, { lowerBetter: true, unit: 'MS' });
 }
 
 function clearAllTimeouts() {
@@ -60,7 +60,8 @@ function setTooEarlyState() {
 }
 
 function handleClick(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
+    if (document.documentElement.dataset.arcPaused === '1') return;
     
     if (gameState === 'idle') {
         startGame();
@@ -84,9 +85,9 @@ function handleClick(e) {
         
         gameArea.className = 'game-area record';
         
-        setTimeout(() => {
+        timeoutIds.push(setTimeout(() => {
             startGame();
-        }, 1500);
+        }, 1500));
     }
 }
 
@@ -116,7 +117,8 @@ function resetGame() {
     currentTimeEl.textContent = '--';
 }
 
-retryBtn.onclick = () => {
+retryBtn.onclick = (e) => {
+    e.stopPropagation();
     resetGame();
     startGame();
 };
@@ -125,8 +127,9 @@ loadBestScore();
 
 document.addEventListener('keydown', (event) => {
     if (event.code === 'Space') {
+        if (event.repeat) return;
         event.preventDefault();
-        handleClick(new Event('click'));
+        handleClick({ preventDefault: function () {} });
     }
 });
 

@@ -4,6 +4,7 @@ const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
 const timeLeftEl = document.getElementById('timeLeft');
 const targetsLeftEl = document.getElementById('targetsLeft');
+const missesEl = document.getElementById('misses');
 const finalScoreEl = document.getElementById('finalScore');
 const gameOverEl = document.getElementById('gameOver');
 const startScreenEl = document.getElementById('startScreen');
@@ -15,9 +16,14 @@ let score = 0;
 let highScore = 0;
 let timeLeft = 30;
 let targetsLeft = 15;
+let misses = 0;
+const MAX_MISSES = 5;
 let timerInterval = null;
 let targets = [];
 const targetColors = ['#ff0066', '#00ff66', '#6600ff', '#ff6600', '#00ffff', '#ff00ff'];
+
+function hitsDone() { return 15 - targetsLeft; }
+function spawnCap() { return Math.min(8, 5 + Math.floor(hitsDone() / 5)); }
 
 function loadHighScore() {
     const savedScore = localStorage.getItem('shootingGalleryHighScore');
@@ -43,7 +49,7 @@ function createTarget() {
         x: direction === 1 ? -size : canvas.width + size,
         y: 50 + Math.random() * (canvas.height - 100 - size),
         size: size,
-        speed: (1 + Math.random() * 1.5) * direction,
+        speed: (1 + Math.random() * 1.5 + Math.min(2, hitsDone() / 5)) * direction,
         color: targetColors[Math.floor(Math.random() * targetColors.length)],
         points: Math.floor(size / 10),
         rotation: 0,
@@ -55,11 +61,13 @@ function resetGame() {
     score = 0;
     timeLeft = 30;
     targetsLeft = 15;
+    misses = 0;
     targets = [];
     
     scoreEl.textContent = '0';
     timeLeftEl.textContent = timeLeft;
     targetsLeftEl.textContent = targetsLeft;
+    missesEl.textContent = '0';
     
     // Spawn initial targets
     for (let i = 0; i < 5; i++) {
@@ -73,17 +81,22 @@ function updateTargets() {
         target.x += target.speed;
         target.rotation += target.rotationSpeed;
         
-        // Remove targets that are off screen
+        // Remove targets that are off screen (escaped = miss)
         if ((target.speed > 0 && target.x > canvas.width + target.size) ||
             (target.speed < 0 && target.x < -target.size)) {
             targets.splice(i, 1);
-            targetsLeft--;
-            targetsLeftEl.textContent = targetsLeft;
+            misses++;
+            missesEl.textContent = misses;
+            FX.shake(200, 4);
             
-            // Spawn new target
-            if (targetsLeft > 0 && targets.length < 5) {
-                createTarget();
+            if (misses >= MAX_MISSES) {
+                endGame();
+                return;
             }
+            
+            // Replace the escaped target, plus grow the board as the cap rises
+            if (targetsLeft > 0 && targets.length < spawnCap()) createTarget();
+            if (targetsLeft > 0 && targets.length < spawnCap()) createTarget();
         }
     }
 }
@@ -144,6 +157,7 @@ function gameLoop() {
     if (!gameRunning) return;
     
     updateTargets();
+    if (!gameRunning) return;
     draw();
     
     if (timeLeft <= 0 || targetsLeft <= 0) {
@@ -173,14 +187,17 @@ function startGame() {
 }
 
 function endGame() {
+    if (!gameRunning) return;
     gameRunning = false;
     Sfx.play(targetsLeft <= 0 ? 'win' : 'gameover');
-Scores.submit('shootingGallery', score);
+    Scores.submit('shootingGallery', score);
     clearInterval(timerInterval);
     saveHighScore();
     
     if (targetsLeft <= 0) {
         gameOverTitleEl.textContent = 'ALL TARGETS HIT!';
+    } else if (misses >= MAX_MISSES) {
+        gameOverTitleEl.textContent = 'TOO MANY MISSES!';
     } else {
         gameOverTitleEl.textContent = 'TIME UP!';
     }

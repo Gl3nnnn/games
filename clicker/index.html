@@ -17,6 +17,8 @@
         <div class="score-display">
             <div class="score">SCORE: <span id="score">0</span></div>
             <div class="high-score">HIGH SCORE: <span id="highScore">0</span></div>
+            <div class="time">TIME: <span id="timeLeft">60</span>s</div>
+            <div class="time">TARGET: <span id="target">100</span></div>
         </div>
         
         <div class="click-area">
@@ -53,7 +55,7 @@
             <div class="upgrade" id="upgrade2">
                 <div class="upgrade-info">
                     <span class="upgrade-name">Auto Clicker</span>
-                    <span class="upgrade-desc">+1 per second</span>
+                    <span class="upgrade-desc">+1 per 2 seconds</span>
                 </div>
                 <button class="upgrade-btn" id="buyAutoClicker">
                     Cost: <span id="autoClickCost">50</span>
@@ -73,12 +75,25 @@
             <div class="upgrade" id="upgrade4">
                 <div class="upgrade-info">
                     <span class="upgrade-name">Super Auto</span>
-                    <span class="upgrade-desc">+10 per second</span>
+                    <span class="upgrade-desc">+10 per 2 seconds</span>
                 </div>
                 <button class="upgrade-btn" id="buySuperAuto">
                     Cost: <span id="superAutoCost">500</span>
                 </button>
             </div>
+        </div>
+        
+        <div id="startScreen" class="overlay-screen">
+            <h2>60 SECOND CHALLENGE</h2>
+            <p>Click fast, buy upgrades, beat the target!</p>
+            <button id="startBtn" class="big-btn">START</button>
+        </div>
+        
+        <div id="gameOverScreen" class="overlay-screen hidden">
+            <h2>TIME'S UP!</h2>
+            <p class="final-line">SCORE: <span id="finalScore">0</span></p>
+            <p id="recordLine" class="record-line"></p>
+            <button id="againBtn" class="big-btn">PLAY AGAIN</button>
         </div>
     </div>
     

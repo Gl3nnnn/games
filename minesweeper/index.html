@@ -14,9 +14,15 @@
         <h1 class="game-title">MINESWEEPER</h1>
 
         <div class="score-display">
-            <div>MINES: <span id="mineCount">15</span></div>
+            <div>MINES: <span id="mineCount">10</span></div>
             <div>BEST TIME: <span id="bestTime">--</span></div>
             <div>TIME: <span id="timer">0</span></div>
+        </div>
+
+        <div class="difficulty">
+            <button class="diff-btn active" data-size="10" data-mines="10">EASY</button>
+            <button class="diff-btn" data-size="14" data-mines="25">MEDIUM</button>
+            <button class="diff-btn" data-size="16" data-mines="40">HARD</button>
         </div>
 
         <div id="board" class="board"></div>

@@ -8,10 +8,10 @@ const gameOverEl = document.getElementById('gameOver');
 const restartBtn = document.getElementById('restartBtn');
 const againBtn = document.getElementById('againBtn');
 
-const SIZE = 10, MINES = 15;
+let SIZE = 10, MINES = 10;
 
 let mines, revealed, flagged, revealedCount, firstClick, gameOver, timer, time;
-let holdTimer = null, flagMode = false;
+let holdTimer = null, flagMode = false, suppressClick = false, overTimer = null;
 
 let bestTime = parseInt(localStorage.getItem('minesweeperBestTime')) || 0;
 bestTimeEl.textContent = bestTime ? bestTime + 's' : '--';
@@ -96,6 +96,7 @@ function updateMineCount() {
 }
 
 function endGame(won) {
+    if (gameOver) return;
     gameOver = true;
     Sfx.play(won ? 'win' : 'gameover');
     stopTimer();
@@ -119,12 +120,20 @@ function endGame(won) {
             }
         }
     }
-    setTimeout(() => gameOverEl.classList.remove('hidden'), won ? 300 : 500);
+    clearTimeout(overTimer);
+    overTimer = setTimeout(() => gameOverEl.classList.remove('hidden'), won ? 300 : 500);
+}
+
+function cellPx() {
+    let px = SIZE <= 10 ? 34 : SIZE <= 14 ? 28 : 24;
+    return Math.max(16, Math.min(px, Math.floor((window.innerWidth - 60) / SIZE)));
 }
 
 function newGame() {
     Sfx.play('select');
     stopTimer();
+    clearTimeout(overTimer);
+    overTimer = null;
     mines = null;
     revealed = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));
     flagged = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));
@@ -136,9 +145,15 @@ function newGame() {
     mineCountEl.textContent = MINES;
     gameOverEl.classList.add('hidden');
     boardEl.innerHTML = '';
+    const px = cellPx();
+    const gap = 3;
+    boardEl.style.gridTemplateColumns = 'repeat(' + SIZE + ', ' + px + 'px)';
+    boardEl.style.gap = gap + 'px';
     for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
         const cell = document.createElement('div');
         cell.className = 'cell';
+        cell.style.width = px + 'px';
+        cell.style.height = px + 'px';
         cell.dataset.r = r;
         cell.dataset.c = c;
         boardEl.appendChild(cell);
@@ -146,6 +161,7 @@ function newGame() {
 }
 
 boardEl.addEventListener('click', (e) => {
+    if (suppressClick) { suppressClick = false; return; }
     const cell = e.target.closest('.cell');
     if (!cell) return;
     const r = +cell.dataset.r, c = +cell.dataset.c;
@@ -181,12 +197,13 @@ boardEl.addEventListener('contextmenu', (e) => {
 });
 
 boardEl.addEventListener('touchstart', (e) => {
+    suppressClick = false;
     const cell = e.target.closest('.cell');
     if (!cell) return;
     holdTimer = setTimeout(() => {
-        flagMode = false;
         toggleFlag(+cell.dataset.r, +cell.dataset.c);
         holdTimer = 'fired';
+        suppressClick = true;
     }, 450);
 });
 
@@ -204,5 +221,16 @@ boardEl.addEventListener('touchmove', () => {
 
 restartBtn.addEventListener('click', newGame);
 againBtn.addEventListener('click', newGame);
+
+document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.classList.contains('active')) return;
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        SIZE = +btn.dataset.size;
+        MINES = +btn.dataset.mines;
+        newGame();
+    });
+});
 
 newGame();

@@ -265,7 +265,7 @@ function startGame() {
 document.addEventListener('keydown', (e) => {
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
-    if (e.key === 'p' || e.key === 'P') { isPaused = !isPaused; return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; return; }
     const map = {
         ArrowUp: 'up', w: 'up', W: 'up',
         ArrowDown: 'down', s: 'down', S: 'down',

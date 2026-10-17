@@ -2,15 +2,18 @@
 let score = 0;
 let highScore = parseInt(localStorage.getItem('whackamoleHighScore')) || 0;
 let timeLeft = 30;
+let lives = 3;
 let isGameRunning = false;
 let moleTimer = null;
 let countdownTimer = null;
 let currentMoleIndex = -1;
+let pendingEscape = new Set();
 
 // DOM elements
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
 const timerEl = document.getElementById('timer');
+const livesEl = document.getElementById('lives');
 const finalScoreEl = document.getElementById('finalScore');
 const gameOverEl = document.getElementById('gameOver');
 const startScreenEl = document.getElementById('startScreen');
@@ -19,43 +22,71 @@ const holes = document.querySelectorAll('.hole');
 
 highScoreEl.textContent = highScore;
 
-// Show a random mole
+function dwellTime() {
+    return Math.max(450, 1500 - (30 - timeLeft) * 40);
+}
+
+function finalizeMoles() {
+    pendingEscape.forEach(i => {
+        const hole = holes[i];
+        if (hole.classList.contains('active') && !hole.classList.contains('whacked')) {
+            loseLife();
+        }
+    });
+    pendingEscape.clear();
+    holes.forEach(h => h.classList.remove('active', 'whacked'));
+    currentMoleIndex = -1;
+}
+
+// Show random mole(s): two moles during the final 15 seconds
 function showMole() {
     if (!isGameRunning) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     
-    // Hide current mole if any
-    hideMole();
+    finalizeMoles();
+    if (!isGameRunning) return;
     
-    // Pick a random hole (different from previous)
-    let newIndex;
-    do {
-        newIndex = Math.floor(Math.random() * holes.length);
-    } while (newIndex === currentMoleIndex);
+    const count = timeLeft <= 15 ? 2 : 1;
+    const chosen = new Set();
+    while (chosen.size < Math.min(count, holes.length)) {
+        chosen.add(Math.floor(Math.random() * holes.length));
+    }
     
-    currentMoleIndex = newIndex;
-    holes[currentMoleIndex].classList.add('active');
+    pendingEscape = new Set(chosen);
+    chosen.forEach(i => holes[i].classList.add('active'));
+    currentMoleIndex = chosen.values().next().value;
+}
+
+function loseLife() {
+    if (!isGameRunning) return;
+    lives--;
+    livesEl.textContent = Math.max(0, lives);
+    Sfx.play('die');
+    FX.shake(250, 5);
+    if (lives <= 0) endGame();
 }
 
 // Hide current mole
 function hideMole() {
-    if (currentMoleIndex >= 0) {
-        holes[currentMoleIndex].classList.remove('active', 'whacked');
-        currentMoleIndex = -1;
-    }
+    finalizeMoles();
 }
 
 // Handle click on hole/mole
 function handleWhack(e) {
     if (!isGameRunning) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
 
     const targetHole = e.target.closest('.hole');
     if (!targetHole) return;
 
-    // Check if this is the active mole
+    // Check if this is an active mole
     if (targetHole.classList.contains('active') && !targetHole.classList.contains('whacked')) {
         // Hit!
         targetHole.classList.remove('active');
         targetHole.classList.add('whacked');
+        
+        const idx = [...holes].indexOf(targetHole);
+        pendingEscape.delete(idx);
         
         // Increase score
         score += 10;
@@ -68,6 +99,7 @@ function handleWhack(e) {
 
 // Play hit sound effect using Web Audio API
 function playHitSound() {
+    if (window.Sfx && Sfx.muted) return;
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioCtx.createOscillator();
@@ -104,11 +136,15 @@ function startCountdown() {
 }
 
 function endGame() {
+    if (!isGameRunning) return;
     Sfx.play('gameover');
     Scores.submit('whackamole', score);
     isGameRunning = false;
     clearInterval(countdownTimer);
     clearTimeout(moleTimer);
+    pendingEscape.clear();
+    holes.forEach(h => h.classList.remove('active', 'whacked'));
+    currentMoleIndex = -1;
     
     // Save high score
     if (score > highScore) {
@@ -122,8 +158,12 @@ function endGame() {
 }
 
 function resetGame() {
+    if (isGameRunning) return;
     score = 0;
     scoreEl.textContent = score;
+    lives = 3;
+    livesEl.textContent = 3;
+    pendingEscape.clear();
     
     // Reset all holes
     holes.forEach(hole => {
@@ -146,8 +186,12 @@ function startGame() {
     
     score = 0;
     scoreEl.textContent = score;
+    lives = 3;
+    livesEl.textContent = 3;
+    pendingEscape.clear();
     isGameRunning = true;
     startScreenEl.classList.add('hidden');
+    gameOverEl.classList.add('hidden');
     
     // Start countdown
     startCountdown();
@@ -160,14 +204,18 @@ function startGame() {
 function scheduleNextMole() {
     if (!isGameRunning) return;
     
-    // Schedule next mole to appear after current one is visible
+    // Schedule next mole to appear after the current dwell time
     moleTimer = setTimeout(() => {
         if (isGameRunning) {
+            if (document.documentElement.dataset.arcPaused === '1') {
+                scheduleNextMole();
+                return;
+            }
             showMole();
             // Keep showing moles until game ends
             scheduleNextMole();
         }
-    }, 1500); // Mole stays for 1.5 seconds, then next one appears
+    }, dwellTime());
 }
 
 // Event listeners

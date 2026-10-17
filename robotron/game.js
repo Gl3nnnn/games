@@ -130,10 +130,11 @@ function update() {
     player.x = Math.max(10, Math.min(W - 10, player.x + mx * 3.3));
     player.y = Math.max(10, Math.min(H - 10, player.y + my * 3.3));
 
-    if (tapShootT > 0) { tapShootT--; shoot(); }
-
-    const sd = shootDir;
-    if (sd.x || sd.y) shoot();
+    const arrowsHeld = shootHeld.ArrowLeft || shootHeld.ArrowRight || shootHeld.ArrowUp || shootHeld.ArrowDown;
+    if (tapShootT > 0 || arrowsHeld) {
+        if (tapShootT > 0) tapShootT--;
+        shoot();
+    }
 
     grunts.forEach(g => {
         const dx = player.x - g.x, dy = player.y - g.y;
@@ -379,7 +380,7 @@ function setShootFromKeys() {
 }
 
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'p' || e.key === 'P') { e.preventDefault(); togglePause(); return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) { e.preventDefault(); togglePause(); } return; }
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -389,9 +390,10 @@ document.addEventListener('keydown', (e) => {
         return;
     }
     if (e.key === ' ') {
+        if (e.repeat) return;
         e.preventDefault();
         shootDir = nearestEnemyDir();
-        tapShootT = 1;
+        tapShootT = 15;
         shoot();
         return;
     }
@@ -420,7 +422,11 @@ canvas.addEventListener('touchstart', (e) => {
     shootDir = { x: dx / m, y: dy / m };
     tapShootT = 45;
 }, { passive: false });
-canvas.addEventListener('touchend', () => { tapShootT = 0; });
+canvas.addEventListener('touchend', () => {
+    tapShootT = 0;
+    const arrowsHeld = shootHeld.ArrowLeft || shootHeld.ArrowRight || shootHeld.ArrowUp || shootHeld.ArrowDown;
+    if (!arrowsHeld) shootDir = { x: 0, y: 0 };
+});
 
 pauseOverlay.addEventListener('click', togglePause);
 

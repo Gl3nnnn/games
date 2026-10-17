@@ -2,18 +2,18 @@ let score = 0;
 let highScore = parseInt(localStorage.getItem('clickerHighScore')) || 0;
 let totalClicks = parseInt(localStorage.getItem('totalClicks')) || 0;
 
-// Easy & Casual settings:
-// - Starting click power: 3 (was 1) - easier to get points
-// - Lower initial costs: 5, 25, 100, 250 (was 10, 50, 200, 500)
-// - Slower cost scaling: 1.2x, 1.3x (was 1.5x, 1.8x, 2x)
+let clickPower = 1;
+let autoClick = 0;
+let clickPowerCost = 10;
+let autoClickCost = 50;
+let megaClickCost = 200;
+let superAutoCost = 500;
 
-let clickPower = parseInt(localStorage.getItem('clickPower')) || 3;
-let autoClick = parseInt(localStorage.getItem('autoClick')) || 0;
-
-let clickPowerCost = parseInt(localStorage.getItem('clickPowerCost')) || 5;
-let autoClickCost = parseInt(localStorage.getItem('autoClickCost')) || 25;
-let megaClickCost = parseInt(localStorage.getItem('megaClickCost')) || 50;
-let superAutoCost = parseInt(localStorage.getItem('superAutoCost')) || 100;
+let timeLeft = 60;
+let roundActive = false;
+let roundTimer = null;
+let targetShown = false;
+let bestAtStart = 0;
 
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
@@ -24,12 +24,24 @@ const clickPowerCostEl = document.getElementById('clickPowerCost');
 const autoClickCostEl = document.getElementById('autoClickCost');
 const megaClickCostEl = document.getElementById('megaClickCost');
 const superAutoCostEl = document.getElementById('superAutoCost');
+const timeLeftEl = document.getElementById('timeLeft');
+const targetEl = document.getElementById('target');
+const finalScoreEl = document.getElementById('finalScore');
+const recordLineEl = document.getElementById('recordLine');
+const startScreenEl = document.getElementById('startScreen');
+const gameOverScreenEl = document.getElementById('gameOverScreen');
 
 const clickBtn = document.getElementById('clickBtn');
 const buyClickPowerBtn = document.getElementById('buyClickPower');
 const buyAutoClickerBtn = document.getElementById('buyAutoClicker');
 const buyMegaClickBtn = document.getElementById('buyMegaClick');
 const buySuperAutoBtn = document.getElementById('buySuperAuto');
+const startBtn = document.getElementById('startBtn');
+const againBtn = document.getElementById('againBtn');
+
+function targetScore() {
+    return Math.max(100, highScore + 100);
+}
 
 function updateDisplay() {
     scoreEl.textContent = score;
@@ -41,6 +53,8 @@ function updateDisplay() {
     autoClickCostEl.textContent = autoClickCost;
     megaClickCostEl.textContent = megaClickCost;
     superAutoCostEl.textContent = superAutoCost;
+    timeLeftEl.textContent = timeLeft;
+    targetEl.textContent = targetScore();
     
     buyClickPowerBtn.disabled = score < clickPowerCost;
     buyAutoClickerBtn.disabled = score < autoClickCost;
@@ -51,12 +65,6 @@ function updateDisplay() {
 function saveGame() {
     localStorage.setItem('clickerHighScore', highScore);
     localStorage.setItem('totalClicks', totalClicks);
-    localStorage.setItem('clickPower', clickPower);
-    localStorage.setItem('autoClick', autoClick);
-    localStorage.setItem('clickPowerCost', clickPowerCost);
-    localStorage.setItem('autoClickCost', autoClickCost);
-    localStorage.setItem('megaClickCost', megaClickCost);
-    localStorage.setItem('superAutoCost', superAutoCost);
 }
 
 function addScore(amount) {
@@ -65,6 +73,13 @@ function addScore(amount) {
     
     if (score > highScore) {
         highScore = score;
+    }
+    
+    if (!targetShown && score >= targetScore()) {
+        targetShown = true;
+        Sfx.play('win');
+        recordLineEl.textContent = '';
+        FX.flash('rgba(0,255,65,0.35)', 200);
     }
     
     updateDisplay();
@@ -83,17 +98,20 @@ function createClickEffect(x, y) {
 }
 
 clickBtn.addEventListener('click', (e) => {
+    if (!roundActive) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     addScore(clickPower);
     Sfx.play('blip');
     createClickEffect(e.clientX, e.clientY);
 });
 
 buyClickPowerBtn.addEventListener('click', () => {
+    if (!roundActive) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     if (score >= clickPowerCost) {
         score -= clickPowerCost;
         clickPower += 1;
-        // Easy & Casual: slower cost scaling (1.2x vs 1.5x)
-        clickPowerCost = Math.floor(clickPowerCost * 1.2);
+        clickPowerCost = Math.floor(clickPowerCost * 1.4);
         updateDisplay();
         saveGame();
         Sfx.play('coin');
@@ -101,11 +119,12 @@ buyClickPowerBtn.addEventListener('click', () => {
 });
 
 buyAutoClickerBtn.addEventListener('click', () => {
+    if (!roundActive) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     if (score >= autoClickCost) {
         score -= autoClickCost;
         autoClick += 1;
-        // Easy & Casual: slower cost scaling (1.2x vs 1.5x)
-        autoClickCost = Math.floor(autoClickCost * 1.2);
+        autoClickCost = Math.floor(autoClickCost * 1.4);
         updateDisplay();
         saveGame();
         Sfx.play('coin');
@@ -113,11 +132,12 @@ buyAutoClickerBtn.addEventListener('click', () => {
 });
 
 buyMegaClickBtn.addEventListener('click', () => {
+    if (!roundActive) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     if (score >= megaClickCost) {
         score -= megaClickCost;
         clickPower += 5;
-        // Easy & Casual: slower cost scaling (1.3x vs 1.8x)
-        megaClickCost = Math.floor(megaClickCost * 1.3);
+        megaClickCost = Math.floor(megaClickCost * 1.6);
         updateDisplay();
         saveGame();
         Sfx.play('coin');
@@ -125,11 +145,12 @@ buyMegaClickBtn.addEventListener('click', () => {
 });
 
 buySuperAutoBtn.addEventListener('click', () => {
+    if (!roundActive) return;
+    if (document.documentElement.dataset.arcPaused === '1') return;
     if (score >= superAutoCost) {
         score -= superAutoCost;
         autoClick += 10;
-        // Easy & Casual: slower cost scaling (1.3x vs 2x)
-        superAutoCost = Math.floor(superAutoCost * 1.3);
+        superAutoCost = Math.floor(superAutoCost * 1.6);
         updateDisplay();
         saveGame();
         Sfx.play('coin');
@@ -137,6 +158,7 @@ buySuperAutoBtn.addEventListener('click', () => {
 });
 
 setInterval(() => {
+    if (!roundActive) return;
     if (autoClick > 0) {
         score += autoClick;
         totalClicks += autoClick;
@@ -144,10 +166,61 @@ setInterval(() => {
         if (score > highScore) {
             highScore = score;
         }
+        if (!targetShown && score >= targetScore()) {
+            targetShown = true;
+            Sfx.play('win');
+        }
         
         updateDisplay();
         saveGame();
     }
+}, 2000);
+
+setInterval(() => {
+    if (!roundActive) return;
+    timeLeft--;
+    timeLeftEl.textContent = timeLeft;
+    if (timeLeft <= 10) {
+        timeLeftEl.style.color = '#ff2244';
+        timeLeftEl.style.textShadow = '0 0 10px #ff2244';
+    }
+    if (timeLeft <= 0) endRound();
 }, 1000);
 
+function startRound() {
+    Sfx.play('select');
+    score = 0;
+    clickPower = 1;
+    autoClick = 0;
+    clickPowerCost = 10;
+    autoClickCost = 50;
+    megaClickCost = 200;
+    superAutoCost = 500;
+    timeLeft = 60;
+    targetShown = false;
+    bestAtStart = highScore;
+    roundActive = true;
+    timeLeftEl.style.color = '';
+    timeLeftEl.style.textShadow = '';
+    startScreenEl.classList.add('hidden');
+    gameOverScreenEl.classList.add('hidden');
+    updateDisplay();
+}
+
+function endRound() {
+    if (!roundActive) return;
+    roundActive = false;
+    Sfx.play('gameover');
+    const isNewBest = score > 0 && score > bestAtStart;
+    if (score > 0) Scores.submit('clicker', score);
+    saveGame();
+    finalScoreEl.textContent = score;
+    recordLineEl.textContent = isNewBest ? 'NEW BEST SCORE!' : '';
+    gameOverScreenEl.classList.remove('hidden');
+}
+
+startBtn.addEventListener('click', startRound);
+againBtn.addEventListener('click', startRound);
+
+highScoreEl.textContent = highScore;
 updateDisplay();

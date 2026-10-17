@@ -568,7 +568,7 @@ body {
     mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 .marquee-inner {
-    display: inline-block; padding-left: 100%;
+    display: inline-block;
     animation: marqueeScroll 35s linear infinite;
     font-family: 'Orbitron', sans-serif; font-size: 0.78rem; color: #0ff;
     text-shadow: 0 0 8px rgba(0,255,255,0.6); letter-spacing: 0.08em;
@@ -580,7 +580,7 @@ body {
     display: flex; align-items: center; justify-content: center;
 }
 .coin-wipe.hidden { display: none; }
-.coin-wipe.play { animation: coinWipeAnim 0.7s ease-in forwards; }
+.coin-wipe.play { animation: coinWipeAnim 0.7s ease-in forwards; pointer-events: none; }
 .coin-text {
     font-family: 'Orbitron', sans-serif; font-size: clamp(1.4rem, 5vw, 3rem);
     color: #ffcc00; letter-spacing: 0.3em; text-shadow: 0 0 24px #ffcc00;
