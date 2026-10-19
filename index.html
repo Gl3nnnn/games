@@ -5,28 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neon Arcade</title>
     <link rel="icon" type="image/png" href="logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="hub.css">
 </head>
-<body>
+<body class="hub-retro">
     <div class="background-effects">
         <div class="grid-overlay"></div>
+        <div class="scanlines"></div>
+        <div class="vignette"></div>
         <div class="glow-orb orb-1"></div>
         <div class="glow-orb orb-2"></div>
     </div>
 
     <header class="main-header">
-        <h1 class="title">NEON ARCADE</h1>
-        <p class="subtitle">Choose Your Game</p>
-        <button id="shuffleBtn" class="shuffle-btn">🎲 SHUFFLE — TRY YOUR LUCK</button>
+        <div class="sign-frame">
+            <div class="bulb-strip top" aria-hidden="true"></div>
+            <h1 class="title">NEON ARCADE</h1>
+            <p class="subtitle">INSERT COIN · 39 GAMES · CHOOSE YOUR GAME</p>
+            <div class="bulb-strip bottom" aria-hidden="true"></div>
+        </div>
+        <div class="header-actions">
+            <button id="shuffleBtn" class="shuffle-btn"><span class="btn-emoji">🎲</span> SHUFFLE — TRY YOUR LUCK</button>
+            <a class="header-link" href="records.html"><span class="btn-emoji">🏆</span> HALL OF FAME</a>
+        </div>
     </header>
+
+    <nav class="cat-nav" id="catNav" aria-label="Game categories">
+        <a href="#classic"><span class="nav-num">01</span>CLASSIC <b>12</b></a>
+        <a href="#puzzle"><span class="nav-num">02</span>PUZZLE <b>07</b></a>
+        <a href="#action"><span class="nav-num">03</span>ACTION <b>14</b></a>
+        <a href="#chance"><span class="nav-num">04</span>CHANCE <b>03</b></a>
+        <a href="#skill"><span class="nav-num">05</span>SKILL <b>03</b></a>
+    </nav>
 
     <main class="container">
         <!-- Classic Games -->
-        <section class="category">
+        <section class="category" id="classic">
             <h2 class="category-title classic-title">
+                <span class="cat-num">01</span>
                 <span class="category-icon">🎮</span>
                 CLASSIC GAMES
+                <span class="cat-count">12 GAMES</span>
             </h2>
             <div class="game-grid">
                 <a href="snake/index.html" class="game-card classic-card">
@@ -129,10 +149,12 @@
         </section>
 
         <!-- Puzzle & Memory -->
-        <section class="category">
+        <section class="category" id="puzzle">
             <h2 class="category-title puzzle-title">
+                <span class="cat-num">02</span>
                 <span class="category-icon">🧠</span>
-                PUZZLE & MEMORY
+                PUZZLE &amp; MEMORY
+                <span class="cat-count">07 GAMES</span>
             </h2>
             <div class="game-grid">
                 <a href="memory/memory.html" class="game-card puzzle-card">
@@ -195,10 +217,12 @@
         </section>
 
         <!-- Action & Reflex -->
-        <section class="category">
+        <section class="category" id="action">
             <h2 class="category-title action-title">
+                <span class="cat-num">03</span>
                 <span class="category-icon">⚡</span>
-                ACTION & REFLEX
+                ACTION &amp; REFLEX
+                <span class="cat-count">14 GAMES</span>
             </h2>
             <div class="game-grid">
                 <a href="balloonpop/balloonpop.html" class="game-card action-card">
@@ -317,10 +341,12 @@
         </section>
 
         <!-- Chance & Luck -->
-        <section class="category">
+        <section class="category" id="chance">
             <h2 class="category-title chance-title">
+                <span class="cat-num">04</span>
                 <span class="category-icon">🎲</span>
-                CHANCE & LUCK
+                CHANCE &amp; LUCK
+                <span class="cat-count">03 GAMES</span>
             </h2>
             <div class="game-grid">
                 <a href="clicker/index.html" class="game-card chance-card">
@@ -351,10 +377,12 @@
         </section>
 
         <!-- Skill Games -->
-        <section class="category">
+        <section class="category" id="skill">
             <h2 class="category-title skill-title">
+                <span class="cat-num">05</span>
                 <span class="category-icon">🎯</span>
                 SKILL CHALLENGE
+                <span class="cat-count">03 GAMES</span>
             </h2>
             <div class="game-grid">
                 <a href="typingspeed/typingspeed.html" class="game-card skill-card">
@@ -391,6 +419,7 @@
     </footer>
 
     <div id="coinWipe" class="coin-wipe hidden"><div class="coin-text">INSERT COIN</div></div>
+    <div id="crtBoot" class="crt-boot" aria-hidden="true"><div class="crt-boot-line"></div></div>
 
     <script src="arcade.js"></script>
     <script>
@@ -471,6 +500,86 @@
             if (!items.length) items = ['★ INSERT COIN TO SET THE HIGH SCORE ★', '★ BE THE FIRST ARCADE LEGEND ★'];
             var text = items.join('  ◆  ') + '  ◆  ';
             inner.textContent = text + text;
+        }
+    })();
+    </script>
+    <script>
+    (function () {
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Decorative marquee bulbs
+        var strips = document.querySelectorAll('.bulb-strip');
+        for (var s = 0; s < strips.length; s++) {
+            for (var b = 0; b < 16; b++) {
+                var bulb = document.createElement('i');
+                bulb.style.setProperty('--n', b);
+                strips[s].appendChild(bulb);
+            }
+        }
+
+        // CRT power-on: once per tab, non-blocking
+        var boot = document.getElementById('crtBoot');
+        var seen = false;
+        try { seen = sessionStorage.getItem('neonHubBooted') === '1'; } catch (e) {}
+        function finishBoot() {
+            if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
+            try { sessionStorage.setItem('neonHubBooted', '1'); } catch (e) {}
+        }
+        if (!boot || reduce || seen) {
+            if (boot) finishBoot();
+        } else {
+            setTimeout(finishBoot, 760);
+        }
+
+        // Staggered card reveal
+        var cards = Array.prototype.slice.call(document.querySelectorAll('.game-card'));
+        function showAll() {
+            for (var i = 0; i < cards.length; i++) cards[i].classList.add('in');
+        }
+        if (!reduce) {
+            document.body.classList.add('hub-anim');
+            for (var i = 0; i < cards.length; i++) {
+                cards[i].style.setProperty('--d', ((i % 8) * 45) + 'ms');
+            }
+        }
+        if (!reduce && 'IntersectionObserver' in window) {
+            var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (en.isIntersecting) {
+                        en.target.classList.add('in');
+                        io.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+            for (var k = 0; k < cards.length; k++) io.observe(cards[k]);
+            setTimeout(function () {
+                for (var j = 0; j < cards.length; j++) {
+                    var r = cards[j].getBoundingClientRect();
+                    if (r.top < window.innerHeight && r.bottom > 0) cards[j].classList.add('in');
+                }
+            }, 1000);
+        } else {
+            showAll();
+        }
+
+        // Highlight the category currently in view
+        var navLinks = Array.prototype.slice.call(document.querySelectorAll('.cat-nav a[href^="#"]'));
+        var secs = [];
+        navLinks.forEach(function (a) {
+            var sec = document.querySelector(a.getAttribute('href'));
+            if (sec) secs.push(sec);
+        });
+        if ('IntersectionObserver' in window && secs.length) {
+            var nio = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    if (!en.isIntersecting) return;
+                    var id = '#' + en.target.id;
+                    navLinks.forEach(function (a) {
+                        a.classList.toggle('active', a.getAttribute('href') === id);
+                    });
+                });
+            }, { rootMargin: '-42% 0px -52% 0px', threshold: 0 });
+            secs.forEach(function (sec) { nio.observe(sec); });
         }
     })();
     </script>
