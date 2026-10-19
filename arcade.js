@@ -180,13 +180,13 @@
         'text-shadow:0 0 18px #0ff;letter-spacing:0.25em;animation:crtPulse 1.2s infinite;}' +
         '.pause-overlay .ph{font-family:Orbitron,sans-serif;font-size:13px;color:#888;letter-spacing:0.1em;}' +
         '@keyframes crtPulse{0%,100%{opacity:1}50%{opacity:0.4}}' +
-        '.crt-boot{position:fixed;inset:0;background:#000;z-index:99992;pointer-events:none;' +
+        '.crt-boot{position:fixed;inset:0;background:#000;z-index:99993;pointer-events:none;' +
         'animation:crtBoot .85s ease-out forwards;}' +
         '@keyframes crtBoot{' +
-        '0%{transform:scaleY(0.004);opacity:1;background:#000;}' +
-        '25%{transform:scaleY(0.004);opacity:1;background:#fff;}' +
-        '60%{transform:scaleY(1);opacity:0.85;background:#fff;}' +
-        '100%{transform:scaleY(1);opacity:0;background:#fff;}}' +
+        '0%{transform:scaleY(0.004);opacity:1;background:#39ff14;}' +
+        '25%{transform:scaleY(0.004);opacity:1;background:#39ff14;}' +
+        '60%{transform:scaleY(0.35);opacity:0.5;background:#39ff14;}' +
+        '100%{transform:scaleY(1);opacity:0;background:#39ff14;}}' +
         'body.fx-shake{animation:fxShake var(--fxShakeDur,.32s) ease-in-out;}' +
         '@keyframes fxShake{' +
         '0%,100%{transform:translate(0,0)}' +
@@ -242,10 +242,13 @@
 
     /* ---------- CRT POWER-ON BOOT (once per page load) ---------- */
     try {
-        var boot = document.createElement('div');
-        boot.className = 'crt-boot';
-        document.body.appendChild(boot);
-        setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 900);
+        /* hub renders its own phosphor boot */
+        if (!document.body.classList.contains('hub-retro')) {
+            var boot = document.createElement('div');
+            boot.className = 'crt-boot';
+            document.body.appendChild(boot);
+            setTimeout(function () { if (boot.parentNode) boot.parentNode.removeChild(boot); }, 900);
+        }
     } catch (e) {}
 
     /* ---------- RETRO HIGH-SCORE INITIALS (top-5 per game) ---------- */

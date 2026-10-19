@@ -8,6 +8,11 @@
     box-sizing: border-box;
 }
 
+html {
+    background: #0a0a0f;
+    color-scheme: dark;
+}
+
 :root {
     /* Neon Color Palette */
     --neon-cyan: #00ffff;
