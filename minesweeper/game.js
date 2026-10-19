@@ -134,6 +134,8 @@ function newGame() {
     stopTimer();
     clearTimeout(overTimer);
     overTimer = null;
+    clearTimeout(holdTimer);
+    holdTimer = null;
     mines = null;
     revealed = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));
     flagged = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));

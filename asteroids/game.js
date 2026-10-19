@@ -368,6 +368,7 @@ function initGame() {
     bullets = []; particles = [];
     saucers = []; sBullets = []; saucerTimer = 400;
     isGameOver = false; isPaused = false;
+    if (window.ArcadePause) ArcadePause.hide();
     scoreEl.textContent = 0; livesEl.textContent = 3;
     spawnWave();
 }
@@ -391,7 +392,7 @@ document.addEventListener('keydown', (e) => {
     if (!isRunning) { startGame(); return; }
     keys[e.key] = true;
     if (e.key === ' ') { e.preventDefault(); shoot(); }
-    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) { isPaused = !isPaused; if (window.ArcadePause) ArcadePause.set(isPaused); } }
     if (['ArrowUp', 'ArrowLeft', 'ArrowRight', 'ArrowDown'].includes(e.key)) e.preventDefault();
 });
 document.addEventListener('keyup', (e) => { keys[e.key] = false; });

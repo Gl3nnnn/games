@@ -54,7 +54,7 @@ function buildLevel() {
 
     bombs = [];
     flames = [];
-    player = { x: cx(1), y: cy(1) };
+    player = { x: cx(1), y: cy(1), inv: 0 };
 
     enemies = [];
     const eCount = Math.min(3 + level, 7);
@@ -110,6 +110,7 @@ function loseLife() {
         Scores.submit('bomberman', score);
     } else {
         player.x = cx(1); player.y = cy(1);
+        player.inv = 1500;
         bombs = [];
         flames = [];
     }
@@ -211,7 +212,6 @@ function updatePlayer() {
     }
 
     const pc = Math.floor(p.x / CELL), pr = Math.floor(p.y / CELL);
-    if (grid[pr][pc] === 3) nextLevel();
 
     if (flames.some(f => Math.hypot(f.c * CELL + CELL / 2 - p.x, f.r * CELL + CELL / 2 - p.y) < 17)) loseLife();
 }
@@ -249,7 +249,7 @@ function updateEnemies(dt) {
             Sfx.play('coin');
             continue;
         }
-        if (Math.hypot(e.x - player.x, e.y - player.y) < 17) loseLife();
+        if (player.inv <= 0 && Math.hypot(e.x - player.x, e.y - player.y) < 17) loseLife();
     }
     if (enemies.length === 0 && isRunning) {
         const pc = Math.floor(player.x / CELL), pr = Math.floor(player.y / CELL);
@@ -362,6 +362,7 @@ function loop(t) {
     const dt = Math.min(50, t - lastTime);
     lastTime = t;
     if (isRunning && !isGameOver && !paused) {
+        if (player.inv > 0) player.inv -= dt;
         updatePlayer();
         updateEnemies(dt);
         updateBombs(dt);

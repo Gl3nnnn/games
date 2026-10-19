@@ -117,10 +117,11 @@ function move(dir) {
         animating = false;
         addTileTimer = null;
         addTile();
-        if (!canMove()) endGame(false);
-        else if (!window._reached2048 && grid.some(row => row.some(v => v >= 2048))) {
+        if (!window._reached2048 && grid.some(row => row.some(v => v >= 2048))) {
             window._reached2048 = true;
             endGame(true);
+        } else if (!canMove()) {
+            endGame(false);
         }
     }, 130);
 }

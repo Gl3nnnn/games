@@ -147,7 +147,7 @@ function updateTrains() {
         const hitMush = mushrooms.find(m => m.hp > 0 && Math.abs(m.x - headX) < 13 && Math.abs(m.y - t.y) < 13);
         if (hitMush) {
             t.dir = -t.dir;
-            t.y += 0;
+            t.y += 20;
             hitMush.hp--;
             Sfx.play('bounce');
             if (hitMush.hp <= 0) {
@@ -235,10 +235,7 @@ function draw() {
     ctx.fillRect(p.x - 3, p.y - 4, 6, 6);
 }
 
-let lastTime = 0;
-function loop(t) {
-    const dt = Math.min(50, t - lastTime);
-    lastTime = t;
+function loop() {
     if (isRunning && !isGameOver && !paused) {
         updatePlayer();
         updateTrains();

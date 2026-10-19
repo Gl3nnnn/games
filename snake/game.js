@@ -55,17 +55,14 @@ function initGame() {
 }
 
 function spawnFood() {
-    food = {
-        x: Math.floor(Math.random() * TILE_COUNT),
-        y: Math.floor(Math.random() * TILE_COUNT)
-    };
-
-    for (let segment of snake) {
-        if (segment.x === food.x && segment.y === food.y) {
-            spawnFood();
-            break;
+    const free = [];
+    for (let x = 0; x < TILE_COUNT; x++) {
+        for (let y = 0; y < TILE_COUNT; y++) {
+            if (!snake.some(s => s.x === x && s.y === y)) free.push({ x, y });
         }
     }
+    if (!free.length) { food = { x: -1, y: -1 }; return; }
+    food = free[Math.floor(Math.random() * free.length)];
 }
 
 function spawnBonus() {
@@ -219,10 +216,12 @@ function draw() {
 }
 
 function gameOver() {
+    if (isGameOver) return;
     Sfx.play('gameover');
     Scores.submit('snake', score);
     isGameOver = true;
     isGameRunning = false;
+    if (gameLoop) { clearInterval(gameLoop); gameLoop = null; }
     
     if (score > highScore) {
         highScore = score;

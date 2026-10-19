@@ -97,28 +97,9 @@ function handleWhack(e) {
     }
 }
 
-// Play hit sound effect using Web Audio API
+// Play hit sound effect using the shared arcade synth
 function playHitSound() {
-    if (window.Sfx && Sfx.muted) return;
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        
-        oscillator.frequency.value = 880;
-        oscillator.type = 'square';
-        
-        gainNode.gain.value = 0.3;
-        
-        oscillator.start();
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        oscillator.stop(audioCtx.currentTime + 0.1);
-    } catch(e) {
-        console.log('Audio not supported');
-    }
+    Sfx.play('hit');
 }
 
 function startCountdown() {
@@ -232,7 +213,10 @@ restartBtn.addEventListener('click', resetGame);
 
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ' && e.code !== 'Space') return;
+    if (e.target && /^(input|textarea|select)$/i.test(e.target.tagName || '')) return;
     if (!isGameRunning && !document.querySelector('.game-over:not(.hidden)')) {
+        e.preventDefault();
         startGame();
     }
 });

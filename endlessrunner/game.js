@@ -13,6 +13,8 @@ let highScore = 0;
 let frameCount = 0;
 let gameSpeed = 3;
 let runId = 0;
+let slowmoTimer = 0;
+let slowmoSaved = 3;
 
 function loadHighScore() {
     const savedScore = localStorage.getItem('endlessRunnerHighScore');
@@ -55,6 +57,7 @@ function resetGame() {
     frameCount = 0;
     gameSpeed = 3;
     runId++;
+    slowmoTimer = 0;
     scoreEl.textContent = '0';
 }
 
@@ -134,13 +137,9 @@ function updatePowerUps() {
             powerUps.splice(i, 1);
             Sfx.play('powerup');
             const savedSpeed = gameSpeed;
-            const myRun = runId;
+            slowmoSaved = savedSpeed;
             gameSpeed = Math.max(1.5, gameSpeed - 1.5);
-            setTimeout(() => {
-                if (gameRunning && runId === myRun && gameSpeed < savedSpeed) {
-                    gameSpeed = savedSpeed;
-                }
-            }, 3000);
+            slowmoTimer = 180;
             continue;
         }
 
@@ -199,6 +198,10 @@ function gameLoop() {
     if (!gameRunning) return;
 
     frameCount++;
+    if (slowmoTimer > 0) {
+        slowmoTimer--;
+        if (slowmoTimer === 0) gameSpeed = Math.max(gameSpeed, slowmoSaved);
+    }
     updatePlayer();
     spawnObstacle();
     spawnPowerUp();

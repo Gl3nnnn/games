@@ -55,7 +55,7 @@ function createBalloon() {
     setTimeout(() => {
         if (balloon.parentNode && !balloon.classList.contains('popped')) {
             balloon.remove();
-            if (document.documentElement.dataset.arcPaused !== '1') loseLife();
+            if (!Arcade.isPaused()) loseLife();
         }
     }, duration);
 }
@@ -120,7 +120,9 @@ function loseLife() {
 }
 
 function endGame() {
+    if (!gameRunning) return;
     stopGame();
+    if (score > 0) Scores.submit('balloonPop', score);
     const balloons = gameArea.querySelectorAll('.balloon');
     balloons.forEach(b => b.remove());
     finalScoreEl.textContent = score;
@@ -130,7 +132,7 @@ function endGame() {
 function scheduleSpawn() {
     spawnTimer = setTimeout(() => {
         if (!gameRunning) return;
-        if (document.documentElement.dataset.arcPaused === '1') {
+        if (Arcade.isPaused()) {
             scheduleSpawn();
             return;
         }
@@ -164,7 +166,6 @@ function startGame() {
 
 function stopGame() {
     gameRunning = false;
-    if (typeof score !== 'undefined' && score > 0) Scores.submit('balloonPop', score);
     startBtn.disabled = false;
     
     if (spawnTimer) {

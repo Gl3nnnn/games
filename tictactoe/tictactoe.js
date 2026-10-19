@@ -15,6 +15,8 @@ let currentPlayer = 'X';
 let gameActive = true;
 let gameMode = 'pvp';
 let difficulty = 'easy';
+let aiTimer = null;
+let aiThinking = false;
 
 const difficultySelect = document.getElementById('difficultySelect');
 
@@ -54,14 +56,16 @@ function handleCellClick(e) {
     const cell = e.target;
     const index = parseInt(cell.dataset.index);
     
-    if (boardState[index] !== '' || !gameActive) {
+    if (boardState[index] !== '' || !gameActive || aiThinking) {
         return;
     }
     
     makeMove(index);
     
     if (gameActive && gameMode === 'pve' && currentPlayer === 'O') {
-        setTimeout(makeAIMove, 500);
+        aiThinking = true;
+        clearTimeout(aiTimer);
+        aiTimer = setTimeout(() => { aiThinking = false; makeAIMove(); }, 500);
     }
 }
 
@@ -171,6 +175,8 @@ function makeAIMove() {
 
 function resetGame() {
     Sfx.play('select');
+    clearTimeout(aiTimer);
+    aiThinking = false;
     boardState = ['', '', '', '', '', '', '', '', ''];
     currentPlayer = 'X';
     gameActive = true;

@@ -89,7 +89,11 @@ function checkMatch() {
     } else {
     Sfx.play('hit');
         clearTimeout(flipBackTimer);
-        flipBackTimer = setTimeout(() => {
+        flipBackTimer = setTimeout(function tick() {
+            if (Arcade.isPaused()) {
+                flipBackTimer = setTimeout(tick, 150);
+                return;
+            }
             card1.classList.remove('flipped');
             card1.textContent = '';
             card2.classList.remove('flipped');

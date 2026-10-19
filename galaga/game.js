@@ -318,6 +318,7 @@ function initGame() {
     score = 0; lives = 3; stage = 1;
     timeTick = 0; fireCooldown = 0; stageBanner = 90;
     isGameOver = false; isPaused = false;
+    if (window.ArcadePause) ArcadePause.hide();
     scoreEl.textContent = 0; livesEl.textContent = 3; stageEl.textContent = 1;
     buildStage();
 }
@@ -336,7 +337,7 @@ document.addEventListener('keydown', (e) => {
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     keys[k] = true;
     if (e.key === ' ') { e.preventDefault(); firePlayer(); }
-    if (k === 'p' && !e.repeat) isPaused = !isPaused;
+    if (k === 'p' && !e.repeat) { isPaused = !isPaused; if (window.ArcadePause) ArcadePause.set(isPaused); }
     if (['ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault();
 });
 document.addEventListener('keyup', (e) => {

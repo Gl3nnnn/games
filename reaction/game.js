@@ -74,6 +74,12 @@ function handleClick(e) {
         return;
     }
     
+    if (gameState === 'tooearly') {
+        resetGame();
+        startGame();
+        return;
+    }
+    
     if (gameState === 'ready') {
         const responseTime = Date.now() - startTime;
         currentTimeEl.textContent = responseTime;
@@ -98,7 +104,11 @@ function startGame() {
     
     const randomDelay = Math.floor(Math.random() * 3000) + 1000;
     
-    const timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(function tick() {
+        if (document.documentElement.dataset.arcPaused === '1') {
+            timeoutIds.push(setTimeout(tick, 200));
+            return;
+        }
         if (gameState === 'waiting') {
             setReadyState();
         }

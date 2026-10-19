@@ -57,6 +57,7 @@ function initGame() {
     homes = [false, false, false, false, false];
     score = 0; lives = 3; level = 1;
     isGameOver = false; isPaused = false;
+    if (window.ArcadePause) ArcadePause.hide();
     scoreEl.textContent = 0; livesEl.textContent = 3; levelEl.textContent = 1;
     buildEntities();
 }
@@ -153,8 +154,6 @@ function move(dir) {
         else die();
         return;
     }
-    update();
-    draw();
 }
 
 function drawFrog(x, y) {
@@ -265,7 +264,7 @@ function startGame() {
 document.addEventListener('keydown', (e) => {
     if (isGameOver) return;
     if (!isRunning) { startGame(); return; }
-    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; return; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) { isPaused = !isPaused; if (window.ArcadePause) ArcadePause.set(isPaused); } return; }
     const map = {
         ArrowUp: 'up', w: 'up', W: 'up',
         ArrowDown: 'down', s: 'down', S: 'down',

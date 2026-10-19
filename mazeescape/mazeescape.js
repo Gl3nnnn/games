@@ -215,7 +215,7 @@ function winGame() {
     winLevelEl.textContent = level;
     
     const best = localStorage.getItem('mazeBestTime');
-    if (!best || thisTime < parseFloat(best)) {
+    if (thisTime > 0 && (!best || thisTime < parseFloat(best))) {
         localStorage.setItem('mazeBestTime', thisTime.toFixed(1));
         bestTimeEl.textContent = thisTime.toFixed(1) + 's';
         Scores.submit('maze', parseFloat(thisTime.toFixed(1)), { lowerBetter: true });

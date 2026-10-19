@@ -40,6 +40,7 @@ function initGame() {
     enemyMissiles = []; playerMissiles = []; explosions = [];
     score = 0; wave = 1; aim = { x: W / 2, y: GROUND };
     isGameOver = false; isPaused = false;
+    if (window.ArcadePause) ArcadePause.hide();
     scoreEl.textContent = 0; waveEl.textContent = 1;
     citiesEl.textContent = 6;
     initWave();
@@ -347,7 +348,7 @@ canvas.addEventListener('touchmove', (e) => {
 }, { passive: false });
 
 document.addEventListener('keydown', (e) => {
-    if ((e.key === 'p' || e.key === 'P') && isRunning && !e.repeat) isPaused = !isPaused;
+    if ((e.key === 'p' || e.key === 'P') && isRunning && !e.repeat) { isPaused = !isPaused; if (window.ArcadePause) ArcadePause.set(isPaused); }
 });
 
 restartBtn.addEventListener('click', () => {

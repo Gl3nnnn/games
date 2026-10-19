@@ -26,9 +26,15 @@ function spawnBalls(n) {
     for (let i = 0; i < n; i++) {
         const speed = 2 + level * 0.25 + Math.random() * 0.6;
         const ang = Math.random() * Math.PI * 2;
+        let x, y, tries = 0;
+        do {
+            x = M + 40 + Math.random() * (W - 2 * M - 80);
+            y = M + 40 + Math.random() * (H - 2 * M - 80);
+            tries++;
+        } while (Math.hypot(x - player.x, y - player.y) < 90 && tries < 40);
         balls.push({
-            x: M + 40 + Math.random() * (W - 2 * M - 80),
-            y: M + 40 + Math.random() * (H - 2 * M - 80),
+            x: x,
+            y: y,
             vx: Math.cos(ang) * speed,
             vy: Math.sin(ang) * speed,
             color: BALL_COLORS[i % BALL_COLORS.length]

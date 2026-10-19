@@ -16,7 +16,7 @@ const TOP_X = 220, TOP_Y = 96, CW = 46, RH = 56;
 
 let score, highScore = parseInt(localStorage.getItem('qbertHighScore')) || 0;
 let level, lives, isRunning = false, isGameOver = false, paused = false;
-let palette, cubes, player, coily, balls, keys = {};
+let palette, cubes, player, coily, balls;
 let coilyTimer, ballTimer, fallTimer;
 
 function paletteFor(l) {
@@ -337,7 +337,6 @@ document.addEventListener('keydown', (e) => {
         }
         return;
     }
-    keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = true;
     if (!isRunning && !isGameOver && startScreen && !startScreen.classList.contains('hidden')) {
         startGame();
         return;
@@ -347,9 +346,6 @@ document.addEventListener('keydown', (e) => {
     else if (e.key === 'ArrowRight' || e.key === 'd') playerMove(-1, 0);
     else if (e.key === 'ArrowDown' || e.key === 's') playerMove(1, 1);
     else if (e.key === 'ArrowLeft' || e.key === 'a') playerMove(1, 0);
-});
-document.addEventListener('keyup', (e) => {
-    keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = false;
 });
 canvas.addEventListener('click', () => {
     if (!isRunning && !isGameOver && startScreen && !startScreen.classList.contains('hidden')) startGame();

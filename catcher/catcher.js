@@ -119,26 +119,7 @@ function drawBasket() {
 }
 
 function playCatchSound() {
-    if (window.Sfx && Sfx.muted) return;
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        
-        oscillator.frequency.value = 880;
-        oscillator.type = 'square';
-        
-        gainNode.gain.value = 0.3;
-        
-        oscillator.start();
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        oscillator.stop(audioCtx.currentTime + 0.1);
-    } catch(e) {
-        console.log('Audio not supported');
-    }
+    Sfx.play('coin');
 }
 
 function gameOver() {
@@ -269,6 +250,7 @@ document.addEventListener('keydown', (e) => {
 
 // Mouse/touch controls
 canvas.addEventListener('mousemove', (e) => {
+    if (!isGameRunning) return;
     const rect = canvas.getBoundingClientRect();
     const relativeX = e.clientX - rect.left;
     basketX = relativeX - BASKET_WIDTH / 2;
@@ -276,6 +258,7 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('touchmove', (e) => {
+    if (!isGameRunning) return;
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
     const relativeX = e.touches[0].clientX - rect.left;
@@ -287,6 +270,7 @@ restartBtn.addEventListener('click', resetGame);
 
 // Initial render before game starts
 function initDraw() {
+    if (isGameRunning) return;
     // Clear and draw background
     ctx.fillStyle = '#0a0a0f';
     ctx.fillRect(0, 0, canvas.width, canvas.height);

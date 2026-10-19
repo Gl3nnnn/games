@@ -112,6 +112,7 @@ function hitPlayer() {
     livesEl.textContent = lives;
     playerBullets = []; alienBullets = [];
     player.x = W / 2 - PLAYER_W / 2;
+    player.inv = 90;
     if (lives <= 0) gameOver();
 }
 
@@ -120,6 +121,7 @@ function update() {
 
     if (keys.ArrowLeft || keys.a) player.x = Math.max(6, player.x - 5);
     if (keys.ArrowRight || keys.d) player.x = Math.min(W - PLAYER_W - 6, player.x + 5);
+    if (player.inv > 0) player.inv--;
 
     playerBullets.forEach(b => b.y -= b.speed);
     playerBullets = playerBullets.filter(b => b.y > -10);
@@ -151,8 +153,9 @@ function update() {
     }
 
     for (const b of alienBullets) {
+        if (player.inv > 0) break;
         if (b.x > player.x && b.x < player.x + PLAYER_W && b.y > player.y && b.y < player.y + PLAYER_H) {
-            b.y = H + 100; hitPlayer();
+            b.y = H + 100; hitPlayer(); break;
         }
     }
 
@@ -244,10 +247,11 @@ function gameOver() {
 }
 
 function initGame() {
-    player = { x: W / 2 - PLAYER_W / 2, y: H - 60 };
+    player = { x: W / 2 - PLAYER_W / 2, y: H - 60, inv: 0 };
     score = 0; lives = 3; wave = 1;
     playerBullets = []; alienBullets = [];
     isGameOver = false; isPaused = false;
+    if (window.ArcadePause) ArcadePause.hide();
     scoreEl.textContent = 0; livesEl.textContent = 3; waveEl.textContent = 1;
     spawnWave();
 }
@@ -274,7 +278,7 @@ document.addEventListener('keydown', (e) => {
     if (!isRunning) { startGame(); return; }
     keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = true;
     if (e.key === ' ') { e.preventDefault(); playerShoot(); }
-    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) isPaused = !isPaused; }
+    if (e.key === 'p' || e.key === 'P') { if (!e.repeat) { isPaused = !isPaused; if (window.ArcadePause) ArcadePause.set(isPaused); } }
 });
 document.addEventListener('keyup', (e) => {
     keys[e.key.length === 1 ? e.key.toLowerCase() : e.key] = false;

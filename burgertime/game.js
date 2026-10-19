@@ -122,6 +122,7 @@ function explode(x, y, color, n = 10) {
 }
 
 function loseLife() {
+    if (isGameOver) return;
     if (player.inv > 0) return;
     Sfx.play('die');
     FX.shake(380, 8);

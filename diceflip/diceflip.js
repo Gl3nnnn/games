@@ -12,6 +12,16 @@ const result = document.getElementById('result');
 const totalRollsEl = document.getElementById('totalRolls');
 const coinWinsEl = document.getElementById('coinWins');
 const gameScoreEl = document.getElementById('gameScore');
+
+function pauseAwareTimeout(fn, ms) {
+    return setTimeout(function tick() {
+        if (Arcade.isPaused()) {
+            setTimeout(tick, 100);
+            return;
+        }
+        fn();
+    }, ms);
+}
 const gameLivesEl = document.getElementById('gameLives');
 const finalScoreEl = document.getElementById('finalScore');
 const gameOverEl = document.getElementById('gameOver');
@@ -237,9 +247,8 @@ function flipCoin() {
     
     coin.classList.add('flipping');
     
-    setTimeout(() => {
-        const isHeads = Math.random() < 0.5;
-        
+    pauseAwareTimeout(function () {
+        const isHeads = Math.random() < 0.5;        
         if (isHeads) {
             coin.querySelector('.coin-front').textContent = 'H';
             coin.querySelector('.coin-back').textContent = 'T';
@@ -253,7 +262,7 @@ function flipCoin() {
             result.textContent = 'Tails! No win.';
         }
         
-        setTimeout(() => {
+        pauseAwareTimeout(function () {
             coin.classList.remove('flipping');
             isRolling = false;
         }, 600);

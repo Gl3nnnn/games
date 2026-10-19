@@ -113,28 +113,7 @@ function flashButton(index) {
 }
 
 function playSound(index) {
-    if (window.Sfx && Sfx.muted) return;
-    const frequencies = [261.63, 329.63, 392.00, 523.25];
-    
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequencies[index];
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.4);
-    } catch (e) {
-        // Audio not supported
-    }
+    Sfx.play(['blip', 'select', 'coin', 'jump'][index] || 'blip');
 }
 
 function handleButtonClick(index) {

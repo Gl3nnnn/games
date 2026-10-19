@@ -35,7 +35,7 @@ function initGame() {
     p1 = { y: H / 2 - PADDLE_H / 2 };
     p2 = { y: H / 2 - PADDLE_H / 2 };
     s1 = 0; s2 = 0;
-    isGameOver = false; isPaused = false;
+    isGameOver = false; isPaused = false; isRunning = false;
     scoreP1El.textContent = 0;
     scoreP2El.textContent = 0;
     resetBall(Math.random() < 0.5 ? 1 : -1);
@@ -51,6 +51,7 @@ function scorePoint(who) {
 function endGame() {
     Sfx.play('gameover');
     isGameOver = true;
+    isRunning = false;
     const p1Won = s1 >= WIN_SCORE;
     winTextEl.textContent = twoPlayer
         ? (p1Won ? 'PLAYER 1 WINS!' : 'PLAYER 2 WINS!')
@@ -61,7 +62,7 @@ function endGame() {
         highScore++;
         localStorage.setItem('pongHighScore', highScore);
         highScoreEl.textContent = highScore;
-        Scores.submit('pong', highScore);
+        Scores.submit('pong', highScore, { unit: 'WINS' });
     }
     finalScoreEl.textContent = `${s1} - ${s2}`;
     gameOverEl.classList.remove('hidden');
@@ -164,10 +165,10 @@ function startGame() {
 
 document.addEventListener('keydown', (e) => {
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-    if (!isRunning && !isGameOver && k !== '2') { startGame(); }
+    if (!isRunning && !isGameOver && k !== '2' && k !== 'p') { startGame(); }
     if (isGameOver) return;
     if (k === '2') { twoPlayer = true; if (!isRunning) startGame(); }
-    if (k === 'p' || k === 'P') { if (!e.repeat) isPaused = !isPaused; }
+    if (k === 'p' || k === 'P') { if (isRunning && !isGameOver && !e.repeat) isPaused = !isPaused; }
     if (['w', 's', 'ArrowUp', 'ArrowDown'].includes(k)) mouseActive = false;
     keys[k] = true;
     if (['ArrowUp', 'ArrowDown', ' '].includes(e.key)) e.preventDefault();

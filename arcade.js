@@ -5,8 +5,11 @@
     var wantDpad = dpadMode === '1' || dpadMode === 'wasd';
     var dpadWasd = dpadMode === 'wasd';
     var wantPause = !!(script && script.dataset.pause === '1');
-    var muted = localStorage.getItem('arcadeMuted') === '1';
-    var crtOn = localStorage.getItem('arcadeCrt') !== '0';
+    var muted = false, crtOn = true;
+    try { muted = localStorage.getItem('arcadeMuted') === '1'; } catch (e) {}
+    try { crtOn = localStorage.getItem('arcadeCrt') !== '0'; } catch (e) {}
+    var nativeRaf = window.requestAnimationFrame.bind(window);
+    var nativeSetInterval = window.setInterval.bind(window);
 
     function isTyping(e) {
         var t = e.target;
@@ -19,7 +22,7 @@
     var actx = null;
     function ac() {
         if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
-        if (actx.state === 'suspended') actx.resume();
+        if (actx.state === 'suspended') { var p = actx.resume(); if (p && p.catch) p.catch(function () {}); }
         return actx;
     }
     function tone(freq, dur, type, vol, delay, slideTo) {
@@ -108,7 +111,8 @@
     };
 
     /* ---------- CHIPTUNE BGM ENGINE ---------- */
-    var musicOn = localStorage.getItem('arcadeMusic') === '1';
+    var musicOn = false;
+    try { musicOn = localStorage.getItem('arcadeMusic') === '1'; } catch (e) {}
     var musicSeq = null, musicStep = 0;
     var MUSIC = {
         tempo: 0.135,
@@ -140,7 +144,7 @@
         } catch (e) {}
         musicStep++;
     }
-    function startMusic() { if (!musicSeq) musicSeq = setInterval(musicTick, MUSIC.tempo * 1000); }
+    function startMusic() { if (!musicSeq) musicSeq = nativeSetInterval(musicTick, MUSIC.tempo * 1000); }
     function stopMusic() { clearInterval(musicSeq); musicSeq = null; }
     function syncMusic() { if (musicOn) startMusic(); else stopMusic(); }
     function updateMusicBtn() {
@@ -205,6 +209,10 @@
         '<button class="arcade-btn" id="arcadeCrtBtn" title="Toggle CRT effect">CRT</button>';
     document.body.appendChild(bar);
 
+    function savePref(k, v) {
+        try { localStorage.setItem(k, v); } catch (e) {}
+    }
+
     function updateButtons() {
         var mb = document.getElementById('arcadeMuteBtn');
         if (mb) mb.textContent = muted ? 'SOUND OFF' : 'SOUND ON';
@@ -215,21 +223,21 @@
 
     document.getElementById('arcadeMuteBtn').addEventListener('click', function () {
         muted = !muted;
-        localStorage.setItem('arcadeMuted', muted ? '1' : '0');
+        savePref('arcadeMuted', muted ? '1' : '0');
         updateButtons();
-        if (!muted) SFX.play('blip');
+        if (!muted) Sfx.play('blip');
     });
     document.getElementById('arcadeCrtBtn').addEventListener('click', function () {
         crtOn = !crtOn;
-        localStorage.setItem('arcadeCrt', crtOn ? '1' : '0');
+        savePref('arcadeCrt', crtOn ? '1' : '0');
         crt.style.display = crtOn ? '' : 'none';
     });
     document.getElementById('arcadeMusicBtn').addEventListener('click', function () {
         musicOn = !musicOn;
-        localStorage.setItem('arcadeMusic', musicOn ? '1' : '0');
+        savePref('arcadeMusic', musicOn ? '1' : '0');
         updateMusicBtn();
         syncMusic();
-        if (!muted) SFX.play('blip');
+        if (!muted) Sfx.play('blip');
     });
 
     /* ---------- CRT POWER-ON BOOT (once per page load) ---------- */
@@ -258,6 +266,7 @@
     document.head.appendChild(ScoreStyle);
 
     var ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var entryOpen = false;
     function scoresKey(id) { return 'arcadeScores_' + id; }
     function readScores(id) {
         try {
@@ -276,7 +285,7 @@
         return lowerBetter ? score < worst : score > worst;
     }
     function insertScore(id, score, initials, lowerBetter) {
-        var arr = readScores(id);
+        var arr = readScores(id).filter(function (e) { return e && typeof e.s === 'number'; });
         arr.push({ s: score, i: initials, t: Date.now() });
         arr.sort(function (a, b) { return lowerBetter ? a.s - b.s : b.s - a.s; });
         writeScores(id, arr);
@@ -298,6 +307,7 @@
             '</div>' +
             '<div class="hs-help">TYPE A–Z · <b>←→</b> MOVE · <b>↑↓</b> CHANGE · <b>ENTER</b> CONFIRM</div>';
         document.body.appendChild(wrap);
+        entryOpen = true;
         var slotEls = wrap.querySelectorAll('.hs-slot');
         function render() {
             slotEls.forEach(function (el, i) {
@@ -309,7 +319,7 @@
         function onKey(e) {
             if (e.key === 'F5' || ((e.ctrlKey || e.metaKey) && /^[rR]$/.test(e.key))) return;
             e.preventDefault();
-            e.stopPropagation();
+            e.stopImmediatePropagation();
             var k = e.key;
             if (/^[a-zA-Z]$/.test(k)) {
                 slots[active] = k.toUpperCase().charCodeAt(0) - 65;
@@ -337,6 +347,7 @@
             render();
         }
         function cleanup() {
+            entryOpen = false;
             document.removeEventListener('keydown', onKey, true);
             if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
         }
@@ -390,13 +401,18 @@
         document.body.appendChild(dpad);
         dpad.querySelectorAll('button').forEach(function (b) {
             var key = b.dataset.key;
+            var pressed = false;
             function down(e) {
                 e.preventDefault();
+                if (pressed) return;
+                pressed = true;
                 var m = dpadMap(key);
                 document.dispatchEvent(new KeyboardEvent('keydown', { key: m.key, code: m.code, bubbles: true, cancelable: true }));
             }
             function up(e) {
                 e.preventDefault();
+                if (!pressed) return;
+                pressed = false;
                 var m = dpadMap(key);
                 document.dispatchEvent(new KeyboardEvent('keyup', { key: m.key, code: m.code, bubbles: true, cancelable: true }));
             }
@@ -411,11 +427,9 @@
     /* ---------- GENERIC PAUSE ENGINE (opt-in via data-pause="1") ---------- */
     if (wantPause) {
         var paused = false;
-        var _raf = window.requestAnimationFrame.bind(window);
-        var _setInterval = window.setInterval.bind(window);
 
         window.requestAnimationFrame = function (cb) {
-            return _raf(function (ts) {
+            return nativeRaf(function (ts) {
                 if (paused) window.requestAnimationFrame(cb);
                 else cb(ts);
             });
@@ -423,11 +437,11 @@
         window.setInterval = function (cb, ms) {
             var args = Array.prototype.slice.call(arguments, 2);
             if (typeof cb === 'function') {
-                return _setInterval(function () {
+                return nativeSetInterval(function () {
                     if (!paused) cb.apply(null, args);
                 }, ms);
             }
-            return _setInterval.apply(window, arguments);
+            return nativeSetInterval.apply(window, arguments);
         };
 
         var pOverlay = null;
@@ -448,15 +462,73 @@
             else if (pOverlay) pOverlay.style.display = 'none';
         }
         document.addEventListener('keydown', function (e) {
+            if (entryOpen) return;
             if ((e.key === 'p' || e.key === 'P') && !e.repeat && (!isTyping(e) || paused)) togglePause();
         });
     }
+
+    /* ---------- SHARED PAUSE OVERLAY FOR SELF-PAUSING GAMES ---------- */
+    window.Arcade = window.Arcade || {};
+    window.Arcade.isPaused = function () {
+        return document.documentElement.dataset.arcPaused === '1';
+    };
+    window.ArcadePause = (function () {
+        var ov = null;
+        function ensure() {
+            if (!ov) {
+                ov = document.createElement('div');
+                ov.className = 'pause-overlay';
+                ov.style.display = 'none';
+                ov.innerHTML = '<div class="pl">PAUSED</div><div class="ph">PRESS P TO RESUME</div>';
+                document.body.appendChild(ov);
+            }
+            return ov;
+        }
+        return {
+            show: function () { ensure().style.display = 'flex'; },
+            hide: function () { if (ov) ov.style.display = 'none'; },
+            set: function (on) { if (on) this.show(); else this.hide(); }
+        };
+    })();
+
+    /* ---------- KEY STATE SAFETY: release held keys on blur/tab-hide ---------- */
+    var heldKeys = {};
+    document.addEventListener('keydown', function (e) {
+        heldKeys[e.code || e.key] = { key: e.key, code: e.code };
+    }, true);
+    document.addEventListener('keyup', function (e) {
+        delete heldKeys[e.code || e.key];
+    }, true);
+    function releaseHeldKeys() {
+        for (var id in heldKeys) {
+            var k = heldKeys[id];
+            document.dispatchEvent(new KeyboardEvent('keyup', { key: k.key, code: k.code, bubbles: true, cancelable: true }));
+        }
+        heldKeys = {};
+    }
+    window.addEventListener('blur', releaseHeldKeys);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) releaseHeldKeys(); });
 
     /* ---------- GAMEPAD API (auto for all pages) ---------- */
     (function () {
         var prev = {};
         var axisHeld = { left: false, right: false, up: false, down: false };
         var dead = 0.5;
+        var BTN = [
+            ['a', 'Enter', 'Enter'],
+            ['b', ' ', 'Space'],
+            ['start', 'p', 'KeyP'],
+            ['up', 'ArrowUp', 'ArrowUp'],
+            ['down', 'ArrowDown', 'ArrowDown'],
+            ['left', 'ArrowLeft', 'ArrowLeft'],
+            ['right', 'ArrowRight', 'ArrowRight']
+        ];
+        var AXIS = [
+            ['left', 'ArrowLeft', 'ArrowLeft'],
+            ['right', 'ArrowRight', 'ArrowRight'],
+            ['up', 'ArrowUp', 'ArrowUp'],
+            ['down', 'ArrowDown', 'ArrowDown']
+        ];
         var padKeys = dpadWasd
             ? { ArrowUp: ['w', 'KeyW'], ArrowDown: ['s', 'KeyS'], ArrowLeft: ['a', 'KeyA'], ArrowRight: ['d', 'KeyD'] }
             : null;
@@ -470,6 +542,7 @@
             }));
         }
         function setBtn(id, down, key, code) {
+            if (prev[id] === undefined) prev[id] = false;
             if (prev[id] === down) return;
             prev[id] = down;
             var m = remap(key, code);
@@ -481,11 +554,22 @@
             var m = remap(key, code);
             press(m.key, m.code, down);
         }
+        var padCount = 0;
+        function releaseAll() {
+            for (var i = 0; i < padCount; i++) {
+                for (var b = 0; b < BTN.length; b++) setBtn(BTN[b][0] + i, false, BTN[b][1], BTN[b][2]);
+            }
+            for (var a = 0; a < AXIS.length; a++) setAxis(AXIS[a][0], false, AXIS[a][1], AXIS[a][2]);
+        }
         function poll() {
             var pads = navigator.getGamepads ? navigator.getGamepads() : [];
+            if (pads.length > padCount) padCount = pads.length;
             for (var i = 0; i < pads.length; i++) {
                 var gp = pads[i];
-                if (!gp) continue;
+                if (!gp) {
+                    for (var b = 0; b < BTN.length; b++) setBtn(BTN[b][0] + i, false, BTN[b][1], BTN[b][2]);
+                    continue;
+                }
                 setBtn('a' + i, !!(gp.buttons[0] && gp.buttons[0].pressed), 'Enter', 'Enter');
                 setBtn('b' + i, !!(gp.buttons[1] && gp.buttons[1].pressed), ' ', 'Space');
                 setBtn('start' + i, !!(gp.buttons[9] && gp.buttons[9].pressed), 'p', 'KeyP');
@@ -499,8 +583,10 @@
                 setAxis('up', ay < -dead, 'ArrowUp', 'ArrowUp');
                 setAxis('down', ay > dead, 'ArrowDown', 'ArrowDown');
             }
-            requestAnimationFrame(poll);
+            nativeRaf(poll);
         }
-        if (navigator.getGamepads) requestAnimationFrame(poll);
+        window.addEventListener('gamepaddisconnected', releaseAll);
+        window.addEventListener('blur', releaseAll);
+        if (navigator.getGamepads) nativeRaf(poll);
     })();
 })();

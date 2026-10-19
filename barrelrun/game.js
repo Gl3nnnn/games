@@ -54,6 +54,7 @@ function nextLevel() {
 }
 
 function loseLife() {
+    if (isGameOver) return;
     lives--;
     livesEl.textContent = lives;
     Sfx.play('die');
@@ -118,18 +119,20 @@ function updatePlayer() {
         p.face = mv;
     }
 
-    if (keys.ArrowUp || keys.w) {
+    if ((keys.ArrowUp || keys.w) && !p.jumping) {
         const lad = ladders.find(l => l.bot === p.row && Math.abs(p.x - l.x) < 15);
         if (lad && p.row > 0) {
             p.climbing = { dir: -1, target: p.row - 1 };
             p.x = lad.x;
+            p.vy = 0; p.jumping = false;
         }
     }
-    if (keys.ArrowDown || keys.s) {
+    if ((keys.ArrowDown || keys.s) && !p.jumping) {
         const lad = ladders.find(l => l.top === p.row && Math.abs(p.x - l.x) < 15);
         if (lad && p.row < 5) {
             p.climbing = { dir: 1, target: p.row + 1 };
             p.x = lad.x;
+            p.vy = 0; p.jumping = false;
         }
     }
 
@@ -177,7 +180,7 @@ function updateBarrels(dt) {
         }
 
         const dy = Math.abs(b.y - (p.y - 17));
-        if (Math.abs(b.x - p.x) < 20 && dy < 22) loseLife();
+        if (Math.abs(b.x - p.x) < 20 && dy < 22) { loseLife(); break; }
     }
 }
 

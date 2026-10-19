@@ -433,10 +433,11 @@
         var inner = document.getElementById('marqueeInner');
         if (inner) {
             var entries = [];
+            var LOWER = /BestTime$|BestMoves$|Best$|reactionBestScore$/;
             try {
                 for (var i = 0; i < localStorage.length; i++) {
                     var k = localStorage.key(i);
-                    if (/HighScore$|BestTime$|BestMoves$|BestLevel$|BestScore$|BestWpm$|Best$|XWins$|CoinWins$/.test(k)) {
+                    if (/HighScore$|BestTime$|BestMoves$|BestLevel$|BestScore$|BestWpm$|Best$|XWins$|CoinWins$/.test(k) && !LOWER.test(k)) {
                         var v = parseInt(localStorage.getItem(k)) || 0;
                         if (v > 0) entries.push({ k: k, v: v });
                     }

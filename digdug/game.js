@@ -43,7 +43,7 @@ function buildLevel() {
         enemies.push({
             x: cx(c), y: cy(2), tx: c, ty: 2, cell: [c, 2],
             type: i % 2 === 1 ? 'fygar' : 'pooka',
-            inflate: 0, frozen: 0, fireCd: 2000 + Math.random() * 3000
+            inflate: 0, frozen: 0, inflateTimer: 0, fireCd: 2000 + Math.random() * 3000
         });
     }
     enemyStepTimer = 0;
@@ -146,9 +146,13 @@ function updateEnemies(dt) {
     if (doStep) enemyStepTimer = 0;
 
     for (const e of enemies) {
-        if (e.inflate > 0) continue;
         e.frozen = Math.max(0, e.frozen - dt);
+        if (e.inflate > 0) {
+            e.inflateTimer -= dt;
+            if (e.inflateTimer <= 0) e.inflate = 0;
+        }
         e.fireCd -= dt;
+        if (e.frozen > 0 || e.inflate > 0) continue;
 
         const [ec, er] = cellOf(e.x, e.y);
         const arrived = Math.abs(e.x - cx(ec)) < 2 && Math.abs(e.y - cy(er)) < 2;
@@ -204,6 +208,7 @@ function updateShots() {
             if (Math.hypot(e.x - s.x, e.y - s.y) < 13) {
                 e.inflate++;
                 e.frozen = 700;
+                e.inflateTimer = 2500;
                 dead = true;
                 if (e.inflate >= 2) {
                     score += e.type === 'fygar' ? 400 : 200;
@@ -233,7 +238,7 @@ function updateFires() {
             fires.splice(i, 1);
             continue;
         }
-        if (Math.hypot(f.x - player.x, f.y - player.y) < 12) loseLife();
+        if (Math.hypot(f.x - player.x, f.y - player.y) < 12) { loseLife(); break; }
     }
 }
 

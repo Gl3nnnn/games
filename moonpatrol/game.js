@@ -112,6 +112,7 @@ function fire() {
 }
 
 function killPlayer() {
+    if (isGameOver) return;
     if (player.inv > 0) return;
     Sfx.play('die');
     FX.shake(380, 8);

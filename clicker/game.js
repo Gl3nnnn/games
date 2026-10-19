@@ -14,6 +14,7 @@ let roundActive = false;
 let roundTimer = null;
 let targetShown = false;
 let bestAtStart = 0;
+let roundTarget = 100;
 
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
@@ -40,7 +41,7 @@ const startBtn = document.getElementById('startBtn');
 const againBtn = document.getElementById('againBtn');
 
 function targetScore() {
-    return Math.max(100, highScore + 100);
+    return roundTarget;
 }
 
 function updateDisplay() {
@@ -199,6 +200,7 @@ function startRound() {
     timeLeft = 60;
     targetShown = false;
     bestAtStart = highScore;
+    roundTarget = Math.max(100, bestAtStart + 100);
     roundActive = true;
     timeLeftEl.style.color = '';
     timeLeftEl.style.textShadow = '';
@@ -223,4 +225,5 @@ startBtn.addEventListener('click', startRound);
 againBtn.addEventListener('click', startRound);
 
 highScoreEl.textContent = highScore;
+roundTarget = Math.max(100, highScore + 100);
 updateDisplay();

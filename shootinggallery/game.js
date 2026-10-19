@@ -20,10 +20,24 @@ let misses = 0;
 const MAX_MISSES = 5;
 let timerInterval = null;
 let targets = [];
+let spawnTimers = [];
 const targetColors = ['#ff0066', '#00ff66', '#6600ff', '#ff6600', '#00ffff', '#ff00ff'];
 
 function hitsDone() { return 15 - targetsLeft; }
 function spawnCap() { return Math.min(8, 5 + Math.floor(hitsDone() / 5)); }
+
+function scheduleTarget(delay) {
+    const id = setTimeout(() => {
+        spawnTimers = spawnTimers.filter(t => t !== id);
+        if (gameRunning) createTarget();
+    }, delay);
+    spawnTimers.push(id);
+}
+
+function clearSpawnTimers() {
+    spawnTimers.forEach(clearTimeout);
+    spawnTimers = [];
+}
 
 function loadHighScore() {
     const savedScore = localStorage.getItem('shootingGalleryHighScore');
@@ -58,6 +72,7 @@ function createTarget() {
 }
 
 function resetGame() {
+    clearSpawnTimers();
     score = 0;
     timeLeft = 30;
     targetsLeft = 15;
@@ -71,7 +86,7 @@ function resetGame() {
     
     // Spawn initial targets
     for (let i = 0; i < 5; i++) {
-        setTimeout(() => createTarget(), i * 300);
+        scheduleTarget(i * 300);
     }
 }
 
@@ -168,6 +183,8 @@ function gameLoop() {
 }
 
 function startGame() {
+    if (gameRunning) return;
+    clearInterval(timerInterval);
     Sfx.play('select');
     resetGame();
     gameRunning = true;
@@ -192,6 +209,7 @@ function endGame() {
     Sfx.play(targetsLeft <= 0 ? 'win' : 'gameover');
     Scores.submit('shootingGallery', score);
     clearInterval(timerInterval);
+    clearSpawnTimers();
     saveHighScore();
     
     if (targetsLeft <= 0) {
@@ -237,7 +255,7 @@ function handleClick(e) {
             
             // Spawn new target
             if (targetsLeft > 0) {
-                setTimeout(createTarget, 500);
+                scheduleTarget(500);
             }
             
             break;

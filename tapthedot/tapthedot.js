@@ -60,7 +60,18 @@ function moveDot() {
     // Gradually decrease move delay (increase speed)
     moveDelay = Math.max(350, moveDelay - 25);
     
-    moveTimeout = setTimeout(onDotEscaped, moveDelay);
+    scheduleEscape(moveDelay);
+}
+
+function scheduleEscape(delay) {
+    clearTimeout(moveTimeout);
+    moveTimeout = setTimeout(function tick() {
+        if (Arcade.isPaused()) {
+            scheduleEscape(150);
+            return;
+        }
+        onDotEscaped();
+    }, delay);
 }
 
 function onDotEscaped() {
@@ -95,6 +106,9 @@ function handleDotClick(e) {
 }
 
 function startGame() {
+    if (gameRunning) return;
+    clearTimeout(moveTimeout);
+    clearInterval(timerInterval);
     Sfx.play('select');
     gameRunning = true;
     score = 0;
@@ -116,7 +130,7 @@ function startGame() {
     dot.style.top = pos.y + 'px';
     
     // Start moving the dot
-    moveTimeout = setTimeout(onDotEscaped, moveDelay);
+    scheduleEscape(moveDelay);
     
     // Start timer
     timerInterval = setInterval(() => {
@@ -165,8 +179,8 @@ function resetGame() {
     moveDelay = 1500;
     
     timerEl.textContent = '30';
-    timerEl.style.color = '#ff0044';
-    timerEl.style.textShadow = '0 0 10px #ff0044';
+    timerEl.style.color = '';
+    timerEl.style.textShadow = '';
     scoreEl.textContent = '0';
     missesEl.textContent = '0';
     

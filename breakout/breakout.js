@@ -69,8 +69,9 @@ function makeBall(stuck = true) {
 function launchBall(b, hitPoint = 0) {
     b.stuck = false;
     const angle = -Math.PI / 2 + hitPoint * 0.002;
-    b.vx = Math.cos(angle) * BALL_SPEED;
-    b.vy = Math.sin(angle) * BALL_SPEED;
+    const sp = boostSpeed();
+    b.vx = Math.cos(angle) * sp;
+    b.vy = Math.sin(angle) * sp;
 }
 
 function syncStuckBalls() {
@@ -246,6 +247,7 @@ function checkWin() {
 }
 
 function loseLife() {
+    if (isGameOver) return;
     lives--;
     if (livesEl) livesEl.textContent = lives;
     Sfx.play('die');
@@ -344,7 +346,6 @@ function draw() {
                     const hitPoint = b.x - (paddleX + paddleW / 2);
                     b.vx = hitPoint * 0.1;
                     Sfx.play('blip');
-                    if (b.stuck) b.stuckTimer = 999;
                 } else if (b.y + b.vy > canvas.height - BALL_RADIUS) {
                     balls.splice(i, 1);
                     if (balls.length === 0) {
@@ -362,10 +363,12 @@ function draw() {
 }
 
 function gameOver(won) {
+    if (isGameOver) return;
     Sfx.play(won ? 'win' : 'gameover');
     Scores.submit('breakout', score);
     isGameOver = true;
     isGameRunning = false;
+    if (gameLoop) { clearInterval(gameLoop); gameLoop = null; }
 
     if (won) {
         gameOverTitle.textContent = 'YOU WIN!';

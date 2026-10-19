@@ -35,7 +35,7 @@ function generateProblem() {
             currentAnswer = num1 + num2;
             break;
         case '−':
-            num1 = Math.floor(Math.random() * R) + R;
+            num1 = Math.floor(Math.random() * R) + 1;
             num2 = Math.floor(Math.random() * num1) + 1;
             currentAnswer = num1 - num2;
             break;
@@ -76,6 +76,8 @@ function showMessage(text, type) {
 }
 
 function startGame() {
+    if (gameRunning) return;
+    clearInterval(timerInterval);
     Sfx.play('select');
     gameRunning = true;
     score = 0;
