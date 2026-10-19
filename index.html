@@ -7,6 +7,10 @@
     <meta name="theme-color" content="#04060b">
     <style>
         html, body { background: #04060b; color-scheme: dark; }
+        body.gate-pending > header,
+        body.gate-pending > nav,
+        body.gate-pending > main,
+        body.gate-pending > footer { visibility: hidden; }
     </style>
     <title>Neon Arcade</title>
     <link rel="icon" type="image/png" href="logo.png">
@@ -14,7 +18,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="hub.css">
 </head>
-<body class="hub-retro">
+<body class="hub-retro gate-pending">
     <div class="background-effects">
         <div class="grid-overlay"></div>
         <div class="scanlines"></div>
@@ -424,7 +428,19 @@
     </footer>
 
     <div id="coinWipe" class="coin-wipe hidden"><div class="coin-text">INSERT COIN</div></div>
-    <div id="crtBoot" class="crt-boot-hub" aria-hidden="true"><div class="crt-boot-line"></div></div>
+
+    <div id="startGate" class="start-gate" role="button" tabindex="0" aria-label="Click to start Neon Arcade">
+        <div class="gate-beam" aria-hidden="true"></div>
+        <div class="gate-panel">
+            <div class="bulb-strip top" aria-hidden="true"></div>
+            <div class="gate-kicker">&#9733; NEON ARCADE &#9733;</div>
+            <div class="gate-title">ARE YOU READY?</div>
+            <div class="gate-coin">&#129689; INSERT COIN</div>
+            <div class="gate-prompt">CLICK TO START</div>
+            <div class="gate-sub">39 GAMES &middot; HIGH SCORES &middot; 1 PLAYER</div>
+            <div class="bulb-strip bottom" aria-hidden="true"></div>
+        </div>
+    </div>
 
     <script src="arcade.js"></script>
     <script>
@@ -522,46 +538,82 @@
             }
         }
 
-        // CRT power-on: short phosphor sweep on every load, non-blocking
-        var boot = document.getElementById('crtBoot');
-        function finishBoot() {
-            if (boot && boot.parentNode) boot.parentNode.removeChild(boot);
-        }
-        if (!boot || reduce) {
-            if (boot) finishBoot();
-        } else {
-            setTimeout(finishBoot, 600);
-        }
-
-        // Staggered card reveal
+        // Start gate + CRT power-on
+        var gate = document.getElementById('startGate');
         var cards = Array.prototype.slice.call(document.querySelectorAll('.game-card'));
+
         function showAll() {
             for (var i = 0; i < cards.length; i++) cards[i].classList.add('in');
         }
-        if (!reduce) {
+
+        function initReveal() {
+            if (reduce) { showAll(); return; }
             document.body.classList.add('hub-anim');
             for (var i = 0; i < cards.length; i++) {
                 cards[i].style.setProperty('--d', ((i % 8) * 45) + 'ms');
             }
-        }
-        if (!reduce && 'IntersectionObserver' in window) {
-            var io = new IntersectionObserver(function (entries) {
-                entries.forEach(function (en) {
-                    if (en.isIntersecting) {
-                        en.target.classList.add('in');
-                        io.unobserve(en.target);
+            if ('IntersectionObserver' in window) {
+                var io = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (en) {
+                        if (en.isIntersecting) {
+                            en.target.classList.add('in');
+                            io.unobserve(en.target);
+                        }
+                    });
+                }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
+                for (var k = 0; k < cards.length; k++) io.observe(cards[k]);
+                setTimeout(function () {
+                    for (var j = 0; j < cards.length; j++) {
+                        var r = cards[j].getBoundingClientRect();
+                        if (r.top < window.innerHeight && r.bottom > 0) cards[j].classList.add('in');
                     }
-                });
-            }, { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
-            for (var k = 0; k < cards.length; k++) io.observe(cards[k]);
-            setTimeout(function () {
-                for (var j = 0; j < cards.length; j++) {
-                    var r = cards[j].getBoundingClientRect();
-                    if (r.top < window.innerHeight && r.bottom > 0) cards[j].classList.add('in');
-                }
-            }, 1000);
+                }, 1000);
+            } else {
+                showAll();
+            }
+        }
+
+        function runBoot() {
+            if (reduce) return;
+            var b = document.createElement('div');
+            b.className = 'crt-boot-hub';
+            b.setAttribute('aria-hidden', 'true');
+            b.innerHTML = '<div class="crt-boot-line"></div>';
+            document.body.appendChild(b);
+            setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, 700);
+        }
+
+        var started = false;
+        function startArcade() {
+            if (started) return;
+            started = true;
+            document.body.classList.remove('gate-pending');
+            if (gate) {
+                gate.classList.add('starting');
+                gate.setAttribute('aria-hidden', 'true');
+            }
+            runBoot();
+            initReveal();
+            setTimeout(function () { if (gate && gate.parentNode) gate.parentNode.removeChild(gate); }, 360);
+        }
+
+        if (!gate || reduce) {
+            if (gate && gate.parentNode) gate.parentNode.removeChild(gate);
+            document.body.classList.remove('gate-pending');
+            initReveal();
         } else {
-            showAll();
+            try { gate.focus({ preventScroll: true }); } catch (e) { gate.focus(); }
+            gate.addEventListener('click', startArcade);
+            gate.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    startArcade();
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                if (started || e.key === 'Tab' || e.key === 'Escape') return;
+                startArcade();
+            });
         }
 
         // Highlight the category currently in view

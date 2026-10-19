@@ -604,6 +604,168 @@ body.hub-retro {
     100% { opacity: 0; visibility: hidden; }
 }
 
+/* ---------------- start gate ---------------- */
+
+body.gate-pending { overflow: hidden; }
+
+.start-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 99992;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at 50% 45%, #0d1a10 0%, #04080a 52%, #010203 100%);
+    cursor: pointer;
+    text-align: center;
+    animation: gateOn 0.5s steps(7) both;
+}
+
+.start-gate::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.5) 0px,
+        rgba(0, 0, 0, 0.5) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    pointer-events: none;
+}
+
+.start-gate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.85) 100%);
+    pointer-events: none;
+}
+
+.start-gate.starting { animation: gateOff 0.36s steps(4) forwards; }
+
+.gate-beam {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -140px;
+    height: 140px;
+    background: linear-gradient(180deg, transparent, rgba(57, 255, 20, 0.09), transparent);
+    animation: gateBeam 3.2s linear infinite;
+    pointer-events: none;
+}
+
+.gate-panel {
+    position: relative;
+    z-index: 1;
+    width: min(680px, 100%);
+    padding: 3.2rem 2.6rem;
+    background: linear-gradient(180deg, rgba(6, 14, 9, 0.96), rgba(2, 4, 6, 0.97));
+    border: 2px solid rgba(57, 255, 20, 0.75);
+    box-shadow:
+        0 0 0 4px #010203,
+        0 0 44px rgba(57, 255, 20, 0.22),
+        inset 0 0 70px rgba(0, 0, 0, 0.9);
+}
+
+.gate-panel::before,
+.gate-panel::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--crt-green);
+    box-shadow: 0 0 10px rgba(57, 255, 20, 0.9);
+}
+.gate-panel::before { top: -6px; left: -6px; }
+.gate-panel::after { bottom: -6px; right: -6px; }
+
+.gate-kicker {
+    font-family: var(--pixel-font);
+    font-size: clamp(0.5rem, 1.3vw, 0.75rem);
+    letter-spacing: 0.3em;
+    color: var(--crt-green);
+    text-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
+    animation: gateFlicker 2.6s steps(2) infinite;
+}
+
+.gate-title {
+    margin: 1.2rem 0 0.9rem;
+    font-family: var(--pixel-font);
+    font-size: clamp(1.15rem, 4.2vw, 2.5rem);
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    color: #ecffe9;
+    text-shadow: 0 0 20px rgba(57, 255, 20, 0.45), 4px 4px 0 #010203;
+    animation: gateTitle 0.6s steps(8) 0.12s both;
+}
+
+.gate-coin {
+    font-family: var(--term-font);
+    font-size: clamp(1rem, 2.6vw, 1.5rem);
+    letter-spacing: 0.24em;
+    color: var(--crt-gold);
+    text-shadow: 0 0 14px rgba(255, 214, 102, 0.5);
+}
+
+.gate-prompt {
+    margin-top: 1.5rem;
+    font-family: var(--pixel-font);
+    font-size: clamp(0.58rem, 1.7vw, 0.9rem);
+    letter-spacing: 0.18em;
+    color: var(--neon-cyan, #0ff);
+    text-shadow: 0 0 16px rgba(0, 255, 255, 0.65);
+    animation: gateBlink 1.05s steps(2) infinite;
+}
+
+.gate-sub {
+    margin-top: 1.7rem;
+    font-family: var(--term-font);
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    color: #798395;
+}
+
+.start-gate .bulb-strip.top { top: 12px; }
+.start-gate .bulb-strip.bottom { bottom: 12px; }
+
+@keyframes gateOn {
+    0% { opacity: 0; filter: brightness(3); }
+    30% { opacity: 0.55; filter: brightness(1.8); }
+    45% { opacity: 0.12; filter: brightness(2.4); }
+    60% { opacity: 1; filter: brightness(1.1); }
+    100% { opacity: 1; filter: brightness(1); }
+}
+
+@keyframes gateOff {
+    0% { opacity: 1; }
+    35% { opacity: 0.15; }
+    55% { opacity: 0.75; }
+    100% { opacity: 0; visibility: hidden; }
+}
+
+@keyframes gateBeam {
+    0% { top: -140px; }
+    100% { top: 100%; }
+}
+
+@keyframes gateFlicker {
+    0%, 92%, 100% { opacity: 1; }
+    93%, 96% { opacity: 0.35; }
+}
+
+@keyframes gateTitle {
+    0% { opacity: 0; transform: scaleY(0.6); }
+    55% { opacity: 0.3; }
+    100% { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes gateBlink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0.35; }
+}
+
 /* ---------------- focus / accessibility ---------------- */
 
 .hub-retro .game-card:focus-visible {
@@ -649,6 +811,8 @@ body.hub-retro {
     .hub-retro .card-icon { height: 84px; }
     .hub-retro .category { margin-bottom: 2.6rem; }
     .cat-count { font-size: 0.92rem; }
+    .gate-panel { padding: 2.6rem 1rem; }
+    .gate-sub { letter-spacing: 0.1em; font-size: 0.75rem; }
 }
 
 /* ---------------- reduced motion ---------------- */
@@ -663,7 +827,12 @@ body.hub-retro {
     .hub-retro .marquee-inner,
     .hub-retro .main-footer p,
     .hub-retro .shuffle-btn,
-    .hub-retro .game-card:hover .card-icon::before {
+    .hub-retro .game-card:hover .card-icon::before,
+    .start-gate,
+    .gate-beam,
+    .gate-kicker,
+    .gate-title,
+    .gate-prompt {
         animation: none !important;
     }
 
