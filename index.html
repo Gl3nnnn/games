@@ -11,6 +11,20 @@
         body.gate-pending > nav,
         body.gate-pending > main,
         body.gate-pending > footer { visibility: hidden; }
+        :where(#startGate) {
+            position: fixed;
+            inset: 0;
+            z-index: 99992;
+            display: grid;
+            place-items: center;
+            background: #04080a;
+            text-align: center;
+        }
+        :where(#startGate) .gate-panel {
+            max-width: 680px;
+            padding: 2rem;
+            border: 2px solid #39ff14;
+        }
     </style>
     <title>Neon Arcade</title>
     <link rel="icon" type="image/png" href="logo.png">
@@ -429,14 +443,14 @@
 
     <div id="coinWipe" class="coin-wipe hidden"><div class="coin-text">INSERT COIN</div></div>
 
-    <div id="startGate" class="start-gate" role="button" tabindex="0" aria-label="Click to start Neon Arcade">
+    <div id="startGate" class="start-gate" role="button" tabindex="0" aria-label="Click or press any key to start Neon Arcade">
         <div class="gate-beam" aria-hidden="true"></div>
         <div class="gate-panel">
             <div class="bulb-strip top" aria-hidden="true"></div>
             <div class="gate-kicker">&#9733; NEON ARCADE &#9733;</div>
             <div class="gate-title">ARE YOU READY?</div>
             <div class="gate-coin">&#129689; INSERT COIN</div>
-            <div class="gate-prompt">CLICK TO START</div>
+            <div class="gate-prompt">CLICK OR PRESS ANY KEY</div>
             <div class="gate-sub">39 GAMES &middot; HIGH SCORES &middot; 1 PLAYER</div>
             <div class="bulb-strip bottom" aria-hidden="true"></div>
         </div>
@@ -529,18 +543,33 @@
         var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         // Decorative marquee bulbs
-        var strips = document.querySelectorAll('.bulb-strip');
-        for (var s = 0; s < strips.length; s++) {
-            for (var b = 0; b < 16; b++) {
-                var bulb = document.createElement('i');
-                bulb.style.setProperty('--n', b);
-                strips[s].appendChild(bulb);
+        try {
+            var strips = document.querySelectorAll('.bulb-strip');
+            for (var s = 0; s < strips.length; s++) {
+                for (var b = 0; b < 16; b++) {
+                    var bulb = document.createElement('i');
+                    bulb.style.setProperty('--n', b);
+                    strips[s].appendChild(bulb);
+                }
             }
-        }
+        } catch (e) {}
 
         // Start gate + CRT power-on
         var gate = document.getElementById('startGate');
         var cards = Array.prototype.slice.call(document.querySelectorAll('.game-card'));
+        var navType = '';
+        try {
+            var navEntries = window.performance && performance.getEntriesByType ? performance.getEntriesByType('navigation') : [];
+            navType = (navEntries && navEntries[0] && navEntries[0].type) || '';
+        } catch (e) {}
+        var returning = navType === 'back_forward';
+
+        function setToolbarInert(on) {
+            var bar = document.querySelector('.arcade-bar');
+            if (!bar) return;
+            if (on) bar.setAttribute('inert', '');
+            else bar.removeAttribute('inert');
+        }
 
         function showAll() {
             for (var i = 0; i < cards.length; i++) cards[i].classList.add('in');
@@ -583,35 +612,74 @@
             setTimeout(function () { if (b.parentNode) b.parentNode.removeChild(b); }, 700);
         }
 
+        function focusContent() {
+            var active = document.activeElement;
+            if (active && active !== document.body && active.id !== 'startGate') return;
+            var main = document.querySelector('main');
+            if (!main) return;
+            try {
+                if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+                main.focus({ preventScroll: true });
+            } catch (e) {
+                try { main.focus(); } catch (e2) {}
+            }
+        }
+
         var started = false;
         function startArcade() {
             if (started) return;
             started = true;
+            setToolbarInert(false);
             document.body.classList.remove('gate-pending');
+            if (!location.hash) {
+                try { window.scrollTo(0, 0); } catch (e) {}
+            } else {
+                var target = document.getElementById(location.hash.slice(1));
+                if (target) { try { target.scrollIntoView(); } catch (e) {} }
+            }
+            setTimeout(function () { if (gate && gate.parentNode) gate.parentNode.removeChild(gate); }, 360);
             if (gate) {
                 gate.classList.add('starting');
+                try { gate.blur(); } catch (e) {}
                 gate.setAttribute('aria-hidden', 'true');
             }
-            runBoot();
-            initReveal();
-            setTimeout(function () { if (gate && gate.parentNode) gate.parentNode.removeChild(gate); }, 360);
+            try { runBoot(); } catch (e) {}
+            try { initReveal(); } catch (e) { showAll(); }
+            try { history.scrollRestoration = 'auto'; } catch (e) {}
+            focusContent();
         }
 
-        if (!gate || reduce) {
+        if (!gate || reduce || returning) {
+            setToolbarInert(false);
             if (gate && gate.parentNode) gate.parentNode.removeChild(gate);
             document.body.classList.remove('gate-pending');
-            initReveal();
+            try { initReveal(); } catch (e) { showAll(); }
         } else {
+            setToolbarInert(true);
+            try { history.scrollRestoration = 'manual'; } catch (e) {}
             try { gate.focus({ preventScroll: true }); } catch (e) { gate.focus(); }
             gate.addEventListener('click', startArcade);
             gate.addEventListener('keydown', function (e) {
+                if (e.key === 'Tab') {
+                    if (!e.ctrlKey && !e.metaKey && !e.altKey) e.preventDefault();
+                    return;
+                }
                 if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
                     e.preventDefault();
                     startArcade();
                 }
             });
             document.addEventListener('keydown', function (e) {
-                if (started || e.key === 'Tab' || e.key === 'Escape') return;
+                document.body.classList.add('using-keys');
+                if (started) return;
+                if (e.key === 'Tab') {
+                    if (e.ctrlKey || e.metaKey || e.altKey) return;
+                    e.preventDefault();
+                    try { gate.focus({ preventScroll: true }); } catch (err) { gate.focus(); }
+                    return;
+                }
+                if (e.key === 'Escape' || e.ctrlKey || e.metaKey || e.altKey) return;
+                if (/^(Shift|Control|Alt|Meta|CapsLock|F\d{1,2})$/.test(e.key)) return;
                 startArcade();
             });
         }

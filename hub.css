@@ -565,7 +565,7 @@ body.hub-retro {
     display: grid;
     place-items: center;
     background: #020506;
-    pointer-events: none;
+    pointer-events: auto;
     overflow: hidden;
     animation: crtBootFade 0.58s steps(4) forwards;
 }
@@ -612,9 +612,10 @@ body.gate-pending { overflow: hidden; }
     position: fixed;
     inset: 0;
     z-index: 99992;
-    display: grid;
-    place-items: center;
+    display: flex;
     padding: 24px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: radial-gradient(ellipse at 50% 45%, #0d1a10 0%, #04080a 52%, #010203 100%);
     cursor: pointer;
     text-align: center;
@@ -645,6 +646,12 @@ body.gate-pending { overflow: hidden; }
 
 .start-gate.starting { animation: gateOff 0.36s steps(4) forwards; }
 
+.start-gate:focus-visible { outline: none; }
+body.using-keys .start-gate:focus-visible .gate-panel {
+    outline: 3px dashed var(--crt-gold);
+    outline-offset: 6px;
+}
+
 .gate-beam {
     position: absolute;
     left: 0;
@@ -660,6 +667,7 @@ body.gate-pending { overflow: hidden; }
     position: relative;
     z-index: 1;
     width: min(680px, 100%);
+    margin: auto;
     padding: 3.2rem 2.6rem;
     background: linear-gradient(180deg, rgba(6, 14, 9, 0.96), rgba(2, 4, 6, 0.97));
     border: 2px solid rgba(57, 255, 20, 0.75);
@@ -813,6 +821,18 @@ body.gate-pending { overflow: hidden; }
     .cat-count { font-size: 0.92rem; }
     .gate-panel { padding: 2.6rem 1rem; }
     .gate-sub { letter-spacing: 0.1em; font-size: 0.75rem; }
+    .gate-prompt { letter-spacing: 0.08em; }
+}
+
+@media (max-height: 480px) {
+    .start-gate { padding: 12px; }
+    .gate-panel { padding: 1.2rem 1rem; }
+    .gate-title {
+        margin: 0.5rem 0 0.4rem;
+        font-size: clamp(1rem, 4.5vw, 1.8rem);
+    }
+    .gate-prompt { margin-top: 0.8rem; }
+    .gate-sub { margin-top: 0.9rem; }
 }
 
 /* ---------------- reduced motion ---------------- */
